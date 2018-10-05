@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FlowsToVehicleAssignment {
 
     private FreightFlowsDataSet dataSet;
+    private final double tons_by_truck = 10.;
 
     public FlowsToVehicleAssignment(FreightFlowsDataSet dataSet) {
         this.dataSet = dataSet;
@@ -49,10 +50,13 @@ public class FlowsToVehicleAssignment {
                         InternalZone destinationZone = (InternalZone) dataSet.getZones().get(destination);
                         ArrayList<OrigDestFlow> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
                         for (OrigDestFlow origDestFlow : flowsThisOrigDest) {
-                            int numberOfVehicles;
                             if (origDestFlow.getMode().equals(Mode.ROAD)) {
-                                numberOfVehicles = Math.round((float) origDestFlow.getVolume_tn() / 20);
-                                for (int vehicle = 0; vehicle < numberOfVehicles; vehicle++) {
+                                double  numberOfVehicles_double = origDestFlow.getVolume_tn()/365/tons_by_truck;
+                                int numberOfVehicles_int = (int) Math.floor(numberOfVehicles_double);
+                                if(Math.random() < (numberOfVehicles_double - numberOfVehicles_int)){
+                                    numberOfVehicles_int++;
+                                }
+                                for (int vehicle = 0; vehicle < numberOfVehicles_int; vehicle++) {
                                     if (Math.random() < scaleFactor) {
                                         String idOfVehicle = origin + "-" +
                                                 destination + "-" +

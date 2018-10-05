@@ -18,7 +18,7 @@ public class MATSimAssignment {
     private Config config;
     private MutableScenario scenario;
     private int iterations = 10;
-    private double scaleFactor = 0.1;
+    private double scaleFactor = 1;
     private FreightFlowsDataSet dataSet;
 
     public void load(FreightFlowsDataSet dataSet){

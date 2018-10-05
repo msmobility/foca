@@ -21,6 +21,8 @@ public class ZonesReader extends CSVReader {
     private int nameIndex;
     //private int zoneTypeIndex;
 
+    private int thisRecordCounter = 1;
+
     protected ZonesReader(FreightFlowsDataSet dataSet) {
         super(dataSet);
 
@@ -37,17 +39,21 @@ public class ZonesReader extends CSVReader {
         int id = Integer.parseInt(record[idIndex]);
         String name = record[nameIndex];
         //todo only internals at the moment
-        if (id < 16078){
+        if (thisRecordCounter < 413){
             InternalZone zone = new InternalZone(id, name);
+            thisRecordCounter++;
             dataSet.getZones().put(id, zone);
+
         }
+
 
     }
 
     public void read() {
         super.read("./input/zones.csv", ";");
-        mapFeaturesToZones(dataSet);
         logger.info("Read " + dataSet.getZones().size() + " zones.");
+        mapFeaturesToZones(dataSet);
+
     }
 
 

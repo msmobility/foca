@@ -123,3 +123,4 @@ rsconnect/
 hs_err_pid*
 
 /src/main/r/.Rproj.user/
+.Rproj.user
