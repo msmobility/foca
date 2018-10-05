@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>msm</groupId>
+    <artifactId>freightFlows</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+
+    <repositories>
+        <repository>
+            <!-- Geotools is not on Maven central -->
+            <id>osgeo</id>
+            <name>Geotools repository</name>
+            <url>http://download.osgeo.org/webdav/geotools</url>
+        </repository>
+        <repository>
+            <id>matsim</id>
+            <url>http://dl.bintray.com/matsim/matsim</url>
+        </repository>
+        <repository>
+            <id>ojo-snapshots</id>
+            <url>http://oss.jfrog.org/libs-snapshot</url>
+        </repository>
+        <repository>
+            <id>bintray-msmobility-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/msmobility/maven</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.15</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jdmk</groupId>
+                    <artifactId>jmxtools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jmx</groupId>
+                    <artifactId>jmxri</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.matsim</groupId>
+            <artifactId>matsim</artifactId>
+            <version>${matsimVersion}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.github.msmobility</groupId>
+            <artifactId>mito</artifactId>
+            <!-- 			<version>0.3.0-SNAPSHOT</version> -->
+            <version>master-SNAPSHOT</version>
+            <!-- 		The jitpack version refers to the github branch.  Since you only have a master branch for mito, you can only use master-SNAPSHOT.  If
+                    you want to have this dependency stay with an older version of mito, you will have to put that older version on a branch and leave it there.
+                    I just introduced a 0.2.x branch. But it does not work with that either. kai, jun'17	 -->
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+
+    </dependencies>
+
+
+    <properties>
+        <matsimVersion>0.11.0-SNAPSHOT</matsimVersion>
+    </properties>
+
+
+</project>
