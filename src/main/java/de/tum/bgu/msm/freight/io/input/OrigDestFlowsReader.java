@@ -5,6 +5,7 @@ import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
 import de.tum.bgu.msm.freight.data.Mode;
 import de.tum.bgu.msm.freight.data.OrigDestFlow;
 import de.tum.bgu.msm.freight.io.CSVReader;
+import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 
 import org.apache.log4j.Logger;
@@ -56,7 +57,7 @@ public class OrigDestFlowsReader extends CSVReader {
     }
 
     public void read() {
-        super.read("./input/matrices/ketten-2010.csv", ";");
+        super.read(Properties.matrixFileName, ";");
         logger.info("Read " + dataSet.getFlowMatrix().size() + " origin/destination pairs with freight flows.");
     }
 }

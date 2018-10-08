@@ -7,6 +7,7 @@ import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
 import de.tum.bgu.msm.freight.data.InternalZone;
 
 import de.tum.bgu.msm.freight.io.CSVReader;
+import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -59,7 +60,7 @@ public class ZonesReader extends CSVReader {
     }
 
     public void read() {
-        super.read("./input/zones_edit.csv", ",");
+        super.read(Properties.zoneInputFile, ",");
         logger.info("Read " + dataSet.getZones().size() + " zones.");
         mapFeaturesToZones(dataSet);
 
@@ -69,10 +70,10 @@ public class ZonesReader extends CSVReader {
 
     public static void mapFeaturesToZones(FreightFlowsDataSet dataSet) {
         int counter = 1;
-        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("input/shp/de_lkr_4326.shp");
+        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(Properties.zoneShapeFile);
 
         for (SimpleFeature feature: features) {
-            int zoneId = Integer.parseInt(feature.getAttribute("RS").toString());
+            int zoneId = Integer.parseInt(feature.getAttribute(Properties.idFieldInShp).toString());
             InternalZone zone = (InternalZone) dataSet.getZones().get(zoneId);
             if (zone != null){
                 zone.setShapeFeature(feature);

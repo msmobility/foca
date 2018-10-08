@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.data.*;
+import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FlowsToVehicleAssignment {
 
     private FreightFlowsDataSet dataSet;
-    private final double tons_by_truck = 10.;
+
 
     public FlowsToVehicleAssignment(FreightFlowsDataSet dataSet) {
         this.dataSet = dataSet;
@@ -37,6 +38,9 @@ public class FlowsToVehicleAssignment {
         Set<Integer> destinations = dataSet.getFlowMatrix().columnKeySet();
         destinations = new HashSet<Integer>();
         destinations.add(9162);
+        destinations.add(9362);
+        //adding muc and regensburg
+
 
         for(int origin : dataSet.getFlowMatrix().rowKeySet()){
             for (int destination : destinations) {
@@ -48,7 +52,7 @@ public class FlowsToVehicleAssignment {
                         ArrayList<OrigDestFlow> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
                         for (OrigDestFlow origDestFlow : flowsThisOrigDest) {
                             if (origDestFlow.getMode().equals(Mode.ROAD)) {
-                                double  numberOfVehicles_double = origDestFlow.getVolume_tn()/365/tons_by_truck;
+                                double  numberOfVehicles_double = origDestFlow.getVolume_tn()/365/Properties.tons_by_truck;
                                 int numberOfVehicles_int = (int) Math.floor(numberOfVehicles_double);
                                 if(Math.random() < (numberOfVehicles_double - numberOfVehicles_int)){
                                     numberOfVehicles_int++;
@@ -57,7 +61,7 @@ public class FlowsToVehicleAssignment {
                                     if (Math.random() < scaleFactor) {
                                         String idOfVehicle = origin + "-" +
                                                 destination + "-" +
-                                                origDestFlow.getCommodity() + "-" +
+                                                origDestFlow.getCommodity().getCommodityGroup() + "-" +
                                                 vehicle + "-" +
                                                 counter;
 

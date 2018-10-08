@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
+import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -17,8 +18,7 @@ public class MATSimAssignment {
 
     private Config config;
     private MutableScenario scenario;
-    private int iterations = 10;
-    private double scaleFactor = 1;
+
     private FreightFlowsDataSet dataSet;
 
     public void load(FreightFlowsDataSet dataSet){
@@ -75,6 +75,7 @@ public class MATSimAssignment {
         config.parallelEventHandling().setNumberOfThreads(16);
         config.qsim().setUsingThreadpool(false);
 
+        int iterations = Properties.iterations;
         config.controler().setLastIteration(iterations);
         config.controler().setWritePlansInterval(iterations);
         config.controler().setWriteEventsInterval(iterations);
@@ -87,7 +88,7 @@ public class MATSimAssignment {
 
     private void createPopulation() {
         FlowsToVehicleAssignment flowsToVehicleAssignment = new FlowsToVehicleAssignment(dataSet);
-        Population population = flowsToVehicleAssignment.disaggregateToVehicles(config, scaleFactor);
+        Population population = flowsToVehicleAssignment.disaggregateToVehicles(config, Properties.scaleFactor);
         scenario = (MutableScenario) ScenarioUtils.loadScenario(config);
         scenario.setPopulation(population);
     }
