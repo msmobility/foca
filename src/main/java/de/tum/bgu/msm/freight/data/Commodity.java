@@ -11,7 +11,7 @@ public enum Commodity {
     OIL_GAS(23, CommodityGroup.PRIMARY),
     ORE(31, CommodityGroup.PRIMARY),
     FERTILIZER(32,CommodityGroup.PRIMARY),
-    MINERAL(33, CommodityGroup.PRIMARY),
+    MINERAL(33, CommodityGroup.SOIL_ROCK),
     FOOD(40, CommodityGroup.FOOD),
     TEXTIL(50,CommodityGroup.MANUFACT),
     WOOD_PAPER(60, CommodityGroup.MANUFACT),
