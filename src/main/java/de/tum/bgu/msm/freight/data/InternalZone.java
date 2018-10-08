@@ -6,7 +6,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.data.Region;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.freight.data.Zone;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
@@ -41,27 +41,12 @@ public class InternalZone implements Zone {
         return new Coord(p.getX(), p.getY());
     }
 
-    public void setRegion(Region region) {
-
-    }
-
-    public Region getRegion() {
+    @Override
+    public String getName() {
         return null;
     }
 
-    public int getMsa() {
-        return 0;
-    }
 
-    public float getArea() {
-        return 0;
-    }
-
-    public int getId() {
-        return 0;
-    }
-
-    public int getZoneId() {
-        return 0;
-    }
 }
+
+

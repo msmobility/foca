@@ -13,7 +13,7 @@ public class FreightFlows {
 
         MATSimAssignment matsimAssignment = new MATSimAssignment();
         matsimAssignment.load(io.getDataSet());
-        matsimAssignment.run();
+        //matsimAssignment.run();
 
 
     }

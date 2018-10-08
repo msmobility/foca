@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.freight.data;
 
 import com.google.common.collect.HashBasedTable;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.freight.data.Zone;
 
 import java.util.ArrayList;
 import java.util.HashMap;

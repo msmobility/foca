@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight.io.input;
 
 
 
+import de.tum.bgu.msm.freight.data.ExternalZone;
 import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
 import de.tum.bgu.msm.freight.data.InternalZone;
 
@@ -19,9 +20,10 @@ public class ZonesReader extends CSVReader {
     private final static Logger logger = Logger.getLogger(ZonesReader.class);
     private int idIndex;
     private int nameIndex;
-    //private int zoneTypeIndex;
+    private int zoneTypeIndex;
+    private int lonIndex;
+    private int latIndex;
 
-    private int thisRecordCounter = 1;
 
     protected ZonesReader(FreightFlowsDataSet dataSet) {
         super(dataSet);
@@ -29,28 +31,35 @@ public class ZonesReader extends CSVReader {
     }
 
     protected void processHeader(String[] header) {
-        idIndex = MitoUtil.findPositionInArray("Verkehrszelle", header);
-        nameIndex = MitoUtil.findPositionInArray("Verkehrszellenname", header);
-        //zoneTypeIndex = MitoUtil.findPositionInArray("type", header);
+        idIndex = MitoUtil.findPositionInArray("id", header);
+        nameIndex = MitoUtil.findPositionInArray("name", header);
+        zoneTypeIndex = MitoUtil.findPositionInArray("type", header);
+        lonIndex = MitoUtil.findPositionInArray("lon", header);
+        latIndex = MitoUtil.findPositionInArray("lat", header);
 
     }
 
     protected void processRecord(String[] record) {
         int id = Integer.parseInt(record[idIndex]);
         String name = record[nameIndex];
-        //todo only internals at the moment
-        if (thisRecordCounter < 413){
+        String type = record[zoneTypeIndex];
+        if (type.equals("LANDKREIS")){
             InternalZone zone = new InternalZone(id, name);
-            thisRecordCounter++;
             dataSet.getZones().put(id, zone);
-
+        } else if (type.equals("EXTERNAL")){
+            double lat = Double.parseDouble(record[latIndex]);
+            double lon = Double.parseDouble(record[lonIndex]);
+            ExternalZone zone = new ExternalZone(id, name, lat, lon);
+            dataSet.getZones().put(id, zone);
+        } else {
+            //todo do something with see ports
         }
 
 
     }
 
     public void read() {
-        super.read("./input/zones.csv", ";");
+        super.read("./input/zones_edit.csv", ",");
         logger.info("Read " + dataSet.getZones().size() + " zones.");
         mapFeaturesToZones(dataSet);
 

@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.freight.modules.assignment;
 
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
-import de.tum.bgu.msm.freight.data.InternalZone;
-import de.tum.bgu.msm.freight.data.Mode;
-import de.tum.bgu.msm.freight.data.OrigDestFlow;
+import de.tum.bgu.msm.freight.data.*;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
@@ -46,8 +43,8 @@ public class FlowsToVehicleAssignment {
                 if (dataSet.getFlowMatrix().contains(origin, destination)) {
                     if (dataSet.getZones().containsKey(origin) &&
                             dataSet.getZones().containsKey(destination)) {
-                        InternalZone originZone = (InternalZone) dataSet.getZones().get(origin);
-                        InternalZone destinationZone = (InternalZone) dataSet.getZones().get(destination);
+                        Zone originZone = dataSet.getZones().get(origin);
+                        Zone destinationZone = dataSet.getZones().get(destination);
                         ArrayList<OrigDestFlow> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
                         for (OrigDestFlow origDestFlow : flowsThisOrigDest) {
                             if (origDestFlow.getMode().equals(Mode.ROAD)) {
