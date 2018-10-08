@@ -68,7 +68,7 @@ public class MATSimAssignment {
         String runId = "flowAssignment";
         config.controler().setRunId(runId);
         config.controler().setOutputDirectory("./output/");
-        config.network().setInputFile("./networks/matsim/germany.xml.gz");
+        config.network().setInputFile(Properties.networkFile);
 
         config.qsim().setNumberOfThreads(16);
         config.global().setNumberOfThreads(16);

@@ -19,7 +19,7 @@ public class NetworkFromOsm {
          * The input file name.
          */
         String networkFolder = "./networks/";
-        String osm = networkFolder + "output/germany-big-roads.osm.pbf";
+        String osm = networkFolder + "output/europe-motorways.osm.pbf";
 
 
         /*
@@ -63,9 +63,13 @@ public class NetworkFromOsm {
         /*
          * Write the Network to a MATSim network file.
          */
-        new NetworkWriter(network).write(networkFolder + "matsim/germany.xml.gz");
+        new NetworkWriter(network).write(networkFolder + "matsim/europe.xml.gz");
 
         System.out.println("MATSIM network created");
 
+
+
     }
+
+
 }

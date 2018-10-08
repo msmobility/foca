@@ -10,6 +10,8 @@ public class Properties {
 
     public static final double tons_by_truck = 10.;
 
+    public static final String networkFile = "./networks/matsim/merge.xml.gz";
+
     public static final int iterations = 10;
     public static final double scaleFactor = 1;
 
