@@ -32,6 +32,6 @@ public class ExternalZone implements Zone {
     }
 
     public Coord getRandomCoord() {
-        return new Coord(lat, lon);
+        return new Coord(lon, lat);
     }
 }
