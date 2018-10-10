@@ -8,7 +8,8 @@ public class Properties {
 
     public static final String zoneInputFile = "./input/zones_edit.csv";
     public static final String zoneShapeFile = "./input/shp/de_lkr_4326.shp";
-    public static final String microZonesShapeFile = "input/shp/zones_4326.shp";
+    public static final String munichMicroZonesShapeFile = "input/shp/zones_4326.shp";
+    public static final String regensburgMicroZonesShapeFile = "input/shp/zones_regensburg_4326.shp";
     public static final String idFieldInZonesShp = "RS";
     public static final String idFieldInMicroZonesShp = "id";
 

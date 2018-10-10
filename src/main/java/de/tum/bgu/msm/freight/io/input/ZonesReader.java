@@ -64,7 +64,8 @@ public class ZonesReader extends CSVReader {
         super.read(Properties.zoneInputFile, ",");
         logger.info("Read " + dataSet.getZones().size() + " zones.");
         mapFeaturesToZones(dataSet);
-        mapFeaturesToMicroZones(dataSet, 9162);
+        mapFeaturesToMicroZones(dataSet, 9162, Properties.munichMicroZonesShapeFile);
+        mapFeaturesToMicroZones(dataSet, 9362, Properties.regensburgMicroZonesShapeFile);
 
     }
 
@@ -87,9 +88,9 @@ public class ZonesReader extends CSVReader {
         logger.info("Read " + counter + " zones.");
     }
 
-    public static void mapFeaturesToMicroZones(FreightFlowsDataSet dataSet, int idZone) {
+    public static void mapFeaturesToMicroZones(FreightFlowsDataSet dataSet, int idZone, String zoneFileName) {
 
-        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(Properties.microZonesShapeFile);
+        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(zoneFileName);
         InternalZone macroZone = (InternalZone) dataSet.getZones().get(idZone);
         MultiPolygon polygon = (MultiPolygon) macroZone.getShapeFeature().getDefaultGeometry();
         int n_microzones = 0;
