@@ -65,9 +65,8 @@ public class MATSimAssignment {
         workActivity.setTypicalDuration(8*60*60);
         config.planCalcScore().addActivityParams(workActivity);
 
-        String runId = "flowAssignment";
-        config.controler().setRunId(runId);
-        config.controler().setOutputDirectory("./output/");
+        config.controler().setRunId(Properties.runId);
+        config.controler().setOutputDirectory("./output/" + Properties.runId + "/");
         config.network().setInputFile(Properties.networkFile);
 
         config.qsim().setNumberOfThreads(16);

@@ -35,12 +35,15 @@ public class FlowsToVehicleAssignment {
         CoordinateTransformation ct =
                 TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
 
-        Set<Integer> destinations = dataSet.getFlowMatrix().columnKeySet();
-        destinations = new HashSet<Integer>();
-        destinations.add(9162);
-        destinations.add(9362);
-        //adding muc and regensburg
-
+        Set<Integer> destinations = new HashSet<>();
+        for(int destId : Properties.selectedDestinations){
+            if (destId == -1){
+                destinations = dataSet.getFlowMatrix().columnKeySet();
+                break;
+            } else {
+                destinations.add(destId);
+            }
+        }
 
         for(int origin : dataSet.getFlowMatrix().rowKeySet()){
             for (int destination : destinations) {
@@ -54,11 +57,11 @@ public class FlowsToVehicleAssignment {
                             if (origDestFlow.getMode().equals(Mode.ROAD)) {
                                 double  numberOfVehicles_double = origDestFlow.getVolume_tn()/365/Properties.tons_by_truck;
                                 int numberOfVehicles_int = (int) Math.floor(numberOfVehicles_double);
-                                if(Math.random() < (numberOfVehicles_double - numberOfVehicles_int)){
+                                if(Properties.rand.nextDouble() < (numberOfVehicles_double - numberOfVehicles_int)){
                                     numberOfVehicles_int++;
                                 }
                                 for (int vehicle = 0; vehicle < numberOfVehicles_int; vehicle++) {
-                                    if (Math.random() < scaleFactor) {
+                                    if (Properties.rand.nextDouble() < scaleFactor) {
                                         String idOfVehicle = origin + "-" +
                                                 destination + "-" +
                                                 origDestFlow.getCommodity().getCommodityGroup() + "-" +
@@ -90,7 +93,7 @@ public class FlowsToVehicleAssignment {
                                             population.addPerson(person);
 
                                             Activity originActivity = factory.createActivityFromCoord("production", origCoord);
-                                            originActivity.setEndTime(Math.random() * 24 * 60 * 60);
+                                            originActivity.setEndTime(Properties.rand.nextDouble() * 24 * 60 * 60);
                                             plan.addActivity(originActivity);
 
                                             plan.addLeg(factory.createLeg(TransportMode.car));

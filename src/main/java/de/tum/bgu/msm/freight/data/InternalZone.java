@@ -6,21 +6,30 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.data.Region;
+import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.Zone;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class InternalZone implements Zone {
 
     private int id;
     private String name;
     private SimpleFeature shapeFeature;
+    private Map<Integer, InternalMicroZone> microZones;
 
 
     public InternalZone(int id, String name) {
         this.id = id;
         this.name = name;
+        this.microZones = new HashMap<>();
     }
 
     public SimpleFeature getShapeFeature() {
@@ -32,13 +41,26 @@ public class InternalZone implements Zone {
     }
 
     public Coord getRandomCoord() {
-        // alternative and about 10 times faster way to generate random point inside a geometry. Amit Dec'17
-        RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
-        randomPointsBuilder.setNumPoints(1);
-        randomPointsBuilder.setExtent((Geometry) shapeFeature.getDefaultGeometry());
-        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
-        Point p = MGC.coordinate2Point(coordinate);
-        return new Coord(p.getX(), p.getY());
+        if (microZones.isEmpty()) {
+            return FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature);
+        } else {
+            int microZoneId = disaggregateToMicroZone();
+            return microZones.get(microZoneId).getRandomCoord();
+        }
+    }
+
+    public void addMicroZone(InternalMicroZone microZone){
+        this.microZones.put(microZone.getId(), microZone);
+    }
+
+    private int disaggregateToMicroZone() {
+        Map<Integer, Double> microZonesProbabilities = new HashMap<>();
+        this.microZones.values().stream().forEach(microZone -> {
+            microZonesProbabilities.put(microZone.getId(), microZone.getAttribute("employment"));
+        } );
+        return FreightFlowUtils.select(microZonesProbabilities, new Random(),
+                FreightFlowUtils.getSum(microZonesProbabilities.values()));
+
     }
 
     @Override

@@ -2,9 +2,10 @@ package de.tum.bgu.msm.freight.io.input;
 
 
 
-import de.tum.bgu.msm.freight.data.ExternalZone;
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
-import de.tum.bgu.msm.freight.data.InternalZone;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
+import de.tum.bgu.msm.freight.data.*;
 
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
@@ -63,6 +64,7 @@ public class ZonesReader extends CSVReader {
         super.read(Properties.zoneInputFile, ",");
         logger.info("Read " + dataSet.getZones().size() + " zones.");
         mapFeaturesToZones(dataSet);
+        mapFeaturesToMicroZones(dataSet, 9162);
 
     }
 
@@ -73,7 +75,7 @@ public class ZonesReader extends CSVReader {
         Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(Properties.zoneShapeFile);
 
         for (SimpleFeature feature: features) {
-            int zoneId = Integer.parseInt(feature.getAttribute(Properties.idFieldInShp).toString());
+            int zoneId = Integer.parseInt(feature.getAttribute(Properties.idFieldInZonesShp).toString());
             InternalZone zone = (InternalZone) dataSet.getZones().get(zoneId);
             if (zone != null){
                 zone.setShapeFeature(feature);
@@ -83,5 +85,27 @@ public class ZonesReader extends CSVReader {
             }
         }
         logger.info("Read " + counter + " zones.");
+    }
+
+    public static void mapFeaturesToMicroZones(FreightFlowsDataSet dataSet, int idZone) {
+
+        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(Properties.microZonesShapeFile);
+        InternalZone macroZone = (InternalZone) dataSet.getZones().get(idZone);
+        MultiPolygon polygon = (MultiPolygon) macroZone.getShapeFeature().getDefaultGeometry();
+        int n_microzones = 0;
+        for (SimpleFeature feature: features) {
+            if (polygon.contains((Geometry) feature.getDefaultGeometry())){
+                int zoneId = Integer.parseInt(feature.getAttribute(Properties.idFieldInMicroZonesShp).toString());
+                InternalMicroZone microZone = new InternalMicroZone(zoneId, feature);
+                macroZone.addMicroZone(microZone);
+
+                double employment = Double.parseDouble(feature.getAttribute("Employment").toString());
+                microZone.setAttribute("employment", employment);
+
+                n_microzones ++;
+            }
+        }
+
+        logger.info("Added " + n_microzones + " zones to zone " + idZone);
     }
 }
