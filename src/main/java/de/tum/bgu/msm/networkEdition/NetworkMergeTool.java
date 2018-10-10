@@ -13,23 +13,25 @@ public class NetworkMergeTool {
 
     private String roadNetowrkFileName;
     private String transitNetworkFileName;
-    private String finalNetowrkFileName;
+    private String finalNetworkFileName;
+
+    private String suffix = "_4";
 
     public static void main (String[] args){
 
-        String file1 = "networks/matsim/germany.xml.gz";
-        String file2 = "networks/matsim/europe.xml.gz";
+        String file1 = "networks/matsim/aux1.xml.gz";
+        String file2 = "networks/matsim/munich.xml.gz";
 
-        String outputFile = "networks/matsim/merge.xml.gz";
+        String outputFile = "networks/matsim/final.xml.gz";
 
         NetworkMergeTool networkMergeTool = new NetworkMergeTool(file1, file2, outputFile);
         networkMergeTool.mergeNetworks();
     }
 
-    public NetworkMergeTool(String roadNetowrkFileName, String transitNetworkFileName, String finalNetowrkFileName) {
+    public NetworkMergeTool(String roadNetowrkFileName, String transitNetworkFileName, String finalNetworkFileName) {
         this.roadNetowrkFileName = roadNetowrkFileName;
         this.transitNetworkFileName = transitNetworkFileName;
-        this.finalNetowrkFileName = finalNetowrkFileName;
+        this.finalNetworkFileName = finalNetworkFileName;
     }
 
     public void mergeNetworks(){
@@ -48,7 +50,7 @@ public class NetworkMergeTool {
 
         Network finalNetwork = merge(network1, network2);
 
-        new NetworkWriter(finalNetwork).write(finalNetowrkFileName);
+        new NetworkWriter(finalNetwork).write(finalNetworkFileName);
 
     }
 
@@ -82,7 +84,7 @@ public class NetworkMergeTool {
             Id<Node> toNodeId = Id.create(link.getToNode().getId().toString(), Node.class);
             Node fromNode = baseNetwork.getNodes().get(fromNodeId);
             Node toNode = baseNetwork.getNodes().get(toNodeId);
-            Link link2 = factory.createLink(Id.create(link.getId().toString() + "_2", Link.class), fromNode, toNode);
+            Link link2 = factory.createLink(Id.create(link.getId().toString() + suffix, Link.class), fromNode, toNode);
             if(!nodesInBaseNetwork.contains(fromNodeId) ||
                     !nodesInBaseNetwork.contains(toNodeId)) {
                 link2.setAllowedModes(link.getAllowedModes());
