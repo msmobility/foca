@@ -26,6 +26,7 @@ for (i in 1:3){
   p1 = ggplot(summary, aes(x= as.factor(year), y = ton, fill = mode)) + 
     geom_bar(stat = "identity", position = position_dodge(preserve = "single")) + 
     facet_grid(origType ~ destType) + 
+    scale_fill_manual(values = c("#ff6c73", "#4c4c4c", "#6fb5f6")) +
     ggtitle(paste("Flows by origin and destination - to ",case[i],sep = ""))
   
   print(p1)
