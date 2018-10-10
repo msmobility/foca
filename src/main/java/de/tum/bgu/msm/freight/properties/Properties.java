@@ -1,8 +1,6 @@
 package de.tum.bgu.msm.freight.properties;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 public class Properties {
 
@@ -19,7 +17,7 @@ public class Properties {
 
     public static final String networkFile = "./networks/matsim/final.xml.gz";
 
-    public static final int iterations = 10;
+    public static final int iterations = 1;
 
     public static final double scaleFactor = 1;
     public static final String runId = "test";

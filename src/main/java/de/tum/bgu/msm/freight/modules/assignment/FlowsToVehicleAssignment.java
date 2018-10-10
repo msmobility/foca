@@ -50,57 +50,65 @@ public class FlowsToVehicleAssignment {
                 if (dataSet.getFlowMatrix().contains(origin, destination)) {
                     if (dataSet.getZones().containsKey(origin) &&
                             dataSet.getZones().containsKey(destination)) {
-                        Zone originZone = dataSet.getZones().get(origin);
-                        Zone destinationZone = dataSet.getZones().get(destination);
                         ArrayList<OrigDestFlow> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
                         for (OrigDestFlow origDestFlow : flowsThisOrigDest) {
-                            if (origDestFlow.getMode().equals(Mode.ROAD)) {
-                                double  numberOfVehicles_double = origDestFlow.getVolume_tn()/365/Properties.tons_by_truck;
-                                int numberOfVehicles_int = (int) Math.floor(numberOfVehicles_double);
-                                if(Properties.rand.nextDouble() < (numberOfVehicles_double - numberOfVehicles_int)){
-                                    numberOfVehicles_int++;
-                                }
-                                for (int vehicle = 0; vehicle < numberOfVehicles_int; vehicle++) {
-                                    if (Properties.rand.nextDouble() < scaleFactor) {
-                                        String idOfVehicle = origin + "-" +
-                                                destination + "-" +
-                                                origDestFlow.getCommodity().getCommodityGroup() + "-" +
-                                                vehicle + "-" +
-                                                counter;
+                            for (Trip trip : origDestFlow.getTrips()) {
+                                if (trip.getMode().equals(Mode.ROAD)) {
+                                    int tripOrigin = trip.getOrigin();
+                                    int tripDestination = trip.getDestination();
+                                    Zone originZone = dataSet.getZones().get(tripOrigin);
+                                    Zone destinationZone = dataSet.getZones().get(tripDestination);
+                                    double numberOfVehicles_double = trip.getVolume_tn() / 365 / Properties.tons_by_truck;
+                                    int numberOfVehicles_int = (int) Math.floor(numberOfVehicles_double);
+                                    if (Properties.rand.nextDouble() < (numberOfVehicles_double - numberOfVehicles_int)) {
+                                        numberOfVehicles_int++;
+                                    }
+                                    for (int vehicle = 0; vehicle < numberOfVehicles_int; vehicle++) {
+                                        if (Properties.rand.nextDouble() < scaleFactor) {
+                                            String idOfVehicle = tripOrigin + "-" +
+                                                    tripDestination + "-" +
+                                                    trip.getCommodity().getCommodityGroup() + "-" +
+                                                    vehicle + "-" +
+                                                    counter;
 
-                                        Coord origCoord;
-                                        Coord destCoord;
-                                        try {
-                                            origCoord = originZone.getRandomCoord();
-                                        } catch (NullPointerException e) {
-                                            origCoord = null;
-                                        }
+                                            if (!trip.getSegment().equals(Segment.MAIN)){
+                                                idOfVehicle += "-" + trip.getSegment().toString();
+                                            }
 
-                                        try {
-                                            destCoord = destinationZone.getRandomCoord();
-                                        } catch (NullPointerException e) {
-                                            destCoord = null;
-                                        }
+                                            Coord origCoord;
+                                            Coord destCoord;
+                                            try {
+                                                origCoord = originZone.getRandomCoord();
+                                            } catch (NullPointerException e) {
+                                                origCoord = null;
+                                            }
 
-                                        if (origCoord != null && destCoord != null) {
+                                            try {
+                                                destCoord = destinationZone.getRandomCoord();
+                                            } catch (NullPointerException e) {
+                                                destCoord = null;
+                                            }
 
-                                            origCoord = ct.transform(origCoord);
-                                            destCoord = ct.transform(destCoord);
+                                            if (origCoord != null && destCoord != null) {
 
-                                            Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
-                                            Plan plan = factory.createPlan();
-                                            person.addPlan(plan);
-                                            population.addPerson(person);
+                                                origCoord = ct.transform(origCoord);
+                                                destCoord = ct.transform(destCoord);
 
-                                            Activity originActivity = factory.createActivityFromCoord("production", origCoord);
-                                            originActivity.setEndTime(Properties.rand.nextDouble() * 24 * 60 * 60);
-                                            plan.addActivity(originActivity);
+                                                Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
+                                                Plan plan = factory.createPlan();
+                                                person.addPlan(plan);
+                                                population.addPerson(person);
 
-                                            plan.addLeg(factory.createLeg(TransportMode.car));
+                                                Activity originActivity = factory.createActivityFromCoord("start", origCoord);
+                                                originActivity.setEndTime(Properties.rand.nextDouble() * 24 * 60 * 60);
+                                                plan.addActivity(originActivity);
 
-                                            Activity destinationActivity = factory.createActivityFromCoord("consumption", destCoord);
-                                            plan.addActivity(destinationActivity);
-                                            counter.incrementAndGet();
+                                                plan.addLeg(factory.createLeg(TransportMode.car));
+
+                                                Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
+                                                plan.addActivity(destinationActivity);
+                                                counter.incrementAndGet();
+                                            }
                                         }
                                     }
                                 }
@@ -112,5 +120,6 @@ public class FlowsToVehicleAssignment {
         }
         return population;
     }
+
 
 }

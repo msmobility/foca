@@ -57,11 +57,11 @@ public class MATSimAssignment {
         config.strategy().setFractionOfIterationsToDisableInnovation(0.8);
         config.strategy().setMaxAgentPlanMemorySize(4);
 
-        PlanCalcScoreConfigGroup.ActivityParams homeActivity = new PlanCalcScoreConfigGroup.ActivityParams("production");
+        PlanCalcScoreConfigGroup.ActivityParams homeActivity = new PlanCalcScoreConfigGroup.ActivityParams("start");
         homeActivity.setTypicalDuration(12*60*60);
         config.planCalcScore().addActivityParams(homeActivity);
 
-        PlanCalcScoreConfigGroup.ActivityParams workActivity = new PlanCalcScoreConfigGroup.ActivityParams("consumption");
+        PlanCalcScoreConfigGroup.ActivityParams workActivity = new PlanCalcScoreConfigGroup.ActivityParams("end");
         workActivity.setTypicalDuration(8*60*60);
         config.planCalcScore().addActivityParams(workActivity);
 

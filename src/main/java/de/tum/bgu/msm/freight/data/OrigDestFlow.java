@@ -1,5 +1,8 @@
 package de.tum.bgu.msm.freight.data;
 
+import java.util.ArrayList;
+
+
 public class OrigDestFlow {
 
     private int year;
@@ -8,6 +11,7 @@ public class OrigDestFlow {
     private Mode mode;
     private Commodity commodity;
     private double volume_tn;
+    private ArrayList<Trip> trips;
 
     public OrigDestFlow(int year, int origin, int destination, Mode mode, Commodity commodity, double volume_tn) {
         this.year = year;
@@ -16,29 +20,14 @@ public class OrigDestFlow {
         this.mode = mode;
         this.commodity = commodity;
         this.volume_tn = volume_tn;
+        this.trips = new ArrayList<>();
     }
 
-    public int getYear() {
-        return year;
+    public void addTrip(Trip trip){
+        this.trips.add(trip);
     }
 
-    public int getOrigin() {
-        return origin;
-    }
-
-    public int getDestination() {
-        return destination;
-    }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public double getVolume_tn() {
-        return volume_tn;
-    }
-
-    public Commodity getCommodity() {
-        return commodity;
+    public ArrayList<Trip> getTrips(){
+        return trips;
     }
 }

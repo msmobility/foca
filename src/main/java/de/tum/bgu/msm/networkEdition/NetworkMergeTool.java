@@ -20,7 +20,7 @@ public class NetworkMergeTool {
     public static void main (String[] args){
 
         String file1 = "networks/matsim/aux1.xml.gz";
-        String file2 = "networks/matsim/munich.xml.gz";
+        String file2 = "networks/matsim/regensburg.xml.gz";
 
         String outputFile = "networks/matsim/final.xml.gz";
 
