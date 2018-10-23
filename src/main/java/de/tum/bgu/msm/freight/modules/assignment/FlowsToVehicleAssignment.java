@@ -77,7 +77,7 @@ public class FlowsToVehicleAssignment {
                                                 idOfVehicle += "-" + trip.getSegment().toString();
                                             }
 
-                                            if (!trip.getFlowType().equals(FlowType.CONTAINER_RO_RO)){
+                                            if (trip.getFlowType().equals(FlowType.CONTAINER_RO_RO)){
                                                 idOfVehicle += "-" + trip.getFlowType().toString();
                                             }
 
