@@ -18,7 +18,8 @@ for (i in 1:3){
   p1 = ggplot(modal_shares, aes(x=year, y = tons, fill = mode)) +
     geom_bar(stat = "identity", position = "fill") + 
     scale_fill_manual(values = c("#ff6c73", "#4c4c4c", "#6fb5f6")) + 
-    ggtitle(paste("Mode by volume in tons to ", case[i], " zones", sep = ""))
+    ggtitle(paste("Mode by volume in tons to ", case[i], " zones", sep = "")) + 
+              ylab("share")
   
   modal_shares_VL = matrices_copy %>%
     filter(Zielzelle %in% zone_case[[i]]) %>%
@@ -39,7 +40,8 @@ for (i in 1:3){
    geom_bar(stat = "identity", position = position_dodge(preserve = "single")) + 
    scale_fill_manual(values = c("#ff6c73", "#4c4c4c", "#6fb5f6")) + 
    ggtitle(paste("Mode by volume to ", case[i], " zones", sep = "")) + 
-    facet_grid(.~year)
+    facet_grid(.~year) + 
+    ylab("tons (million)")
   
   plot(p1)
   plot(p2)

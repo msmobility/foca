@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.freight.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class OrigDestFlow {
@@ -8,26 +10,21 @@ public class OrigDestFlow {
     private int year;
     private int origin;
     private int destination;
-    private Mode mode;
-    private Commodity commodity;
-    private double volume_tn;
-    private ArrayList<Trip> trips;
 
-    public OrigDestFlow(int year, int origin, int destination, Mode mode, Commodity commodity, double volume_tn) {
+    private Map<Segment,Trip> trips;
+
+    public OrigDestFlow(int year, int origin, int destination) {
         this.year = year;
         this.origin = origin;
         this.destination = destination;
-        this.mode = mode;
-        this.commodity = commodity;
-        this.volume_tn = volume_tn;
-        this.trips = new ArrayList<>();
+        this.trips = new HashMap<>();
     }
 
     public void addTrip(Trip trip){
-        this.trips.add(trip);
+        this.trips.put(trip.getSegment(),trip);
     }
 
-    public ArrayList<Trip> getTrips(){
+    public Map<Segment, Trip> getTrips(){
         return trips;
     }
 }

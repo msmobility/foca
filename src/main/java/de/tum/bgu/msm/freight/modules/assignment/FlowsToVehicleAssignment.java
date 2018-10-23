@@ -19,11 +19,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FlowsToVehicleAssignment {
 
     private FreightFlowsDataSet dataSet;
-
+    private UncongestedTravelTime uncongestedTravelTime;
 
     public FlowsToVehicleAssignment(FreightFlowsDataSet dataSet) {
         this.dataSet = dataSet;
-
+        if (Properties.storeExpectedTimes) {
+            uncongestedTravelTime = new UncongestedTravelTime(Properties.simpleNetworkFile);
+        }
     }
 
     public Population disaggregateToVehicles(Config config, double scaleFactor) {
@@ -52,7 +54,7 @@ public class FlowsToVehicleAssignment {
                             dataSet.getZones().containsKey(destination)) {
                         ArrayList<OrigDestFlow> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
                         for (OrigDestFlow origDestFlow : flowsThisOrigDest) {
-                            for (Trip trip : origDestFlow.getTrips()) {
+                            for (Trip trip : origDestFlow.getTrips().values()) {
                                 if (trip.getMode().equals(Mode.ROAD)) {
                                     int tripOrigin = trip.getOrigin();
                                     int tripDestination = trip.getDestination();
@@ -73,6 +75,10 @@ public class FlowsToVehicleAssignment {
 
                                             if (!trip.getSegment().equals(Segment.MAIN)){
                                                 idOfVehicle += "-" + trip.getSegment().toString();
+                                            }
+
+                                            if (!trip.getFlowType().equals(FlowType.CONTAINER_RO_RO)){
+                                                idOfVehicle += "-" + trip.getFlowType().toString();
                                             }
 
                                             Coord origCoord;
@@ -108,6 +114,14 @@ public class FlowsToVehicleAssignment {
                                                 Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
                                                 plan.addActivity(destinationActivity);
                                                 counter.incrementAndGet();
+
+                                                //simply adds the expected time as an attribute to the plan (no current application)
+                                                //it is slow at this point
+                                                //may be used to better decide on the arrival time at destination
+                                                if (Properties.storeExpectedTimes) {
+                                                    double time = uncongestedTravelTime.getTravelTime(origCoord, destCoord);
+                                                    plan.getAttributes().putAttribute("time", time);
+                                                }
                                             }
                                         }
                                     }

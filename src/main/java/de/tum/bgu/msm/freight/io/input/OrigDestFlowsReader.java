@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight.io.input;
 
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.io.CSVReader;
+import de.tum.bgu.msm.freight.modules.assignment.UncongestedTravelTime;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 
@@ -27,6 +28,9 @@ public class OrigDestFlowsReader extends CSVReader {
     private int commodityNLIndex;
     private int tonsNLIndex;
     private int tonsVLIndex;
+    private int typeVLIndex;
+    private int typeHLIndex;
+    private int typeNLIndex;
 
 
     protected OrigDestFlowsReader(FreightFlowsDataSet dataSet, int year) {
@@ -48,16 +52,17 @@ public class OrigDestFlowsReader extends CSVReader {
         tonsHLIndex = MitoUtil.findPositionInArray("TonnenHL", header);
         tonsVLIndex = MitoUtil.findPositionInArray("TonnenVL", header);
         tonsNLIndex = MitoUtil.findPositionInArray("TonnenNL", header);
+        typeVLIndex = MitoUtil.findPositionInArray("VerkArtVL", header);;
+        typeHLIndex = MitoUtil.findPositionInArray("VerkArtHL", header);;
+        typeNLIndex = MitoUtil.findPositionInArray("VerkArtNL", header);;
 
     }
 
     protected void processRecord(String[] record) {
         int origin = Integer.parseInt(record[originIndex]);
         int destination = Integer.parseInt(record[destinationIndex]);
-        Mode modeHL = Mode.valueOf(Integer.parseInt(record[modeHLIndex]));
-        Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
-        double tonsHL = Double.parseDouble(record[tonsHLIndex]);
-        OrigDestFlow origDestFlow = new OrigDestFlow(year, origin, destination, modeHL, commodityHL, tonsHL);
+
+        OrigDestFlow origDestFlow = new OrigDestFlow(year, origin, destination);
 
         if (dataSet.getFlowMatrix().contains(origin, destination)){
             dataSet.getFlowMatrix().get(origin, destination).add(origDestFlow);
@@ -75,10 +80,16 @@ public class OrigDestFlowsReader extends CSVReader {
             Mode modeVL = Mode.valueOf(Integer.parseInt(record[modeVLIndex]));
             Commodity commodityVL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityVLIndex]));
             double tonsVL = Double.parseDouble(record[tonsVLIndex]);
-            Trip tripVL = new Trip(origin, originHL, modeVL, commodityVL, tonsVL, Segment.PRE);
+            FlowType flowTypeVL = FlowType.getFromCode(Integer.parseInt(record[typeVLIndex]));
+            Trip tripVL = new Trip(origin, originHL, modeVL, commodityVL, tonsVL, Segment.PRE, flowTypeVL);
             origDestFlow.addTrip(tripVL);
         }
-        Trip tripHL = new Trip(originHL, destinationHL, modeHL, commodityHL, tonsHL, Segment.MAIN);
+
+        Mode modeHL = Mode.valueOf(Integer.parseInt(record[modeHLIndex]));
+        Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
+        double tonsHL = Double.parseDouble(record[tonsHLIndex]);
+        FlowType flowTypeHL = FlowType.getFromCode(Integer.parseInt(record[typeHLIndex]));
+        Trip tripHL = new Trip(originHL, destinationHL, modeHL, commodityHL, tonsHL, Segment.MAIN, flowTypeHL);
         origDestFlow.addTrip(tripHL);
 
         if (destination != destinationHL){
@@ -86,7 +97,8 @@ public class OrigDestFlowsReader extends CSVReader {
             Mode modeNL = Mode.valueOf(Integer.parseInt(record[modeNLIndex]));
             Commodity commodityNL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityNLIndex]));
             double tonsNL = Double.parseDouble(record[tonsNLIndex]);
-            Trip tripNL = new Trip(destinationHL, destination, modeNL, commodityNL, tonsNL, Segment.POST);
+            FlowType flowTypeNL = FlowType.getFromCode(Integer.parseInt(record[typeNLIndex]));
+            Trip tripNL = new Trip(destinationHL, destination, modeNL, commodityNL, tonsNL, Segment.POST, flowTypeNL);
             origDestFlow.addTrip(tripNL);
         }
     }
