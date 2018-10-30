@@ -69,6 +69,14 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>networkEditor</artifactId>
+            <version>${matsimVersion}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>com.github.msmobility</groupId>

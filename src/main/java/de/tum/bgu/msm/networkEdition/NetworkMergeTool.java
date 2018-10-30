@@ -11,50 +11,54 @@ import java.util.*;
 
 public class NetworkMergeTool {
 
-    private String roadNetowrkFileName;
-    private String transitNetworkFileName;
-    private String finalNetworkFileName;
-
-    private String suffix = "_4";
-
     public static void main (String[] args){
 
-        String file1 = "networks/matsim/aux1.xml.gz";
-        String file2 = "networks/matsim/regensburg.xml.gz";
+        String file1 = "networks/matsim/europe_v3.xml.gz";
+        String file2 = "networks/matsim/germany.xml.gz";
+        String file3 = "networks/matsim/munich.xml.gz";
+        String file4 = "networks/matsim/regensburg.xml.gz";
 
-        String outputFile = "networks/matsim/final.xml.gz";
+        List<String> inputFiles = new ArrayList<>();
+        inputFiles.add(file1);
+        inputFiles.add(file2);
+        inputFiles.add(file3);
+        inputFiles.add(file4);
 
-        NetworkMergeTool networkMergeTool = new NetworkMergeTool(file1, file2, outputFile);
-        networkMergeTool.mergeNetworks();
+        String outputFile = "networks/matsim/final_v2.xml.gz";
+
+        NetworkMergeTool networkMergeTool = new NetworkMergeTool();
+        networkMergeTool.mergeNetworks(inputFiles, outputFile);
     }
 
-    public NetworkMergeTool(String roadNetowrkFileName, String transitNetworkFileName, String finalNetworkFileName) {
-        this.roadNetowrkFileName = roadNetowrkFileName;
-        this.transitNetworkFileName = transitNetworkFileName;
-        this.finalNetworkFileName = finalNetworkFileName;
-    }
 
-    public void mergeNetworks(){
+    public void mergeNetworks(List<String> inputFiles, String outputFile){
 
-        Config config1 = ConfigUtils.createConfig();
-        config1.network().setInputFile(roadNetowrkFileName);
+        Config config0 = ConfigUtils.createConfig();
+        config0.network().setInputFile(inputFiles.get(0));
+        Scenario scenario0 = ScenarioUtils.loadScenario(config0);
+        Network finalNetwork = scenario0.getNetwork();
 
-        Scenario scenario1 = ScenarioUtils.loadScenario(config1);
-        Network network1 = scenario1.getNetwork();
+        for (int i =1; i < inputFiles.size(); i++ ) {
+            Config config = ConfigUtils.createConfig();
+            config.network().setInputFile(inputFiles.get(i));
+            String suffix = "_" + (i + 1);
+            Scenario scenario = ScenarioUtils.loadScenario(config);
+            Network thisNetwork = scenario.getNetwork();
+            finalNetwork = merge(finalNetwork, thisNetwork, suffix);
+        }
 
-        Config config2 = ConfigUtils.createConfig();
-        config2.network().setInputFile(transitNetworkFileName);
-
-        Scenario scenario2 = ScenarioUtils.loadScenario(config2);
-        Network network2 = scenario2.getNetwork();
-
-        Network finalNetwork = merge(network1, network2);
-
-        new NetworkWriter(finalNetwork).write(finalNetworkFileName);
+        new NetworkWriter(finalNetwork).write(outputFile);
 
     }
 
-    private Network merge(Network baseNetwork, Network addNetwork) {
+    /**
+     *
+     * @param baseNetwork
+     * @param addNetwork
+     * @param suffix to add to the links of addnetwork so their names do not repeat the ones of base network
+     * @return
+     */
+    private Network merge(Network baseNetwork, Network addNetwork, String suffix) {
 
         NetworkFactory factory = baseNetwork.getFactory();
         Set<Id<Node>> nodesInBaseNetwork = new HashSet<>();
@@ -96,7 +100,7 @@ public class NetworkMergeTool {
                 counter++;
             }
         }
-        System.out.println("ADDED " + counter + " LINKS.");
+        System.out.println("ADDED " + counter + " LINKS using the suffix " + suffix);
 
         return baseNetwork;
 

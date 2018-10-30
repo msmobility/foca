@@ -16,7 +16,7 @@ public class Properties {
 
     public static double tons_by_truck = 10.;
 
-    public static String networkFile = "./networks/matsim/final.xml.gz";
+    public static String networkFile = "./networks/matsim/final_v2.xml.gz";
     public static String simpleNetworkFile = "./networks/matsim/europe.xml.gz";
 
     public static int iterations = 1;
