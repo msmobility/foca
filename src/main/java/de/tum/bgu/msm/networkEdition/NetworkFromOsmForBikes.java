@@ -11,7 +11,7 @@ import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.io.OsmNetworkReader;
 
-public class NetworkFromOsm {
+public class NetworkFromOsmForBikes {
 
     public static void main (String[] args){
 
@@ -19,9 +19,9 @@ public class NetworkFromOsm {
          * The input file name.
          */
         String networkFolder = "./networks/";
-        String osm = networkFolder +  "output/network_bicycle_muc_v2.osm";
+        String osm = networkFolder +  "output/muc-all.osm";
 
-        String outputFile = "matsim/muc_bicycle_v2.xml.gz";
+        String outputFile = "matsim/muc_all_bike.xml.gz";
 
         boolean networkCleaning = true;
 
@@ -56,7 +56,24 @@ public class NetworkFromOsm {
         Network network = scenario.getNetwork();
 
         OsmNetworkReader onr = new OsmNetworkReader(network,ct);
+
+
+        /*
+         * Set highway defaults for the cycle paths
+         * experimental!
+         */
+
+        onr.setHighwayDefaults(7, "service", 1, 25/3.6, 1,  1000);
+
+
+        onr.setHighwayDefaults(7, "cycleway", 1, 25/3.6, 1,  1000);
+        onr.setHighwayDefaults(7, "path", 1, 15/3.6, 1,  1000);
+        //onr.setHighwayDefaults(7, "pedestrian", 1, 15/3.6, 1,  1000);
+        //onr.setHighwayDefaults(8, "footway", 1, 15/3.6, 1,  1000);
+
+
         onr.parse(osm);
+
 
 
 
