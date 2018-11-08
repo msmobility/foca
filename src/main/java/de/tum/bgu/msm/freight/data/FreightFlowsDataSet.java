@@ -13,11 +13,23 @@ public class FreightFlowsDataSet {
 
     private HashBasedTable<Integer, Integer, ArrayList<OrigDestFlow>> flowMatrix = HashBasedTable.create();
 
+    private HashBasedTable<Commodity, DistanceBin, Double> truckLoadsByDistanceAndCommodity = HashBasedTable.create();
+
+    private HashBasedTable<Commodity, DistanceBin, Double> emptyTrucksProportionByDistanceAndCommodity = HashBasedTable.create();
+
     public Map<Integer, Zone> getZones() {
         return zones;
     }
 
     public HashBasedTable<Integer, Integer, ArrayList<OrigDestFlow>> getFlowMatrix() {
         return flowMatrix;
+    }
+
+    public HashBasedTable<Commodity, DistanceBin, Double> getTruckLoadsByDistanceAndCommodity() {
+        return truckLoadsByDistanceAndCommodity;
+    }
+
+    public HashBasedTable<Commodity, DistanceBin, Double> getEmptyTruckProportionsByDistanceAndCommodity() {
+        return emptyTrucksProportionByDistanceAndCommodity;
     }
 }

@@ -14,8 +14,6 @@ public class Properties {
 
     public static String matrixFileName = "./input/matrices/ketten-2010.csv";
 
-    public static double tons_by_truck = 10.;
-
     public static String networkFile = "./networks/matsim/final_v2.xml.gz";
     public static String simpleNetworkFile = "./networks/matsim/europe.xml.gz";
 
@@ -31,4 +29,6 @@ public class Properties {
 
     public static final boolean storeExpectedTimes = false;
 
+    public static String commodityAttributeFile = "input/commodities/commodity_groups.csv";
+    public static int daysPerYear = 306;
 }

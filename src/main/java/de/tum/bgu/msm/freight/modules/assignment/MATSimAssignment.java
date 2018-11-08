@@ -14,6 +14,8 @@ import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 
+import java.io.IOException;
+
 public class MATSimAssignment {
 
     private Config config;
@@ -21,7 +23,7 @@ public class MATSimAssignment {
 
     private FreightFlowsDataSet dataSet;
 
-    public void load(FreightFlowsDataSet dataSet){
+    public void load(FreightFlowsDataSet dataSet) throws IOException {
         this.dataSet = dataSet;
         configMatsim();
         createPopulation();
@@ -66,7 +68,7 @@ public class MATSimAssignment {
         config.planCalcScore().addActivityParams(workActivity);
 
         config.controler().setRunId(Properties.runId);
-        config.controler().setOutputDirectory("./output/" + Properties.runId + "/");
+        config.controler().setOutputDirectory("./output/" + Properties.runId + "/matsim");
         config.network().setInputFile(Properties.networkFile);
 
         config.qsim().setNumberOfThreads(16);
@@ -85,9 +87,11 @@ public class MATSimAssignment {
         config.qsim().setStorageCapFactor(1);
     }
 
-    private void createPopulation() {
+    private void createPopulation() throws IOException {
         FlowsToVehicleAssignment flowsToVehicleAssignment = new FlowsToVehicleAssignment(dataSet);
         Population population = flowsToVehicleAssignment.disaggregateToVehicles(config, Properties.scaleFactor);
+        flowsToVehicleAssignment.printOutResults();
+
         scenario = (MutableScenario) ScenarioUtils.loadScenario(config);
         scenario.setPopulation(population);
     }
