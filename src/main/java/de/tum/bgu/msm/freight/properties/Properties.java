@@ -26,8 +26,6 @@ public class Properties {
     private double scaleFactor = .10;
     private String runId = "assignmentFull";
     private Random rand = new Random(1);
-
-//    private  int[] selectedDestinations = new int[]{9162,9362};
     private int[] selectedDestinations = new int[]{-1};
     private boolean storeExpectedTimes = false;
     private String commodityAttributeFile = "input/commodities/commodity_groups.csv";

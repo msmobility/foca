@@ -9,13 +9,15 @@ import java.io.IOException;
 
 public class FreightFlows {
 
-    public static void main (String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         Properties properties = new Properties();
 
         /*
         Place to configure the properties according to users' prefrereces, otherwise the default values are chosen
          */
+
+        properties.setSelectedDestinations(new int[]{9162, 9362});
 
         properties.logUsedProperties();
 
