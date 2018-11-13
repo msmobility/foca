@@ -1,5 +1,5 @@
-path_to_file = "input/zones.csv"
 
+path_to_file = "input/zones.csv"
 zones = read.csv(paste(folder, path_to_file, sep = ""), sep=";")
 
 zoneType = zones$Verkehrszelle

@@ -26,9 +26,11 @@ public class ZonesReader extends CSVReader {
     private int lonIndex;
     private int latIndex;
 
+    private Properties properties;
 
-    protected ZonesReader(FreightFlowsDataSet dataSet) {
+    protected ZonesReader(FreightFlowsDataSet dataSet, Properties properties) {
         super(dataSet);
+        this.properties = properties;
 
     }
 
@@ -61,22 +63,22 @@ public class ZonesReader extends CSVReader {
     }
 
     public void read() {
-        super.read(Properties.zoneInputFile, ",");
+        super.read(properties.getZoneInputFile(), ",");
         logger.info("Read " + dataSet.getZones().size() + " zones.");
         mapFeaturesToZones(dataSet);
-        mapFeaturesToMicroZones(dataSet, 9162, Properties.munichMicroZonesShapeFile);
-        mapFeaturesToMicroZones(dataSet, 9362, Properties.regensburgMicroZonesShapeFile);
+        mapFeaturesToMicroZones(dataSet, 9162, properties.getMunichMicroZonesShapeFile());
+        mapFeaturesToMicroZones(dataSet, 9362, properties.getRegensburgMicroZonesShapeFile());
 
     }
 
 
 
-    public static void mapFeaturesToZones(FreightFlowsDataSet dataSet) {
+    private void mapFeaturesToZones(FreightFlowsDataSet dataSet) {
         int counter = 1;
-        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(Properties.zoneShapeFile);
+        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(properties.getZoneShapeFile());
 
         for (SimpleFeature feature: features) {
-            int zoneId = Integer.parseInt(feature.getAttribute(Properties.idFieldInZonesShp).toString());
+            int zoneId = Integer.parseInt(feature.getAttribute(properties.getIdFieldInZonesShp()).toString());
             InternalZone zone = (InternalZone) dataSet.getZones().get(zoneId);
             if (zone != null){
                 zone.setShapeFeature(feature);
@@ -88,7 +90,7 @@ public class ZonesReader extends CSVReader {
         logger.info("Read " + counter + " zones.");
     }
 
-    public static void mapFeaturesToMicroZones(FreightFlowsDataSet dataSet, int idZone, String zoneFileName) {
+    private void mapFeaturesToMicroZones(FreightFlowsDataSet dataSet, int idZone, String zoneFileName) {
 
         Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(zoneFileName);
         InternalZone macroZone = (InternalZone) dataSet.getZones().get(idZone);
@@ -96,7 +98,7 @@ public class ZonesReader extends CSVReader {
         int n_microzones = 0;
         for (SimpleFeature feature: features) {
             if (polygon.contains((Geometry) feature.getDefaultGeometry())){
-                int zoneId = Integer.parseInt(feature.getAttribute(Properties.idFieldInMicroZonesShp).toString());
+                int zoneId = Integer.parseInt(feature.getAttribute(properties.getIdFieldInMicroZonesShp()).toString());
                 InternalMicroZone microZone = new InternalMicroZone(zoneId, feature);
                 macroZone.addMicroZone(microZone);
 

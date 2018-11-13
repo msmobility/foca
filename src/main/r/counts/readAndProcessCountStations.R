@@ -1,4 +1,4 @@
-
+library(data.table)
 library(dplyr)
 
 #read the annual data----------------------------------------------------------------------------------------------
@@ -77,19 +77,20 @@ for (station in stations){
 write.csv(byHour, paste(workFolder, "hourlyData.csv" , sep = ""), row.names = F)
 
 #read the already stored data------------------------------------------------------------------------------------
-byHour = read.csv(paste(workFolder, "hourlyData.csv" , sep = ""))
+workFolder = "C:/models/freightFlows/working/counts/"
+byHour = fread(paste(workFolder, "hourlyData.csv" , sep = ""))
 
 #filter to weekdays Tu to Th
 byHour = byHour %>%
   filter(Wotag == " 2" | Wotag == " 3" | Wotag == " 4") %>% 
-  select(Zst, Strklas, Strnum, Datum, Wotag, Stunde, KFZ_R1, KFZ_R2, PLZ_R1, PLZ_R2)
+  select(Zst, Strklas, Strnum, Datum, Wotag, Stunde, KFZ_R1, KFZ_R2, PLZ_R1, PLZ_R2, LoA_R1, LoA_R2, Lzg_R1, Lzg_R2)
 
 summaryStations = byHour %>% group_by(Zst, Stunde) %>% summarize(count1 = mean(as.numeric(KFZ_R1), na.rm = T),
                                                                  count2 = mean(as.numeric(KFZ_R2), na.rm = T), 
                                                                  count1L = mean(as.numeric(PLZ_R1), na.rm = T),
                                                                  count2L = mean(as.numeric(PLZ_R2), na.rm = T), 
-                                                                 count1H = count1 - count1L, 
-                                                                 count2H = count2 - count2L)
+                                                                 count1H = mean(as.numeric(LoA_R1), na.rm = T) + mean(as.numeric(Lzg_R1), na.rm = T), 
+                                                                 count2H = mean(as.numeric(LoA_R2), na.rm = T) + mean(as.numeric(Lzg_R2), na.rm = T))
 
 
 

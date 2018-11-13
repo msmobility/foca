@@ -18,6 +18,8 @@ import java.util.Random;
 
 public class FreightFlowUtils {
 
+    public static Random random;
+
     public static Coord getRandomCoordinatesFromFeature(SimpleFeature feature){
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
@@ -27,10 +29,13 @@ public class FreightFlowUtils {
         return new Coord(p.getX(), p.getY());
     }
 
+    public static void setRandomNumber(Properties properties){
+        random = properties.getRand();
+    }
 
-    public static <T> T select(Map<T, Double> probabilities, Random random, double sum) {
+    public static <T> T select(Map<T, Double> probabilities, double sum) {
         // select item based on probabilities (for mapped double probabilities)
-        double selectedWeight = Properties.rand.nextDouble() * sum;
+        double selectedWeight = random.nextDouble() * sum;
         double select = 0;
         for (Map.Entry<T, Double> entry : probabilities.entrySet()) {
             select += entry.getValue();

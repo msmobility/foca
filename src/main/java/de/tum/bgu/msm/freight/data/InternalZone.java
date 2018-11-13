@@ -58,7 +58,7 @@ public class InternalZone implements Zone {
         this.microZones.values().stream().forEach(microZone -> {
             microZonesProbabilities.put(microZone.getId(), microZone.getAttribute("employment"));
         } );
-        return FreightFlowUtils.select(microZonesProbabilities, new Random(),
+        return FreightFlowUtils.select(microZonesProbabilities,
                 FreightFlowUtils.getSum(microZonesProbabilities.values()));
 
     }

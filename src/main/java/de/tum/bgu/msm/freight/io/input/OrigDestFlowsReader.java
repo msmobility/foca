@@ -2,7 +2,6 @@ package de.tum.bgu.msm.freight.io.input;
 
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.io.CSVReader;
-import de.tum.bgu.msm.freight.modules.assignment.UncongestedTravelTime;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 
@@ -32,10 +31,13 @@ public class OrigDestFlowsReader extends CSVReader {
     private int typeHLIndex;
     private int typeNLIndex;
 
+    private Properties properties;
 
-    protected OrigDestFlowsReader(FreightFlowsDataSet dataSet, int year) {
+
+    protected OrigDestFlowsReader(FreightFlowsDataSet dataSet, int year, Properties properties) {
         super(dataSet);
         this.year = year;
+        this.properties = properties;
     }
 
     protected void processHeader(String[] header) {
@@ -104,7 +106,7 @@ public class OrigDestFlowsReader extends CSVReader {
     }
 
     public void read() {
-        super.read(Properties.matrixFileName, ";");
+        super.read(properties.getMatrixFileName(), ";");
         logger.info("Read " + dataSet.getFlowMatrix().size() + " origin/destination pairs with freight flows.");
     }
 }

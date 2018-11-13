@@ -18,8 +18,11 @@ public class CommodityAttributesReader extends CSVReader {
     private Map<DistanceBin, Integer> truckLoadIndexes = new HashMap<>();
     private Map<DistanceBin, Integer> emptyTruckIndexes = new HashMap<>();
 
-    protected CommodityAttributesReader(FreightFlowsDataSet dataSet) {
+    private Properties properties;
+
+    protected CommodityAttributesReader(FreightFlowsDataSet dataSet, Properties properties) {
         super(dataSet);
+        this.properties = properties;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class CommodityAttributesReader extends CSVReader {
 
     @Override
     public void read() {
-        super.read(Properties.commodityAttributeFile, ",");
+        super.read(properties.getCommodityAttributeFile(), ",");
         logger.info("Commodity attributes read");
 
     }

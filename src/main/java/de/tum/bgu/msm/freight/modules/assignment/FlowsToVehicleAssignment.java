@@ -12,9 +12,7 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,17 +22,19 @@ public class FlowsToVehicleAssignment {
 
     private FreightFlowsDataSet dataSet;
     private UncongestedTravelTime uncongestedTravelTime;
+    private Properties properties;
 
     private ArrayList<StoredFlow> flowsByTruck = new ArrayList<>();
 
-    public FlowsToVehicleAssignment(FreightFlowsDataSet dataSet) {
+    public FlowsToVehicleAssignment(FreightFlowsDataSet dataSet, Properties properties) {
         this.dataSet = dataSet;
-        if (Properties.storeExpectedTimes) {
-            uncongestedTravelTime = new UncongestedTravelTime(Properties.simpleNetworkFile);
+        this.properties = properties;
+        if (properties.isStoreExpectedTimes()) {
+            uncongestedTravelTime = new UncongestedTravelTime(properties.getSimpleNetworkFile());
         }
     }
 
-    public Population disaggregateToVehicles(Config config, double scaleFactor) {
+    public Population disaggregateToVehicles(Config config) {
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
 
@@ -44,7 +44,7 @@ public class FlowsToVehicleAssignment {
                 TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
 
         Set<Integer> destinations = new HashSet<>();
-        for (int destId : Properties.selectedDestinations) {
+        for (int destId : properties.getSelectedDestinations()) {
             if (destId == -1) {
                 destinations = dataSet.getFlowMatrix().columnKeySet();
                 break;
@@ -91,17 +91,17 @@ public class FlowsToVehicleAssignment {
                                         double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(trip.getCommodity(), distanceBin);
                                         double proportionEmpty = dataSet.getEmptyTruckProportionsByDistanceAndCommodity().get(trip.getCommodity(), distanceBin);
 
-                                        double numberOfVehicles_double = trip.getVolume_tn() / Properties.daysPerYear / truckLoad;
+                                        double numberOfVehicles_double = trip.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
                                         numberOfVehicles_double = numberOfVehicles_double / (1 - proportionEmpty);
 
                                         int numberOfVehicles_int = (int) Math.floor(numberOfVehicles_double);
-                                        if (Properties.rand.nextDouble() < (numberOfVehicles_double - numberOfVehicles_int)) {
+                                        if (properties.getRand().nextDouble() < (numberOfVehicles_double - numberOfVehicles_int)) {
                                             numberOfVehicles_int++;
                                         }
 
                                         flowsByTruck.add(new StoredFlow(trip.getCommodity(), beelineDistance_km, trip.getVolume_tn(), numberOfVehicles_int));
                                         for (int vehicle = 0; vehicle < numberOfVehicles_int; vehicle++) {
-                                            if (Properties.rand.nextDouble() < scaleFactor) {
+                                            if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
                                                 String idOfVehicle = tripOrigin + "-" +
                                                         tripDestination + "-" +
                                                         trip.getCommodity().getCommodityGroup() + "-" +
@@ -123,7 +123,7 @@ public class FlowsToVehicleAssignment {
                                                 population.addPerson(person);
 
                                                 Activity originActivity = factory.createActivityFromCoord("start", origCoord);
-                                                originActivity.setEndTime(Properties.rand.nextDouble() * 24 * 60 * 60);
+                                                originActivity.setEndTime(properties.getRand().nextDouble() * 24 * 60 * 60);
                                                 plan.addActivity(originActivity);
 
                                                 plan.addLeg(factory.createLeg(TransportMode.car));
@@ -135,7 +135,7 @@ public class FlowsToVehicleAssignment {
                                                 //simply adds the expected time as an attribute to the plan (no current application)
                                                 //it is slow at this point
                                                 //may be used to better decide on the arrival time at destination
-                                                if (Properties.storeExpectedTimes) {
+                                                if (properties.isStoreExpectedTimes()) {
                                                     double time = uncongestedTravelTime.getTravelTime(origCoord, destCoord);
                                                     plan.getAttributes().putAttribute("time", time);
                                                 }
@@ -154,12 +154,16 @@ public class FlowsToVehicleAssignment {
 
 
     public void printOutResults() throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter("./output/" + Properties.runId + "/truckFlows.csv"));
+
+        File file = new File("./output/" + properties.getRunId());
+        file.mkdirs();
+
+        PrintWriter pw = new PrintWriter(new FileWriter("./output/" + properties.getRunId() + "/truckFlows.csv"));
 
         pw.println("commodity,distanceBin,volume_tn,trucks");
 
         for (StoredFlow storedFlow : flowsByTruck){
-            pw.println(storedFlow.commodity + "," +  storedFlow.distance_km + "," +  storedFlow.volume_tn / Properties.daysPerYear + "," +  storedFlow.numberOfTrucks);
+            pw.println(storedFlow.commodity + "," +  storedFlow.distance_km + "," +  storedFlow.volume_tn / properties.getDaysPerYear() + "," +  storedFlow.numberOfTrucks);
         }
 
         pw.close();
