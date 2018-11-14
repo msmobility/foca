@@ -2,7 +2,7 @@ package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
 import de.tum.bgu.msm.freight.modules.assignment.counts.CountEventHandler;
-import de.tum.bgu.msm.freight.modules.assignment.counts.LinksFileReader;
+import de.tum.bgu.msm.freight.io.input.LinksFileReader;
 import de.tum.bgu.msm.freight.modules.assignment.counts.MultiDayCounts;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
@@ -11,12 +11,10 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
-import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
-import org.matsim.core.router.TripRouterModule;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -142,10 +140,10 @@ public class MATSimAssignment {
 
         CountEventHandler countEventHandler = new CountEventHandler(properties);
         if (properties.isReadEventsForCounts()) {
-            LinksFileReader linksFileReader = new LinksFileReader(null, properties.getCountStationLinkListFile());
+            LinksFileReader linksFileReader = new LinksFileReader(dataSet, properties.getCountStationLinkListFile());
             linksFileReader.read();
 
-            for (String linkId : linksFileReader.getListOfIds()) {
+            for (Id linkId : dataSet.getObservedCounts().keySet()) {
                 countEventHandler.addLinkById(linkId);
             }
             controler.getEvents().addHandler(countEventHandler);

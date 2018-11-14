@@ -45,7 +45,7 @@ public class CommodityAttributesReader extends CSVReader {
 
         for (DistanceBin bin : DistanceBin.values()){
             dataSet.getTruckLoadsByDistanceAndCommodity().put(commodity, bin, Double.parseDouble(record[truckLoadIndexes.get(bin)]));
-            dataSet.getEmptyTruckProportionsByDistanceAndCommodity().put(commodity, bin, Double.parseDouble(record[emptyTruckIndexes.get(bin)]));
+            dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().put(commodity, bin, Double.parseDouble(record[emptyTruckIndexes.get(bin)]));
         }
 
     }

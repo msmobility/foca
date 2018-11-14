@@ -1,10 +1,11 @@
-package de.tum.bgu.msm.freight.modules.assignment.counts;
+package de.tum.bgu.msm.freight.io.input;
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.matsim.api.core.v01.Id;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.List;
 public class LinksFileReader extends CSVReader {
 
     private String fileName;
-    List<String> links = new ArrayList<>();
     private int idIndex;
 
     public LinksFileReader(FreightFlowsDataSet dataSet, String fileName) {
@@ -30,7 +30,7 @@ public class LinksFileReader extends CSVReader {
     @Override
     protected void processRecord(String[] record) {
         String linkId = record[idIndex];
-        links.add(linkId);
+        dataSet.getObservedCounts().put(Id.createLinkId(linkId), 0);
     }
 
     @Override
@@ -38,7 +38,4 @@ public class LinksFileReader extends CSVReader {
         super.read(fileName, ",");
     }
 
-    public List<String> getListOfIds(){
-        return links;
-    }
 }

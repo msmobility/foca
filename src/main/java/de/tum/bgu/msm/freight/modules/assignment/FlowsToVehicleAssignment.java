@@ -89,7 +89,7 @@ public class FlowsToVehicleAssignment {
                                         double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord)/1000;
                                         DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);
                                         double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(trip.getCommodity(), distanceBin);
-                                        double proportionEmpty = dataSet.getEmptyTruckProportionsByDistanceAndCommodity().get(trip.getCommodity(), distanceBin);
+                                        double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(trip.getCommodity(), distanceBin);
 
                                         double numberOfVehicles_double = trip.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
                                         numberOfVehicles_double = numberOfVehicles_double / (1 - proportionEmpty);

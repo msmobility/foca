@@ -1,5 +1,8 @@
 package de.tum.bgu.msm.freight.modules.assignment.counts;
 
+import de.tum.bgu.msm.freight.FreightFlowUtils;
+import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
+import de.tum.bgu.msm.freight.io.input.LinksFileReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -15,6 +18,8 @@ public class MultiDayCounts {
 
     public static void main (String[] args) throws IOException {
 
+        FreightFlowsDataSet freightFlowsDataSet = new FreightFlowsDataSet();
+
         String eventsFile = args[0];
         String linksFile = args[1];
         String countsFile = args[2];
@@ -23,10 +28,10 @@ public class MultiDayCounts {
 
         EventsManager eventsManager = EventsUtils.createEventsManager();
         CountEventHandler countEventHandler = new CountEventHandler(propertiesForStandAloneEventManager);
-        LinksFileReader linksFileReader = new LinksFileReader(null, linksFile);
+        LinksFileReader linksFileReader = new LinksFileReader(freightFlowsDataSet, linksFile);
         linksFileReader.read();
 
-        for (String linkId : linksFileReader.getListOfIds()) {
+        for (Id linkId : freightFlowsDataSet.getObservedCounts().keySet()) {
             countEventHandler.addLinkById(linkId);
         }
 

@@ -26,8 +26,8 @@ public class CountEventHandler implements LinkEnterEventHandler {
 
     private Map<Id, Integer> listOfSelectedLinks = new HashMap<>();
 
-    public void addLinkById(String linkId){
-        listOfSelectedLinks.put(Id.createLinkId(linkId),0);
+    public void addLinkById(Id linkId){
+        listOfSelectedLinks.put(linkId,0);
     }
 
     public Map<Id, Integer> getMapOfCOunts(){
