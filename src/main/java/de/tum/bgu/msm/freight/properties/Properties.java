@@ -4,8 +4,6 @@ import de.tum.bgu.msm.freight.FreightFlowUtils;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 
@@ -20,7 +18,7 @@ public class Properties {
     private String idFieldInZonesShp = "RS";
     private String idFieldInMicroZonesShp = "id";
     private String matrixFileName = "./input/matrices/ketten-2010.csv";
-    private String networkFile = "./networks/matsim/final_v2.xml.gz";
+    private String networkFile = "./networks/matsim/final_v3.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe.xml.gz";
     private int iterations = 10;
     private double scaleFactor = .10;
@@ -33,7 +31,9 @@ public class Properties {
 
     private  boolean readEventsForCounts = true;
     private  String countStationLinkListFile = "input/matsim_links_stations.csv";
-    private  String countsFileNameWithoutPath = "counts_multi_day.csv";
+    private  String countsFileName = "counts_multi_day.csv";
+    private String vehicleFile = "input/vehicleFile.xml";
+
 
     public Properties(){
         FreightFlowUtils.setRandomNumber(this);
@@ -201,11 +201,19 @@ public class Properties {
         this.countStationLinkListFile = countStationLinkListFile;
     }
 
-    public String getCountsFileNameWithoutPath() {
-        return countsFileNameWithoutPath;
+    public String getCountsFileName() {
+        return countsFileName;
     }
 
-    public void setCountsFileNameWithoutPath(String countsFileNameWithoutPath) {
-        this.countsFileNameWithoutPath = countsFileNameWithoutPath;
+    public void setCountsFileName(String countsFileName) {
+        this.countsFileName = countsFileName;
+    }
+
+    public String getVehicleFile() {
+        return vehicleFile;
+    }
+
+    public void setVehicleFile(String vehicleFile){
+        this.vehicleFile = vehicleFile;
     }
 }

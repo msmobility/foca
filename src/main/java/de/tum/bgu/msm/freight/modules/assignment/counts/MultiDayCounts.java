@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.freight.modules.assignment.counts;
 
+import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.events.EventsUtils;
@@ -18,8 +19,10 @@ public class MultiDayCounts {
         String linksFile = args[1];
         String countsFile = args[2];
 
+        Properties propertiesForStandAloneEventManager = new Properties();
+
         EventsManager eventsManager = EventsUtils.createEventsManager();
-        CountEventHandler countEventHandler = new CountEventHandler();
+        CountEventHandler countEventHandler = new CountEventHandler(propertiesForStandAloneEventManager);
         LinksFileReader linksFileReader = new LinksFileReader(null, linksFile);
         linksFileReader.read();
 

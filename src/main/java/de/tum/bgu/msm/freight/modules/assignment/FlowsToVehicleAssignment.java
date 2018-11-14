@@ -126,7 +126,7 @@ public class FlowsToVehicleAssignment {
                                                 originActivity.setEndTime(properties.getRand().nextDouble() * 24 * 60 * 60);
                                                 plan.addActivity(originActivity);
 
-                                                plan.addLeg(factory.createLeg(TransportMode.car));
+                                                plan.addLeg(factory.createLeg(TransportMode.truck));
 
                                                 Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
                                                 plan.addActivity(destinationActivity);

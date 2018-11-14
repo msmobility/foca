@@ -18,6 +18,8 @@ public class FreightFlows {
          */
 
         properties.setSelectedDestinations(new int[]{9162, 9362});
+        properties.setRunId("test");
+        properties.setIterations(1);
 
         properties.logUsedProperties();
 

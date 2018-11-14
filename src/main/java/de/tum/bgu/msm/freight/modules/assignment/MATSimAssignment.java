@@ -6,18 +6,22 @@ import de.tum.bgu.msm.freight.modules.assignment.counts.LinksFileReader;
 import de.tum.bgu.msm.freight.modules.assignment.counts.MultiDayCounts;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
+import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.router.TripRouterModule;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 
 public class MATSimAssignment {
 
@@ -27,7 +31,7 @@ public class MATSimAssignment {
     private Properties properties;
     private FreightFlowsDataSet dataSet;
 
-    public MATSimAssignment(Properties properties){
+    public MATSimAssignment(Properties properties) {
         this.properties = properties;
     }
 
@@ -96,6 +100,32 @@ public class MATSimAssignment {
         config.qsim().setStorageCapFactor(1);
 
         config.linkStats().setWriteLinkStatsInterval(1);
+
+        //add truck as new mode to MATSim
+        Set<String> modes = new HashSet<>();
+        modes.addAll(config.qsim().getMainModes());
+        modes.add(TransportMode.truck);
+        config.qsim().setMainModes(modes);
+
+        config.plansCalcRoute().setNetworkModes(modes);
+
+        PlanCalcScoreConfigGroup.ModeParams carParams = config.planCalcScore().getOrCreateModeParams(TransportMode.car);
+        PlanCalcScoreConfigGroup.ModeParams truckParams = new PlanCalcScoreConfigGroup.ModeParams(TransportMode.truck);
+        truckParams.setConstant(carParams.getConstant());
+        truckParams.setDailyMonetaryConstant(carParams.getDailyMonetaryConstant());
+        truckParams.setMarginalUtilityOfDistance(carParams.getMarginalUtilityOfDistance());
+        truckParams.setDailyUtilityConstant(carParams.getDailyUtilityConstant());
+        truckParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
+        config.planCalcScore().addModeParams(truckParams);
+
+        config.travelTimeCalculator().setAnalyzedModes("car,truck");
+        config.travelTimeCalculator().setSeparateModes(true);
+
+        config.vehicles().setVehiclesFile(properties.getVehicleFile());
+        config.qsim().setVehiclesSource(QSimConfigGroup.VehiclesSource.modeVehicleTypesFromVehiclesData);
+        config.qsim().setLinkDynamics(QSimConfigGroup.LinkDynamics.FIFO);
+        config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.queue);
+
     }
 
     private void createPopulation() throws IOException {
@@ -110,7 +140,7 @@ public class MATSimAssignment {
     private void runMatsim() {
         final Controler controler = new Controler(scenario);
 
-        CountEventHandler countEventHandler = new CountEventHandler();
+        CountEventHandler countEventHandler = new CountEventHandler(properties);
         if (properties.isReadEventsForCounts()) {
             LinksFileReader linksFileReader = new LinksFileReader(null, properties.getCountStationLinkListFile());
             linksFileReader.read();
@@ -118,16 +148,13 @@ public class MATSimAssignment {
             for (String linkId : linksFileReader.getListOfIds()) {
                 countEventHandler.addLinkById(linkId);
             }
-
-
-            countEventHandler.addLinkById("1");
             controler.getEvents().addHandler(countEventHandler);
         }
         controler.run();
         if (properties.isReadEventsForCounts()) {
             Map<Id, Integer> mapOfCounts = countEventHandler.getMapOfCOunts();
             try {
-                MultiDayCounts.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileNameWithoutPath(), mapOfCounts);
+                MultiDayCounts.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName(), mapOfCounts);
             } catch (IOException e) {
                 e.printStackTrace();
             }
