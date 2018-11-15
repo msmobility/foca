@@ -68,6 +68,11 @@ public class InternalZone implements Zone {
         return null;
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
+
 
 }
 

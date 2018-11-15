@@ -23,6 +23,11 @@ public class ExternalZone implements Zone {
         return name;
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
+
     public double getLat() {
         return lat;
     }

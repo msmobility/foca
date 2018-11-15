@@ -116,8 +116,8 @@ public class MATSimAssignment {
         truckParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
         config.planCalcScore().addModeParams(truckParams);
 
-        config.travelTimeCalculator().setAnalyzedModes("car,truck");
-        config.travelTimeCalculator().setSeparateModes(true);
+        config.travelTimeCalculator().setAnalyzedModes("truck,car");
+        config.travelTimeCalculator().setSeparateModes(false);
 
         config.vehicles().setVehiclesFile(properties.getVehicleFile());
         config.qsim().setVehiclesSource(QSimConfigGroup.VehiclesSource.modeVehicleTypesFromVehiclesData);

@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.properties.Properties;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
@@ -20,17 +21,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FlowsToVehicleAssignment {
 
+    private static Logger logger = Logger.getLogger(FlowsToVehicleAssignment.class);
+
     private FreightFlowsDataSet dataSet;
     private UncongestedTravelTime uncongestedTravelTime;
     private Properties properties;
 
+    private CoordinateTransformation ct;
+    private DepartureTimeDistribution departureTimeDistribution;
+
     private ArrayList<StoredFlow> flowsByTruck = new ArrayList<>();
 
     public FlowsToVehicleAssignment(FreightFlowsDataSet dataSet, Properties properties) {
+
+        ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
+        departureTimeDistribution = new NormalDepartureTimeDistribution();
+
         this.dataSet = dataSet;
         this.properties = properties;
         if (properties.isStoreExpectedTimes()) {
             uncongestedTravelTime = new UncongestedTravelTime(properties.getSimpleNetworkFile());
+            uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet);
         }
     }
 
@@ -40,8 +51,7 @@ public class FlowsToVehicleAssignment {
 
         AtomicInteger counter = new AtomicInteger(0);
 
-        CoordinateTransformation ct =
-                TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
+
 
         Set<Integer> destinations = new HashSet<>();
         for (int destId : properties.getSelectedDestinations()) {
@@ -86,21 +96,25 @@ public class FlowsToVehicleAssignment {
                                         origCoord = ct.transform(origCoord);
                                         destCoord = ct.transform(destCoord);
 
-                                        double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord)/1000;
+                                        double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord) / 1000;
                                         DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);
                                         double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(trip.getCommodity(), distanceBin);
                                         double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(trip.getCommodity(), distanceBin);
 
                                         double numberOfVehicles_double = trip.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
                                         numberOfVehicles_double = numberOfVehicles_double / (1 - proportionEmpty);
-
                                         int numberOfVehicles_int = (int) Math.floor(numberOfVehicles_double);
+
                                         if (properties.getRand().nextDouble() < (numberOfVehicles_double - numberOfVehicles_int)) {
                                             numberOfVehicles_int++;
                                         }
 
-                                        flowsByTruck.add(new StoredFlow(trip.getCommodity(), beelineDistance_km, trip.getVolume_tn(), numberOfVehicles_int));
+                                        flowsByTruck.add(new StoredFlow(trip.getOrigin(), trip.getDestination(), trip.getCommodity(),
+                                                beelineDistance_km, trip.getVolume_tn(), numberOfVehicles_int,
+                                                dataSet.getUncongestedTravelTime(trip.getOrigin(), trip.getDestination())));
+
                                         for (int vehicle = 0; vehicle < numberOfVehicles_int; vehicle++) {
+
                                             if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
                                                 String idOfVehicle = tripOrigin + "-" +
                                                         tripDestination + "-" +
@@ -112,10 +126,13 @@ public class FlowsToVehicleAssignment {
                                                     idOfVehicle += "-" + trip.getSegment().toString();
                                                 }
 
+                                                if (properties.getRand().nextDouble() < proportionEmpty){
+                                                    idOfVehicle += "-IS_EMPTY";
+                                                }
+
                                                 if (trip.getFlowType().equals(FlowType.CONTAINER_RO_RO)) {
                                                     idOfVehicle += "-" + trip.getFlowType().toString();
                                                 }
-
 
                                                 Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
                                                 Plan plan = factory.createPlan();
@@ -123,7 +140,7 @@ public class FlowsToVehicleAssignment {
                                                 population.addPerson(person);
 
                                                 Activity originActivity = factory.createActivityFromCoord("start", origCoord);
-                                                originActivity.setEndTime(properties.getRand().nextDouble() * 24 * 60 * 60);
+                                                originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0)*60);
                                                 plan.addActivity(originActivity);
 
                                                 plan.addLeg(factory.createLeg(TransportMode.truck));
@@ -132,13 +149,6 @@ public class FlowsToVehicleAssignment {
                                                 plan.addActivity(destinationActivity);
                                                 counter.incrementAndGet();
 
-                                                //simply adds the expected time as an attribute to the plan (no current application)
-                                                //it is slow at this point
-                                                //may be used to better decide on the arrival time at destination
-                                                if (properties.isStoreExpectedTimes()) {
-                                                    double time = uncongestedTravelTime.getTravelTime(origCoord, destCoord);
-                                                    plan.getAttributes().putAttribute("time", time);
-                                                }
                                             }
                                         }
                                     }
@@ -160,10 +170,16 @@ public class FlowsToVehicleAssignment {
 
         PrintWriter pw = new PrintWriter(new FileWriter("./output/" + properties.getRunId() + "/truckFlows.csv"));
 
-        pw.println("commodity,distanceBin,volume_tn,trucks");
+        pw.println("origin,destination,commodity,distanceBin,volume_tn,trucks,tt");
 
-        for (StoredFlow storedFlow : flowsByTruck){
-            pw.println(storedFlow.commodity + "," +  storedFlow.distance_km + "," +  storedFlow.volume_tn / properties.getDaysPerYear() + "," +  storedFlow.numberOfTrucks);
+        for (StoredFlow storedFlow : flowsByTruck) {
+            pw.println(storedFlow.origin + "," +
+                    storedFlow.destination + "," +
+                    storedFlow.commodity + "," +
+                    storedFlow.distance_km + "," +
+                    storedFlow.volume_tn / properties.getDaysPerYear() + "," +
+                    storedFlow.numberOfTrucks + "," +
+                    storedFlow.tt_s);
         }
 
         pw.close();
@@ -171,17 +187,24 @@ public class FlowsToVehicleAssignment {
 
 
     private class StoredFlow {
+        private int origin;
+        private int destination;
         private Commodity commodity;
         private double distance_km;
         private double volume_tn;
         private int numberOfTrucks;
+        private double tt_s;
 
-        public StoredFlow(Commodity commodity, double distance_km, double volume_tn, int numberOfTrucks) {
+        public StoredFlow(int origin, int destination, Commodity commodity, double distance_km, double volume_tn, int numberOfTrucks, double tt_s) {
+            this.origin = origin;
+            this.destination = destination;
             this.commodity = commodity;
             this.distance_km = distance_km;
             this.volume_tn = volume_tn;
             this.numberOfTrucks = numberOfTrucks;
+            this.tt_s = tt_s;
         }
+
 
     }
 }

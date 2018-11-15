@@ -7,4 +7,6 @@ public interface Zone {
     Coord getRandomCoord();
 
     String getName();
+
+    int getId();
 }
