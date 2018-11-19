@@ -150,9 +150,8 @@ public class MATSimAssignment {
         }
         controler.run();
         if (properties.isReadEventsForCounts()) {
-            Map<Id, Integer> mapOfCounts = countEventHandler.getMapOfCOunts();
             try {
-                MultiDayCounts.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName(), mapOfCounts);
+                MultiDayCounts.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName(), countEventHandler.getMapOfCOunts());
             } catch (IOException e) {
                 e.printStackTrace();
             }

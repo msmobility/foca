@@ -24,21 +24,30 @@ public class CountEventHandler implements LinkEnterEventHandler {
 
     private int thisIteration;
 
-    private Map<Id, Integer> listOfSelectedLinks = new HashMap<>();
+    private Map<Id, Map<Integer, Integer>> listOfSelectedLinks = new HashMap<>();
 
-    public void addLinkById(Id linkId){
-        listOfSelectedLinks.put(linkId,0);
+    private int getHourFromTime(double time_s){
+        return (int) (time_s / 3600) > 23 ? 24 : (int) (time_s / 3600) ;
     }
 
-    public Map<Id, Integer> getMapOfCOunts(){
+    public void addLinkById(Id linkId){
+        Map<Integer, Integer> countsByHour = new HashMap<>();
+        for (int i = 0; i < 25; i++){
+            countsByHour.put(i, 0);
+        }
+        listOfSelectedLinks.put(linkId,countsByHour);
+    }
+
+    public Map<Id, Map<Integer, Integer>>  getMapOfCOunts(){
         return listOfSelectedLinks;
     }
 
     @Override
     public void handleEvent(LinkEnterEvent linkEnterEvent) {
         Id id  = linkEnterEvent.getLinkId();
+        int hour = getHourFromTime(linkEnterEvent.getTime());
         if (listOfSelectedLinks.containsKey(id) && thisIteration == properties.getIterations()){
-            listOfSelectedLinks.put(id, listOfSelectedLinks.get(id) + 1);
+            listOfSelectedLinks.get(id).put(hour, listOfSelectedLinks.get(id).get(hour) + 1);
         }
     }
 
@@ -46,7 +55,7 @@ public class CountEventHandler implements LinkEnterEventHandler {
     public void reset(int iteration) {
         this.thisIteration = iteration;
         for (Id id : listOfSelectedLinks.keySet()){
-            listOfSelectedLinks.put(id,0);
+            addLinkById(id);
         }
         logger.info("Reset event handler at iteration " + thisIteration);
     }

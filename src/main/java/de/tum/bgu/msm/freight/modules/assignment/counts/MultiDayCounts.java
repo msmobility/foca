@@ -25,6 +25,7 @@ public class MultiDayCounts {
         String countsFile = args[2];
 
         Properties propertiesForStandAloneEventManager = new Properties();
+        propertiesForStandAloneEventManager.setIterations(0);
 
         EventsManager eventsManager = EventsUtils.createEventsManager();
         CountEventHandler countEventHandler = new CountEventHandler(propertiesForStandAloneEventManager);
@@ -38,7 +39,7 @@ public class MultiDayCounts {
         eventsManager.addHandler(countEventHandler);
         new MatsimEventsReader(eventsManager).readFile(eventsFile);
 
-        Map<Id,Integer> counts = countEventHandler.getMapOfCOunts();
+        Map<Id, Map<Integer, Integer>>  counts = countEventHandler.getMapOfCOunts();
 
         printOutCounts(countsFile, counts);
 
@@ -46,13 +47,18 @@ public class MultiDayCounts {
 
     }
 
-    public static void printOutCounts(String countsFile, Map<Id, Integer> counts) throws IOException {
+    public static void printOutCounts(String countsFile, Map<Id, Map<Integer, Integer>>  counts) throws IOException {
         PrintWriter pw = new PrintWriter(new FileWriter(countsFile));
 
-        pw.println("link,count");
+        pw.println("link,hour,count");
 
         for (Id id : counts.keySet()){
-            pw.println(id.toString() + "," + counts.get(id));
+            Map<Integer, Integer> countsByHour = counts.get(id);
+            for (int hour : countsByHour.keySet()){
+                pw.println(id.toString() + "," +
+                        hour + "," +
+                        countsByHour.get(hour));
+            }
         }
 
         pw.close();
