@@ -10,8 +10,8 @@ import java.util.Map;
 public class NormalDepartureTimeDistribution implements DepartureTimeDistribution{
 
 
-    private final double mean = 9.948;
-    private final double standardDeviation = 5.899487;
+    private final double mean = 9.91;
+    private final double standardDeviation = 5.94;
 
 
     private Map<Integer, Double> preCalculatedProbabilities;

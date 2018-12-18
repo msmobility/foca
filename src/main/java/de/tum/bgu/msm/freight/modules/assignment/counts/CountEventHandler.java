@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class CountEventHandler implements LinkEnterEventHandler {
 
+    private final int LAST_HOUR = 49;
     private Properties properties;
 
     private static Logger logger = Logger.getLogger(CountEventHandler.class);
@@ -27,12 +28,12 @@ public class CountEventHandler implements LinkEnterEventHandler {
     private Map<Id, Map<Integer, Integer>> listOfSelectedLinks = new HashMap<>();
 
     private int getHourFromTime(double time_s){
-        return (int) (time_s / 3600) > 23 ? 24 : (int) (time_s / 3600) ;
+        return (int) (time_s / 3600) > (LAST_HOUR-1) ? LAST_HOUR : (int) Math.floor(time_s / 3600) ;
     }
 
     public void addLinkById(Id linkId){
         Map<Integer, Integer> countsByHour = new HashMap<>();
-        for (int i = 0; i < 25; i++){
+        for (int i = 0; i < LAST_HOUR+1; i++){
             countsByHour.put(i, 0);
         }
         listOfSelectedLinks.put(linkId,countsByHour);

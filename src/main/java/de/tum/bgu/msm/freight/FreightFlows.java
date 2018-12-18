@@ -18,9 +18,11 @@ public class FreightFlows {
          */
 
         //properties.setSelectedDestinations(new int[]{9162, 9362});
-        properties.setRunId("assignmentFull");
+        properties.setRunId("assignmentFull2");
         properties.setIterations(1);
         properties.setScaleFactor(0.05);
+
+        properties.setCommodityAttributeFile("input/commodities/commodity_groups_kba.csv");
         //properties.setStoreExpectedTimes(true);
 
         properties.logUsedProperties();

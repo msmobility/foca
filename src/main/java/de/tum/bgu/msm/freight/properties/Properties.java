@@ -27,7 +27,7 @@ public class Properties {
     private int[] selectedDestinations = new int[]{-1};
     private boolean storeExpectedTimes = false;
     private String commodityAttributeFile = "input/commodities/commodity_groups.csv";
-    private  int daysPerYear = 306;
+    private  int daysPerYear = 365;
 
     private  boolean readEventsForCounts = true;
     private  String countStationLinkListFile = "input/matsim_links_stations.csv";
