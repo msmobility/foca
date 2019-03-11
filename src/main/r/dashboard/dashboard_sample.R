@@ -18,9 +18,9 @@ ui <- dashboardPage(
   dashboardHeader(),
   dashboardSidebar(
     checkboxInput("allOrigin", "all origins", T),
-    selectInput("origZone", "origin", multiple = T, choices = zones$Verkehrszellenname ),
+    selectInput("origZone", "origCoord", multiple = T, choices = zones$Verkehrszellenname ),
     checkboxInput("allDestination", "all destinations", T),
-    selectInput("destZone", "destination", multiple = T, choices = zones$Verkehrszellenname )
+    selectInput("destZone", "destCoord", multiple = T, choices = zones$Verkehrszellenname )
   ),
   dashboardBody(
     # Boxes need to be put in a row (or column)

@@ -4,7 +4,6 @@ package de.tum.bgu.msm.freight.io.input;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
 import de.tum.bgu.msm.freight.data.*;
 
 import de.tum.bgu.msm.freight.io.CSVReader;
@@ -15,7 +14,6 @@ import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.Collection;
-import java.util.List;
 
 public class ZonesReader extends CSVReader {
 
@@ -28,7 +26,7 @@ public class ZonesReader extends CSVReader {
 
     private Properties properties;
 
-    protected ZonesReader(FreightFlowsDataSet dataSet, Properties properties) {
+    protected ZonesReader(DataSet dataSet, Properties properties) {
         super(dataSet);
         this.properties = properties;
 
@@ -73,7 +71,7 @@ public class ZonesReader extends CSVReader {
 
 
 
-    private void mapFeaturesToZones(FreightFlowsDataSet dataSet) {
+    private void mapFeaturesToZones(DataSet dataSet) {
         int counter = 1;
         Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(properties.getZoneShapeFile());
 
@@ -90,10 +88,11 @@ public class ZonesReader extends CSVReader {
         logger.info("Read " + counter + " zones.");
     }
 
-    private void mapFeaturesToMicroZones(FreightFlowsDataSet dataSet, int idZone, String zoneFileName) {
+    private void mapFeaturesToMicroZones(DataSet dataSet, int idZone, String zoneFileName) {
 
         Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(zoneFileName);
         InternalZone macroZone = (InternalZone) dataSet.getZones().get(idZone);
+        macroZone.setInStudyArea(true);
         MultiPolygon polygon = (MultiPolygon) macroZone.getShapeFeature().getDefaultGeometry();
         int n_microzones = 0;
         for (SimpleFeature feature: features) {

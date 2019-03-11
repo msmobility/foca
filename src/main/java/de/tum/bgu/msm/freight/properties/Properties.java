@@ -20,19 +20,20 @@ public class Properties {
     private String matrixFileName = "./input/matrices/ketten-2010.csv";
     private String networkFile = "./networks/matsim/final_v3.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe.xml.gz";
-    private int iterations = 10;
-    private double scaleFactor = .10;
+    private int iterations = 1;
+    private double scaleFactor = 1.;
     private String runId = "assignmentFull";
     private Random rand = new Random(1);
     private int[] selectedDestinations = new int[]{-1};
     private boolean storeExpectedTimes = false;
-    private String commodityAttributeFile = "input/commodities/commodity_groups.csv";
+    private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
     private  int daysPerYear = 365;
 
     private  boolean readEventsForCounts = true;
     private  String countStationLinkListFile = "input/matsim_links_stations.csv";
     private  String countsFileName = "counts_multi_day.csv";
     private String vehicleFile = "input/vehicleFile.xml";
+    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";;
 
 
     public Properties(){
@@ -215,5 +216,9 @@ public class Properties {
 
     public void setVehicleFile(String vehicleFile){
         this.vehicleFile = vehicleFile;
+    }
+
+    public String getDistributionCentersFile() {
+        return distributionCentersFile;
     }
 }

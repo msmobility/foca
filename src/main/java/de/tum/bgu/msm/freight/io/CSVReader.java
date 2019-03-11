@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.freight.io;
 
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
+import de.tum.bgu.msm.freight.data.DataSet;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -15,7 +15,7 @@ public abstract class CSVReader extends AbstractReader {
 
     private int numberOfRecords = 0;
 
-    protected CSVReader(FreightFlowsDataSet dataSet) {
+    protected CSVReader(DataSet dataSet) {
         super(dataSet);
     }
 

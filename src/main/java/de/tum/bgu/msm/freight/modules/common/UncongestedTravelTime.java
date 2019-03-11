@@ -1,10 +1,8 @@
-package de.tum.bgu.msm.freight.modules.assignment;
+package de.tum.bgu.msm.freight.modules.common;
 
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
+import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.Zone;
-import de.tum.bgu.msm.modules.trafficAssignment.CarSkimUpdater;
 import org.apache.log4j.Logger;
-import org.geotools.factory.GeoTools;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -21,10 +19,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.utils.leastcostpathtree.LeastCostPathTree;
 import org.matsim.vehicles.Vehicle;
-import org.opengis.geometry.Geometry;
 
-import javax.validation.constraints.Null;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,17 +69,17 @@ public class UncongestedTravelTime {
         return Math.sqrt(Math.pow(fromCoord.getX() - toCoord.getX(), 2) + Math.pow(fromCoord.getY() - toCoord.getY(), 2));
     }
 
-    public void calculateTravelTimeMatrix(CoordinateTransformation ct, FreightFlowsDataSet dataSet) {
+    public void calculateTravelTimeMatrix(CoordinateTransformation ct, DataSet dataSet) {
         LOGGER.info("Starting calculation of matrix for " + dataSet.getZones().size() + " zones.");
         AtomicInteger counter = new AtomicInteger(0);
         dataSet.getZones().values().forEach(origin -> {
-            Coord fromCoord = ct.transform(origin.getRandomCoord());
+            Coord fromCoord = ct.transform(origin.getCoordinates(null));
             Node originNode = NetworkUtils.getNearestLink(network, fromCoord).getToNode();
             LeastCostPathTree leastCostPathTree =
                     new LeastCostPathTree(new MyTravelTime(linkOffPeakHourTimes), new MyTravelDisutility(linkOffPeakHourTimes, linkOffPeakHourTimes));
             leastCostPathTree.calculate(network, originNode, DEFAULT_PEAK_H_S);
             for (Zone destination : dataSet.getZones().values()) {
-                Coord toCoord = ct.transform(destination.getRandomCoord());
+                Coord toCoord = ct.transform(destination.getCoordinates(null));
                 double euclideanDistance = getDistancePointToPoint(fromCoord, toCoord);
                 if (euclideanDistance > 200e3) {
                     dataSet.getUncongestedTravelTimeMatrix().put(origin.getId(), destination.getId(), euclideanDistance / 80 * 3.6);

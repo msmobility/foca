@@ -1,11 +1,11 @@
 package de.tum.bgu.msm.freight.io.input;
 
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
+import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.properties.Properties;
 
 public class InputManager {
 
-    private FreightFlowsDataSet dataSet;
+    private DataSet dataSet;
     private Properties properties;
 
     public InputManager(Properties properties){
@@ -13,11 +13,19 @@ public class InputManager {
     }
 
     public void readInput(){
-        this.dataSet = new FreightFlowsDataSet();
+        this.dataSet = new DataSet();
         readZones();
         readCommodityAttributes();
-        readOrigDestFlows(2010);
+        readDistributionCenters();
+        readOrigDestFlows();
+
     }
+
+    private void readDistributionCenters() {
+        DistributionCenterReader distributionCenterReader = new DistributionCenterReader(dataSet, properties);
+        distributionCenterReader.read();
+    }
+
 
     private void readZones(){
         ZonesReader zonesReader = new ZonesReader(dataSet, properties);
@@ -30,13 +38,13 @@ public class InputManager {
         commodityAttributesReader.read();
     }
 
-    private void readOrigDestFlows(int year){
-        OrigDestFlowsReader origDestFlowsReader = new OrigDestFlowsReader(dataSet, year, properties);
+    private void readOrigDestFlows(){
+        OrigDestFlowsReader origDestFlowsReader = new OrigDestFlowsReader(dataSet, properties);
         origDestFlowsReader.read();
     }
 
 
-    public FreightFlowsDataSet getDataSet() {
+    public DataSet getDataSet() {
         return dataSet;
     }
 }

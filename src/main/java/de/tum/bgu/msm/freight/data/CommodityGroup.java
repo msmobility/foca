@@ -2,16 +2,26 @@ package de.tum.bgu.msm.freight.data;
 
 public enum CommodityGroup {
 
-    AGRI,
-    PRIMARY,
-    SOIL_ROCK,
-    FOOD,
-    MANUFACT,
-    HEAVY_MANUFACT,
-    CHEMICAL,
-    WASTE,
-    GROUP,
-    PACKET,
-    OTHER,
-    EMPTY;
+    AGRI (GoodDistribution.DOOR_TO_DOOR),
+    PRIMARY (GoodDistribution.DOOR_TO_DOOR),
+    SOIL_ROCK (GoodDistribution.DOOR_TO_DOOR),
+    FOOD (GoodDistribution.SINGLE_VEHICLE),
+    MANUFACT(GoodDistribution.SINGLE_VEHICLE),
+    HEAVY_MANUFACT (GoodDistribution.DOOR_TO_DOOR),
+    CHEMICAL (GoodDistribution.DOOR_TO_DOOR),
+    WASTE (GoodDistribution.DOOR_TO_DOOR),
+    GROUP(GoodDistribution.SINGLE_VEHICLE),
+    PACKET(GoodDistribution.SINGLE_DELIVERY),
+    OTHER (GoodDistribution.DOOR_TO_DOOR),
+    EMPTY(GoodDistribution.DOOR_TO_DOOR);
+
+    private GoodDistribution goodDistribution;
+
+    CommodityGroup(GoodDistribution goodDistribution) {
+        this.goodDistribution = goodDistribution;
+    }
+
+    public GoodDistribution getGoodDistribution() {
+        return goodDistribution;
+    }
 }

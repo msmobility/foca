@@ -1,9 +1,10 @@
-package de.tum.bgu.msm.freight.modules.assignment;
+package de.tum.bgu.msm.freight.modules.runMATSim;
 
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
-import de.tum.bgu.msm.freight.modules.assignment.counts.CountEventHandler;
+import de.tum.bgu.msm.freight.data.DataSet;
+import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.FlowsToVehicleAssignment;
+import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.CountEventHandler;
 import de.tum.bgu.msm.freight.io.input.LinksFileReader;
-import de.tum.bgu.msm.freight.modules.assignment.counts.MultiDayCounts;
+import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.MultiDayCounts;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
@@ -27,13 +28,13 @@ public class MATSimAssignment {
     private MutableScenario scenario;
 
     private Properties properties;
-    private FreightFlowsDataSet dataSet;
+    private DataSet dataSet;
 
     public MATSimAssignment(Properties properties) {
         this.properties = properties;
     }
 
-    public void load(FreightFlowsDataSet dataSet) throws IOException {
+    public void load(DataSet dataSet) throws IOException {
         this.dataSet = dataSet;
         configMatsim();
         createPopulation();
@@ -116,7 +117,11 @@ public class MATSimAssignment {
         truckParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
         config.planCalcScore().addModeParams(truckParams);
 
-        config.travelTimeCalculator().setAnalyzedModes("truck,car");
+        Set<String> analyzedModes = new HashSet<>();
+        analyzedModes.add("truck");
+        analyzedModes.add("car");
+
+        config.travelTimeCalculator().setAnalyzedModes(analyzedModes);
         config.travelTimeCalculator().setSeparateModes(false);
 
         config.vehicles().setVehiclesFile(properties.getVehicleFile());
@@ -128,7 +133,8 @@ public class MATSimAssignment {
 
     private void createPopulation() throws IOException {
         FlowsToVehicleAssignment flowsToVehicleAssignment = new FlowsToVehicleAssignment(dataSet, properties);
-        Population population = flowsToVehicleAssignment.disaggregateToVehicles(config);
+        flowsToVehicleAssignment.generateNumberOfTrucks();
+        Population population = flowsToVehicleAssignment.generatePopulation(config);
         flowsToVehicleAssignment.printOutResults();
 
         scenario = (MutableScenario) ScenarioUtils.loadScenario(config);

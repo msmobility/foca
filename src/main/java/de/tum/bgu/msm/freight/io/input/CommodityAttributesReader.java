@@ -2,7 +2,7 @@ package de.tum.bgu.msm.freight.io.input;
 
 import de.tum.bgu.msm.freight.data.Commodity;
 import de.tum.bgu.msm.freight.data.DistanceBin;
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
+import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -20,7 +20,7 @@ public class CommodityAttributesReader extends CSVReader {
 
     private Properties properties;
 
-    protected CommodityAttributesReader(FreightFlowsDataSet dataSet, Properties properties) {
+    protected CommodityAttributesReader(DataSet dataSet, Properties properties) {
         super(dataSet);
         this.properties = properties;
     }

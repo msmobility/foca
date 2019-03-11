@@ -34,9 +34,8 @@ public class OrigDestFlowsReader extends CSVReader {
     private Properties properties;
 
 
-    protected OrigDestFlowsReader(FreightFlowsDataSet dataSet, int year, Properties properties) {
+    protected OrigDestFlowsReader(DataSet dataSet, Properties properties) {
         super(dataSet);
-        this.year = year;
         this.properties = properties;
     }
 
@@ -64,13 +63,13 @@ public class OrigDestFlowsReader extends CSVReader {
         int origin = Integer.parseInt(record[originIndex]);
         int destination = Integer.parseInt(record[destinationIndex]);
 
-        OrigDestFlow origDestFlow = new OrigDestFlow(year, origin, destination);
+        OriginDestinationPair originDestinationPair = new OriginDestinationPair(origin, destination);
 
         if (dataSet.getFlowMatrix().contains(origin, destination)){
-            dataSet.getFlowMatrix().get(origin, destination).add(origDestFlow);
+            dataSet.getFlowMatrix().get(origin, destination).add(originDestinationPair);
         } else {
-            ArrayList<OrigDestFlow> flowsThisOrigDestPair = new ArrayList<OrigDestFlow>();
-            flowsThisOrigDestPair.add(origDestFlow);
+            ArrayList<OriginDestinationPair> flowsThisOrigDestPair = new ArrayList<OriginDestinationPair>();
+            flowsThisOrigDestPair.add(originDestinationPair);
             dataSet.getFlowMatrix().put(origin, destination, flowsThisOrigDestPair);
         }
 
@@ -83,16 +82,16 @@ public class OrigDestFlowsReader extends CSVReader {
             Commodity commodityVL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityVLIndex]));
             double tonsVL = Double.parseDouble(record[tonsVLIndex]);
             FlowType flowTypeVL = FlowType.getFromCode(Integer.parseInt(record[typeVLIndex]));
-            Trip tripVL = new Trip(origin, originHL, modeVL, commodityVL, tonsVL, Segment.PRE, flowTypeVL);
-            origDestFlow.addTrip(tripVL);
+            Flow FlowVL = new Flow(origin, originHL, modeVL, commodityVL, tonsVL, Segment.PRE, flowTypeVL);
+            originDestinationPair.addTrip(FlowVL);
         }
 
         Mode modeHL = Mode.valueOf(Integer.parseInt(record[modeHLIndex]));
         Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
         double tonsHL = Double.parseDouble(record[tonsHLIndex]);
         FlowType flowTypeHL = FlowType.getFromCode(Integer.parseInt(record[typeHLIndex]));
-        Trip tripHL = new Trip(originHL, destinationHL, modeHL, commodityHL, tonsHL, Segment.MAIN, flowTypeHL);
-        origDestFlow.addTrip(tripHL);
+        Flow FlowHL = new Flow(originHL, destinationHL, modeHL, commodityHL, tonsHL, Segment.MAIN, flowTypeHL);
+        originDestinationPair.addTrip(FlowHL);
 
         if (destination != destinationHL){
             //there is a NL
@@ -100,8 +99,8 @@ public class OrigDestFlowsReader extends CSVReader {
             Commodity commodityNL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityNLIndex]));
             double tonsNL = Double.parseDouble(record[tonsNLIndex]);
             FlowType flowTypeNL = FlowType.getFromCode(Integer.parseInt(record[typeNLIndex]));
-            Trip tripNL = new Trip(destinationHL, destination, modeNL, commodityNL, tonsNL, Segment.POST, flowTypeNL);
-            origDestFlow.addTrip(tripNL);
+            Flow FlowNL = new Flow(destinationHL, destination, modeNL, commodityNL, tonsNL, Segment.POST, flowTypeNL);
+            originDestinationPair.addTrip(FlowNL);
         }
     }
 

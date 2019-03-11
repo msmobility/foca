@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.assignment;
+package de.tum.bgu.msm.freight.modules.common;
 
 public interface DepartureTimeDistribution {
 

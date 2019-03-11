@@ -19,6 +19,11 @@ public class ExternalZone implements Zone {
     }
 
 
+    @Override
+    public Coord getCoordinates(Commodity commodity) {
+        return new Coord(lon, lat);
+    }
+
     public String getName() {
         return name;
     }
@@ -26,6 +31,11 @@ public class ExternalZone implements Zone {
     @Override
     public int getId() {
         return id;
+    }
+
+    @Override
+    public boolean isInStudyArea() {
+        return false;
     }
 
     public double getLat() {
@@ -36,7 +46,4 @@ public class ExternalZone implements Zone {
         return lon;
     }
 
-    public Coord getRandomCoord() {
-        return new Coord(lon, lat);
-    }
 }

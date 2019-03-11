@@ -12,6 +12,7 @@ public class InternalMicroZone implements Zone {
     private int id;
     private SimpleFeature shapeFeature;
     private Map<String, Double> attributes;
+    private boolean isInStudyArea = true;
 
     public InternalMicroZone(int id, SimpleFeature shapeFeature) {
         this.id = id;
@@ -28,7 +29,7 @@ public class InternalMicroZone implements Zone {
     }
 
     @Override
-    public Coord getRandomCoord() {
+    public Coord getCoordinates(Commodity commodity) {
         return FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature);
     }
 
@@ -40,4 +41,11 @@ public class InternalMicroZone implements Zone {
     public int getId() {
         return this.id;
     }
+
+    @Override
+    public boolean isInStudyArea() {
+        return isInStudyArea;
+    }
+
+
 }

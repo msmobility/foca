@@ -1,14 +1,14 @@
 package de.tum.bgu.msm.freight.io;
 
 
-import de.tum.bgu.msm.freight.data.FreightFlowsDataSet;
+import de.tum.bgu.msm.freight.data.DataSet;
 
 abstract class AbstractReader {
 
 
-    protected final FreightFlowsDataSet dataSet;
+    protected final DataSet dataSet;
 
-    AbstractReader(FreightFlowsDataSet dataSet) {
+    AbstractReader(DataSet dataSet) {
             this.dataSet = dataSet;
         }
 

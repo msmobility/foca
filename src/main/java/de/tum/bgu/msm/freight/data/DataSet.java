@@ -1,20 +1,17 @@
 package de.tum.bgu.msm.freight.data;
 
 import com.google.common.collect.HashBasedTable;
-import de.tum.bgu.msm.freight.data.Zone;
 import org.matsim.api.core.v01.Id;
 
-import javax.swing.*;
-import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FreightFlowsDataSet {
+public class DataSet {
 
     private Map<Integer, Zone> zones = new HashMap<Integer, Zone>();
 
-    private HashBasedTable<Integer, Integer, ArrayList<OrigDestFlow>> flowMatrix = HashBasedTable.create();
+    private HashBasedTable<Integer, Integer, ArrayList<OriginDestinationPair>> flowMatrix = HashBasedTable.create();
 
     private HashBasedTable<Integer, Integer, Double> uncongestedTravelTimeMatrix = HashBasedTable.create();
 
@@ -24,9 +21,13 @@ public class FreightFlowsDataSet {
 
     private Map<Id, Integer> observedCounts = new HashMap<>();
 
+    private Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> distributionCenters = new HashMap<>();
+
     public Map<Integer, Zone> getZones() {
         return zones;
     }
+
+
 
     public Map<Integer, Zone> getInternalAndExternalZonesOnly(){
         Map<Integer, Zone> zonesSubset = new HashMap<>();
@@ -38,7 +39,7 @@ public class FreightFlowsDataSet {
         return zonesSubset;
     }
 
-    public HashBasedTable<Integer, Integer, ArrayList<OrigDestFlow>> getFlowMatrix() {
+    public HashBasedTable<Integer, Integer, ArrayList<OriginDestinationPair>> getFlowMatrix() {
         return flowMatrix;
     }
 
@@ -66,5 +67,13 @@ public class FreightFlowsDataSet {
 
     public HashBasedTable<Integer, Integer, Double> getUncongestedTravelTimeMatrix() {
         return uncongestedTravelTimeMatrix;
+    }
+
+    public ArrayList<DistributionCenter> getDistributionCenterForZoneAndCommodityGroup(int zoneId, CommodityGroup commodityGroup) {
+            return distributionCenters.get(zoneId).get(commodityGroup);
+    }
+
+    public Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> getDistributionCenters() {
+        return distributionCenters;
     }
 }

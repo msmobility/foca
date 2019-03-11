@@ -1,22 +1,12 @@
 package de.tum.bgu.msm.freight.data;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
-import de.tum.bgu.msm.data.Region;
 import de.tum.bgu.msm.freight.FreightFlowUtils;
-import de.tum.bgu.msm.freight.data.Zone;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.matsim.api.core.v01.Coord;
-import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import java.util.Objects;
 
 public class InternalZone implements Zone {
 
@@ -24,6 +14,7 @@ public class InternalZone implements Zone {
     private String name;
     private SimpleFeature shapeFeature;
     private Map<Integer, InternalMicroZone> microZones;
+    private boolean isInStudyArea = false;
 
 
     public InternalZone(int id, String name) {
@@ -40,20 +31,22 @@ public class InternalZone implements Zone {
         this.shapeFeature = shapeFeature;
     }
 
-    public Coord getRandomCoord() {
-        if (microZones.isEmpty()) {
-            return FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature);
+    public Coord getCoordinates(Commodity commodity) {
+        if (microZones.isEmpty() || commodity == null) {
+            return Objects.requireNonNull(FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature));
         } else {
-            int microZoneId = disaggregateToMicroZone();
-            return microZones.get(microZoneId).getRandomCoord();
+            int microZoneId = disaggregateToMicroZone(commodity);
+            Coord coord =  microZones.get(microZoneId).getCoordinates(commodity);
+            return Objects.requireNonNull(coord);
         }
+
     }
 
     public void addMicroZone(InternalMicroZone microZone){
         this.microZones.put(microZone.getId(), microZone);
     }
 
-    private int disaggregateToMicroZone() {
+    private int disaggregateToMicroZone(Commodity commodity) {
         Map<Integer, Double> microZonesProbabilities = new HashMap<>();
         this.microZones.values().stream().forEach(microZone -> {
             microZonesProbabilities.put(microZone.getId(), microZone.getAttribute("employment"));
@@ -73,7 +66,14 @@ public class InternalZone implements Zone {
         return id;
     }
 
+    @Override
+    public boolean isInStudyArea() {
+        return isInStudyArea;
+    }
 
+    public void setInStudyArea(boolean inStudyArea) {
+        isInStudyArea = inStudyArea;
+    }
 }
 
 

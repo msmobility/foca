@@ -1,13 +1,11 @@
-package de.tum.bgu.msm.freight.modules.assignment.counts;
+package de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts;
 
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
 import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
-import org.matsim.api.core.v01.network.Link;
 
-import javax.validation.constraints.Null;
 import java.util.HashMap;
 import java.util.Map;
 
