@@ -1,21 +1,20 @@
-package de.tum.bgu.msm.freight.data;
-
-import org.matsim.api.core.v01.Coord;
+package de.tum.bgu.msm.freight.data.freight;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Flow {
 
     private int origin;
     private int destination;
+    private int originTerminal = -1;
+    private int destinationTerminal = -1;
     private Mode mode;
     private Commodity commodity;
     private double volume_tn;
     private Segment segment;
     private FlowType flowType;
 
-    private ArrayList<TruckTrip> truckTrips = new ArrayList<TruckTrip>();
+    private ArrayList<LongDistanceTruckTrip> longDistanceTruckTrips = new ArrayList<LongDistanceTruckTrip>();
 
     //these attributes are optional only for the trips that are converted to trucks
     private double distance_km;
@@ -94,11 +93,27 @@ public class Flow {
         this.tt_s = tt_s;
     }
 
-    public ArrayList<TruckTrip> getTruckTrips() {
-        return truckTrips;
+    public ArrayList<LongDistanceTruckTrip> getLongDistanceTruckTrips() {
+        return longDistanceTruckTrips;
     }
 
-    public void addTruckTrip(TruckTrip truckTrip) {
-        this.truckTrips.add(truckTrip);
+    public void addTruckTrip(LongDistanceTruckTrip longDistanceTruckTrip) {
+        this.longDistanceTruckTrips.add(longDistanceTruckTrip);
+    }
+
+    public int getOriginTerminal() {
+        return originTerminal;
+    }
+
+    public void setOriginTerminal(int originTerminal) {
+        this.originTerminal = originTerminal;
+    }
+
+    public int getDestinationTerminal() {
+        return destinationTerminal;
+    }
+
+    public void setDestinationTerminal(int destinationTerminal) {
+        this.destinationTerminal = destinationTerminal;
     }
 }

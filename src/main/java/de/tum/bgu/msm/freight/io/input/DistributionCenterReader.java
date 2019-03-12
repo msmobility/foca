@@ -1,16 +1,14 @@
 package de.tum.bgu.msm.freight.io.input;
 
-import de.tum.bgu.msm.freight.data.Commodity;
-import de.tum.bgu.msm.freight.data.CommodityGroup;
+import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
 import de.tum.bgu.msm.freight.data.DataSet;
-import de.tum.bgu.msm.freight.data.DistributionCenter;
+import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

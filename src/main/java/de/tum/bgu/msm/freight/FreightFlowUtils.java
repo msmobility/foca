@@ -10,10 +10,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 
 public class FreightFlowUtils {
@@ -56,4 +53,5 @@ public class FreightFlowUtils {
 
         return sm;
     }
+
 }

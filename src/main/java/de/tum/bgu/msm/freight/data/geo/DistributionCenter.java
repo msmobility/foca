@@ -1,9 +1,13 @@
-package de.tum.bgu.msm.freight.data;
+package de.tum.bgu.msm.freight.data.geo;
 
+import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.Objects;
 
+/**
+ * A distribution center is a location where goods are transferred between one truck to other trucks
+ */
 public class DistributionCenter implements Zone{
 
     private int id;
@@ -19,7 +23,7 @@ public class DistributionCenter implements Zone{
     }
 
     @Override
-    public Coord getCoordinates(Commodity commodity) {
+    public Coord getCoordinates() {
         return Objects.requireNonNull(coord);
     }
 

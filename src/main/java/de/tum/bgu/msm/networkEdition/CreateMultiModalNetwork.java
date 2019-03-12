@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.networkEdition;
 
-import de.tum.bgu.msm.freight.data.Commodity;
-import de.tum.bgu.msm.freight.data.CommodityGroup;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;

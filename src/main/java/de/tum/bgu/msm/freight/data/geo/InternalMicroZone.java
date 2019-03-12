@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.data;
+package de.tum.bgu.msm.freight.data.geo;
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import org.matsim.api.core.v01.Coord;
@@ -29,7 +29,7 @@ public class InternalMicroZone implements Zone {
     }
 
     @Override
-    public Coord getCoordinates(Commodity commodity) {
+    public Coord getCoordinates() {
         return FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature);
     }
 

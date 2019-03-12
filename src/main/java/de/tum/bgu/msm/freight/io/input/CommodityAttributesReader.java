@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.freight.io.input;
 
-import de.tum.bgu.msm.freight.data.Commodity;
-import de.tum.bgu.msm.freight.data.DistanceBin;
+import de.tum.bgu.msm.freight.data.freight.Commodity;
+import de.tum.bgu.msm.freight.data.freight.DistanceBin;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;

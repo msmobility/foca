@@ -1,8 +1,13 @@
 package de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment;
 
 import de.tum.bgu.msm.freight.data.*;
+import de.tum.bgu.msm.freight.data.freight.*;
+import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
+import de.tum.bgu.msm.freight.data.geo.InternalZone;
+import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.modules.common.DepartureTimeDistribution;
 import de.tum.bgu.msm.freight.modules.common.NormalDepartureTimeDistribution;
+import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.modules.common.UncongestedTravelTime;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
@@ -68,7 +73,7 @@ public class FlowsToVehicleAssignment {
                             dataSet.getZones().containsKey(destination)) {
                         ArrayList<OriginDestinationPair> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
                         for (OriginDestinationPair originDestinationPair : flowsThisOrigDest) {
-                            for (Flow flow : originDestinationPair.getTrips().values()) {
+                            for (Flow flow : originDestinationPair.getFlows().values()) {
                                 if (flow.getMode().equals(Mode.ROAD)) {
                                     int tripOrigin = flow.getOrigin();
                                     int tripDestination = flow.getDestination();
@@ -76,8 +81,8 @@ public class FlowsToVehicleAssignment {
                                     Zone originZone = dataSet.getZones().get(tripOrigin);
                                     Zone destinationZone = dataSet.getZones().get(tripDestination);
 
-                                    Coord origCoord = originZone.getCoordinates(null);
-                                    Coord destCoord = destinationZone.getCoordinates(null);
+                                    Coord origCoord = originZone.getCoordinates();
+                                    Coord destCoord = destinationZone.getCoordinates();
 
                                     origCoord = ct.transform(origCoord);
                                     destCoord = ct.transform(destCoord);
@@ -143,24 +148,31 @@ public class FlowsToVehicleAssignment {
 
                 if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
 
-                    TruckTrip truckTrip = createOneTruckTrip(flow, true);
+                    LongDistanceTruckTrip longDistanceTruckTrip = createOneTruckTrip(flow, true);
+
+                    boolean intrazonal = flow.getOrigin() == flow.getDestination() ? true : false;
 
                     String idOfVehicle = flow.getCommodity().getCommodityGroup() + "-" +
                             vehicle + flow.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
+                            flow.getSegment() + "-" +
                             counter;
+
+                    if (intrazonal){
+                        idOfVehicle += "-INTRA";
+                    }
 
                     Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
                     Plan plan = factory.createPlan();
                     person.addPlan(plan);
                     population.addPerson(person);
 
-                    Activity originActivity = factory.createActivityFromCoord("start", truckTrip.getOrigCoord());
+                    Activity originActivity = factory.createActivityFromCoord("start", longDistanceTruckTrip.getOrigCoord());
                     originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                     plan.addActivity(originActivity);
 
                     plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                    Activity destinationActivity = factory.createActivityFromCoord("end", truckTrip.getDestCoord());
+                    Activity destinationActivity = factory.createActivityFromCoord("end", longDistanceTruckTrip.getDestCoord());
                     plan.addActivity(destinationActivity);
                     counter.incrementAndGet();
 
@@ -171,12 +183,12 @@ public class FlowsToVehicleAssignment {
 
                 if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
 
-                    TruckTrip truckTrip = createOneTruckTrip(flow, false);
+                    LongDistanceTruckTrip longDistanceTruckTrip = createOneTruckTrip(flow, false);
 
                     String idOfVehicle =
                             flow.getCommodity().getCommodityGroup() + "-" +
-                            vehicle + "-IS_EMPTY-" + flow.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
-                            counter;
+                                    vehicle + "-IS_EMPTY-" + flow.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
+                                    counter;
 
 
                     Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
@@ -184,13 +196,13 @@ public class FlowsToVehicleAssignment {
                     person.addPlan(plan);
                     population.addPerson(person);
 
-                    Activity originActivity = factory.createActivityFromCoord("start", truckTrip.getOrigCoord());
+                    Activity originActivity = factory.createActivityFromCoord("start", longDistanceTruckTrip.getOrigCoord());
                     originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                     plan.addActivity(originActivity);
 
                     plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                    Activity destinationActivity = factory.createActivityFromCoord("end", truckTrip.getDestCoord());
+                    Activity destinationActivity = factory.createActivityFromCoord("end", longDistanceTruckTrip.getDestCoord());
                     plan.addActivity(destinationActivity);
                     counter.incrementAndGet();
                 }
@@ -203,7 +215,7 @@ public class FlowsToVehicleAssignment {
         return population;
     }
 
-    private TruckTrip createOneTruckTrip(Flow flow, boolean loaded) {
+    private LongDistanceTruckTrip createOneTruckTrip(Flow flow, boolean loaded) {
 
         Zone originZone = dataSet.getZones().get(flow.getOrigin());
         Zone destinationZone = dataSet.getZones().get(flow.getDestination());
@@ -211,28 +223,52 @@ public class FlowsToVehicleAssignment {
         Coord origCoord;
         Coord destCoord;
 
-        if (!flow.getCommodity().getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
+        if (flow.getSegment().equals(Segment.POST)) {
+            origCoord = dataSet.getTerminals().get(flow.getOriginTerminal()).getCoordinates();
+        } else if (!flow.getCommodity().getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
                 originZone.isInStudyArea()) {
+            //pick up a distribution center
             DistributionCenter originDistributionCenter = chooseDistributionCenter(flow.getOrigin(), flow.getCommodity().getCommodityGroup());
-            origCoord = originDistributionCenter.getCoordinates(flow.getCommodity());
-        } else {
+            origCoord = originDistributionCenter.getCoordinates();
+            //further disaggregate the flows, including the destination microzones if needed
 
-            origCoord = originZone.getCoordinates(flow.getCommodity());
+        } else {
+            if (!originZone.isInStudyArea()) {
+                //if zone does not have microzones
+                origCoord = originZone.getCoordinates();
+            } else {
+                //if zone does have microzones
+                InternalZone internalZone = (InternalZone) originZone;
+                int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(flow.getCommodity(), internalZone, dataSet.getMakeTable());
+                origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+            }
         }
 
         origCoord = ct.transform(origCoord);
 
 
-        if (!flow.getCommodity().getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
+        if (flow.getSegment().equals(Segment.PRE)) {
+            destCoord = dataSet.getTerminals().get(flow.getDestinationTerminal()).getCoordinates();
+        } else if (!flow.getCommodity().getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
                 destinationZone.isInStudyArea()) {
             DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flow.getDestination(), flow.getCommodity().getCommodityGroup());
-            destCoord = destinationDistributionCenter.getCoordinates(flow.getCommodity());
+            destCoord = destinationDistributionCenter.getCoordinates();
+            //further disaggregate the flows, including the destination microzones if needed
+
         } else {
-            destCoord = destinationZone.getCoordinates(flow.getCommodity());
+            if (!destinationZone.isInStudyArea()) {
+                //if zone does not have microzones
+                destCoord = destinationZone.getCoordinates();
+            } else {
+                //if zone does have microzones
+                InternalZone internalZone = (InternalZone) destinationZone;
+                int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(flow.getCommodity(), internalZone, dataSet.getUseTable());
+                destCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+            }
         }
         destCoord = ct.transform(destCoord);
 
-        return new TruckTrip(origCoord, destCoord, flow, loaded);
+        return new LongDistanceTruckTrip(origCoord, destCoord, flow, loaded);
     }
 
 

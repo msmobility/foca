@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.data;
+package de.tum.bgu.msm.freight.data.freight;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,19 +9,19 @@ public class OriginDestinationPair {
     private int origin;
     private int destination;
 
-    private Map<Segment,Flow> trips;
+    private Map<Segment,Flow> flows;
 
     public OriginDestinationPair(int origin, int destination) {
         this.origin = origin;
         this.destination = destination;
-        this.trips = new HashMap<>();
+        this.flows = new HashMap<>();
     }
 
-    public void addTrip(Flow Flow){
-        this.trips.put(Flow.getSegment(), Flow);
+    public void addFlow(Flow Flow){
+        this.flows.put(Flow.getSegment(), Flow);
     }
 
-    public Map<Segment, Flow> getTrips(){
-        return trips;
+    public Map<Segment, Flow> getFlows(){
+        return flows;
     }
 }

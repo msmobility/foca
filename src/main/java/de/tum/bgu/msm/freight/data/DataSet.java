@@ -1,6 +1,14 @@
 package de.tum.bgu.msm.freight.data;
 
 import com.google.common.collect.HashBasedTable;
+import de.tum.bgu.msm.freight.data.freight.Commodity;
+import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
+import de.tum.bgu.msm.freight.data.freight.DistanceBin;
+import de.tum.bgu.msm.freight.data.freight.OriginDestinationPair;
+import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
+import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
+import de.tum.bgu.msm.freight.data.geo.Terminal;
+import de.tum.bgu.msm.freight.data.geo.Zone;
 import org.matsim.api.core.v01.Id;
 
 import java.util.ArrayList;
@@ -23,11 +31,15 @@ public class DataSet {
 
     private Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> distributionCenters = new HashMap<>();
 
+    private HashBasedTable<String, Commodity, Double> makeTable = HashBasedTable.create();
+
+    private HashBasedTable<String, Commodity, Double> useTable = HashBasedTable.create();
+
+    public Map<Integer, Terminal> terminals = new HashMap<>();
+
     public Map<Integer, Zone> getZones() {
         return zones;
     }
-
-
 
     public Map<Integer, Zone> getInternalAndExternalZonesOnly(){
         Map<Integer, Zone> zonesSubset = new HashMap<>();
@@ -75,5 +87,17 @@ public class DataSet {
 
     public Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> getDistributionCenters() {
         return distributionCenters;
+    }
+
+    public HashBasedTable<String, Commodity, Double> getMakeTable() {
+        return makeTable;
+    }
+
+    public HashBasedTable<String, Commodity, Double> getUseTable() {
+        return useTable;
+    }
+
+    public Map<Integer, Terminal> getTerminals() {
+        return terminals;
     }
 }

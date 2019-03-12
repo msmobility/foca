@@ -1,7 +1,5 @@
-package de.tum.bgu.msm.freight.data;
+package de.tum.bgu.msm.freight.data.geo;
 
-import de.tum.bgu.msm.data.Region;
-import de.tum.bgu.msm.freight.data.Zone;
 import org.matsim.api.core.v01.Coord;
 
 public class ExternalZone implements Zone {
@@ -20,7 +18,7 @@ public class ExternalZone implements Zone {
 
 
     @Override
-    public Coord getCoordinates(Commodity commodity) {
+    public Coord getCoordinates() {
         return new Coord(lon, lat);
     }
 

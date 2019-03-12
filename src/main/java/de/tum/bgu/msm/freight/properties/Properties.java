@@ -13,7 +13,7 @@ public class Properties {
 
     private String zoneInputFile = "./input/zones_edit.csv";
     private String zoneShapeFile = "./input/shp/de_lkr_4326.shp";
-    private String munichMicroZonesShapeFile = "input/shp/zones_4326.shp";
+    private String munichMicroZonesShapeFile = "input/shp/zones_4326_jobs.shp";
     private String regensburgMicroZonesShapeFile = "input/shp/zones_regensburg_4326.shp";
     private String idFieldInZonesShp = "RS";
     private String idFieldInMicroZonesShp = "id";
@@ -33,7 +33,12 @@ public class Properties {
     private  String countStationLinkListFile = "input/matsim_links_stations.csv";
     private  String countsFileName = "counts_multi_day.csv";
     private String vehicleFile = "input/vehicleFile.xml";
-    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";;
+    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
+    private  String  terminalsFileName = "input/distributionCenters/intermodal_terminals.csv";
+
+    private String[] jobTypes = new String[]{"Mnft","Util","Cons","Retl","Trns","Finc","Rlst","Admn","Serv","Agri"};
+    private String makeTableFileName = "./input/makeUseCoefficients/makeTable.csv";
+    private String useTableFileName = "./input/makeUseCoefficients/useTable.csv";
 
 
     public Properties(){
@@ -220,5 +225,21 @@ public class Properties {
 
     public String getDistributionCentersFile() {
         return distributionCentersFile;
+    }
+
+    public String[] getJobTypes() {
+        return jobTypes;
+    }
+
+    public String getMakeTableFilename() {
+        return makeTableFileName;
+    }
+
+    public String getUseTableFilename() {
+        return useTableFileName;
+    }
+
+    public String getTerminalsFile() {
+        return terminalsFileName;
     }
 }

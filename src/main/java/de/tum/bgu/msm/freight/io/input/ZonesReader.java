@@ -6,6 +6,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import de.tum.bgu.msm.freight.data.*;
 
+import de.tum.bgu.msm.freight.data.geo.ExternalZone;
+import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
+import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -53,8 +56,11 @@ public class ZonesReader extends CSVReader {
             double lon = Double.parseDouble(record[lonIndex]);
             ExternalZone zone = new ExternalZone(id, name, lat, lon);
             dataSet.getZones().put(id, zone);
-        } else {
-            //todo do something with see ports
+        } else if (type.equals("SEEPORT")){
+            double lat = Double.parseDouble(record[latIndex]);
+            double lon = Double.parseDouble(record[lonIndex]);
+            ExternalZone zone = new ExternalZone(id, name, lat, lon);
+            dataSet.getZones().put(id, zone);
         }
 
 
@@ -103,6 +109,29 @@ public class ZonesReader extends CSVReader {
 
                 double employment = Double.parseDouble(feature.getAttribute("Employment").toString());
                 microZone.setAttribute("employment", employment);
+
+                try{
+                double population = Double.parseDouble(feature.getAttribute("Population").toString());
+                microZone.setAttribute("population", population);
+                } catch (NullPointerException e){
+                    //todo some micro zone data is missing
+                    microZone.setAttribute("population", 1);
+                    logger.warn("Populaion is not defined in micro-zone " + microZone.getId() + " of zone " + idZone);
+                }
+
+
+
+                for (String jobType : properties.getJobTypes()){
+                    try{
+                        double jobsThis_type = Double.parseDouble(feature.getAttribute(jobType).toString());
+                        microZone.setAttribute(jobType, jobsThis_type);
+                    } catch (NullPointerException e){
+                        //todo some micro zone data is missing
+                        microZone.setAttribute(jobType, 1);
+                        logger.warn("The job type " + jobType + " is not defined in micro-zone " + microZone.getId() + " of zone " + idZone);
+                    }
+
+                }
 
                 n_microzones ++;
             }

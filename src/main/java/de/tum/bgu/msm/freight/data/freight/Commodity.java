@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.data;
+package de.tum.bgu.msm.freight.data.freight;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,5 +50,9 @@ public enum Commodity {
 
     public CommodityGroup getCommodityGroup(){
         return this.commodityGroup;
+    }
+
+    public int getCode() {
+        return code;
     }
 }

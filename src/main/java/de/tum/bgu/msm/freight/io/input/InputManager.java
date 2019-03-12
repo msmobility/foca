@@ -17,8 +17,23 @@ public class InputManager {
         readZones();
         readCommodityAttributes();
         readDistributionCenters();
+        readTerminals();
+        readMakeUseTable();
         readOrigDestFlows();
 
+    }
+
+    private void readTerminals() {
+        TerminalReader terminalReader = new TerminalReader(dataSet, properties);
+        terminalReader.read();
+    }
+
+    private void readMakeUseTable() {
+        MakeUseTablesReader makeUseTablesReader = new MakeUseTablesReader(dataSet, properties, true);
+        makeUseTablesReader.read();
+
+        makeUseTablesReader = new MakeUseTablesReader(dataSet, properties, false);
+        makeUseTablesReader.read();
     }
 
     private void readDistributionCenters() {
