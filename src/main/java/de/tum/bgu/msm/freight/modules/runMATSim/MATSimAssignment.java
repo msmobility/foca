@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.freight.modules.runMATSim;
 
 import de.tum.bgu.msm.freight.data.DataSet;
+import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.FlowsToVehicleAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.CountEventHandler;
 import de.tum.bgu.msm.freight.io.input.LinksFileReader;
@@ -22,7 +23,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 import java.io.IOException;
 import java.util.*;
 
-public class MATSimAssignment {
+public class MATSimAssignment implements Module {
 
     private Config config;
     private MutableScenario scenario;
@@ -30,17 +31,20 @@ public class MATSimAssignment {
     private Properties properties;
     private DataSet dataSet;
 
-    public MATSimAssignment(Properties properties) {
-        this.properties = properties;
+    public MATSimAssignment() {
+
     }
 
-    public void load(DataSet dataSet) throws IOException {
+    @Override
+    public void setup(DataSet dataSet, Properties properties) {
+        this.properties = properties;
         this.dataSet = dataSet;
         configMatsim();
-        createPopulation();
     }
 
+    @Override
     public void run() {
+        createPopulation();
         runMatsim();
     }
 
@@ -131,12 +135,8 @@ public class MATSimAssignment {
 
     }
 
-    private void createPopulation() throws IOException {
-        FlowsToVehicleAssignment flowsToVehicleAssignment = new FlowsToVehicleAssignment(dataSet, properties);
-        flowsToVehicleAssignment.generateNumberOfTrucks();
-        Population population = flowsToVehicleAssignment.generatePopulation(config);
-        flowsToVehicleAssignment.printOutResults();
-
+    private void createPopulation(){
+        Population population = dataSet.getMatsimPopulation();
         scenario = (MutableScenario) ScenarioUtils.loadScenario(config);
         scenario.setPopulation(population);
     }
@@ -163,4 +163,6 @@ public class MATSimAssignment {
             }
         }
     }
+
+
 }

@@ -1,8 +1,11 @@
 package de.tum.bgu.msm.freight;
 
 
+import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.io.input.InputManager;
+import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.FlowsToVehicleAssignment;
 import de.tum.bgu.msm.freight.modules.runMATSim.MATSimAssignment;
+import de.tum.bgu.msm.freight.modules.runMATSim.MatsimPopulationGenerator;
 import de.tum.bgu.msm.freight.properties.Properties;
 
 import java.io.IOException;
@@ -18,7 +21,7 @@ public class FreightFlows {
          */
 
         properties.setSelectedDestinations(new int[]{9162, 9362});
-        properties.setRunId("assignmentFull3");
+        properties.setRunId("assignmentFull4");
         properties.setIterations(1);
 
         //properties.setStoreExpectedTimes(true);
@@ -28,9 +31,20 @@ public class FreightFlows {
         InputManager io = new InputManager(properties);
         io.readInput();
 
-        MATSimAssignment matsimAssignment = new MATSimAssignment(properties);
-        matsimAssignment.load(io.getDataSet());
-        matsimAssignment.run();
+        DataSet dataSet = io.getDataSet();
+
+        FlowsToVehicleAssignment flowsToVehicleAssignment = new FlowsToVehicleAssignment();
+        MatsimPopulationGenerator matsimPopulationGenerator = new MatsimPopulationGenerator();
+        MATSimAssignment matSimAssignment = new MATSimAssignment();
+
+        flowsToVehicleAssignment.setup(dataSet, properties);
+        matsimPopulationGenerator.setup(dataSet, properties);
+        matSimAssignment.setup(dataSet, properties);
+
+        flowsToVehicleAssignment.run();
+        matsimPopulationGenerator.run();
+        matSimAssignment.run();
+
 
 
     }

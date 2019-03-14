@@ -1,15 +1,13 @@
 package de.tum.bgu.msm.freight.data;
 
 import com.google.common.collect.HashBasedTable;
-import de.tum.bgu.msm.freight.data.freight.Commodity;
-import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
-import de.tum.bgu.msm.freight.data.freight.DistanceBin;
-import de.tum.bgu.msm.freight.data.freight.OriginDestinationPair;
+import de.tum.bgu.msm.freight.data.freight.*;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.Terminal;
 import de.tum.bgu.msm.freight.data.geo.Zone;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.population.Population;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +17,7 @@ public class DataSet {
 
     private Map<Integer, Zone> zones = new HashMap<Integer, Zone>();
 
-    private HashBasedTable<Integer, Integer, ArrayList<OriginDestinationPair>> flowMatrix = HashBasedTable.create();
+    private HashBasedTable<Integer, Integer, Map<Integer, FlowOriginToDestination>> flowMatrix = HashBasedTable.create();
 
     private HashBasedTable<Integer, Integer, Double> uncongestedTravelTimeMatrix = HashBasedTable.create();
 
@@ -35,7 +33,12 @@ public class DataSet {
 
     private HashBasedTable<String, Commodity, Double> useTable = HashBasedTable.create();
 
-    public Map<Integer, Terminal> terminals = new HashMap<>();
+    private Map<Integer, Terminal> terminals = new HashMap<>();
+
+    private final ArrayList<FlowSegment> assignedFlowSegments = new ArrayList<>();
+
+    private Population matsimPopulation;
+
 
     public Map<Integer, Zone> getZones() {
         return zones;
@@ -51,7 +54,7 @@ public class DataSet {
         return zonesSubset;
     }
 
-    public HashBasedTable<Integer, Integer, ArrayList<OriginDestinationPair>> getFlowMatrix() {
+    public HashBasedTable<Integer, Integer, Map<Integer, FlowOriginToDestination>> getFlowMatrix() {
         return flowMatrix;
     }
 
@@ -99,5 +102,17 @@ public class DataSet {
 
     public Map<Integer, Terminal> getTerminals() {
         return terminals;
+    }
+
+    public Population getMatsimPopulation() {
+        return matsimPopulation;
+    }
+
+    public void setMatsimPopulation(Population matsimPopulation) {
+        this.matsimPopulation = matsimPopulation;
+    }
+
+    public ArrayList<FlowSegment> getAssignedFlowSegments() {
+        return assignedFlowSegments;
     }
 }

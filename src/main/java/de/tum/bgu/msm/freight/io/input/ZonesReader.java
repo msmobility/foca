@@ -116,7 +116,7 @@ public class ZonesReader extends CSVReader {
                 } catch (NullPointerException e){
                     //todo some micro zone data is missing
                     microZone.setAttribute("population", 1);
-                    logger.warn("Populaion is not defined in micro-zone " + microZone.getId() + " of zone " + idZone);
+                    logger.warn("Population is not defined in micro-zone " + microZone.getId() + " of zone " + idZone);
                 }
 
 

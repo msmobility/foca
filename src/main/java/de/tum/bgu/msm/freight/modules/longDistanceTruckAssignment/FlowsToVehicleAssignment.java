@@ -16,36 +16,41 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
+import scala.sys.Prop;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FlowsToVehicleAssignment {
+public class FlowsToVehicleAssignment implements de.tum.bgu.msm.freight.modules.Module {
 
     private static Logger logger = Logger.getLogger(FlowsToVehicleAssignment.class);
 
-    private DataSet dataSet;
     private UncongestedTravelTime uncongestedTravelTime;
     private Properties properties;
 
+    private DataSet dataSet;
+
     private CoordinateTransformation ct;
-    private DepartureTimeDistribution departureTimeDistribution;
+
 
     private Set<Integer> selectedDestinations = new HashSet<>();
-    private final ArrayList<Flow> assignedFlows = new ArrayList<>();
 
-    public FlowsToVehicleAssignment(DataSet dataSet, Properties properties) {
 
+
+    @Override
+    public void setup(DataSet dataSet, Properties properties){
         ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
-        departureTimeDistribution = new NormalDepartureTimeDistribution();
 
-        this.dataSet = dataSet;
+
         this.properties = properties;
+        this.dataSet = dataSet;
+
         if (properties.isStoreExpectedTimes()) {
             uncongestedTravelTime = new UncongestedTravelTime(properties.getSimpleNetworkFile());
             uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet);
@@ -59,24 +64,29 @@ public class FlowsToVehicleAssignment {
                 selectedDestinations.add(destId);
             }
         }
-
     }
 
-    public void generateNumberOfTrucks() {
+    @Override
+    public void run(){
+        generateNumberOfTrucks();
+        printOutResults();
+    }
+
+    private void generateNumberOfTrucks() {
 
         AtomicInteger counter = new AtomicInteger(0);
 
         for (int origin : dataSet.getFlowMatrix().rowKeySet()) {
-            for (int destination : selectedDestinations) {
-                if (dataSet.getFlowMatrix().contains(origin, destination)) {
-                    if (dataSet.getZones().containsKey(origin) &&
+            for (int destination : dataSet.getFlowMatrix().columnKeySet()) {
+                if (selectedDestinations.contains(origin) || selectedDestinations.contains(destination)) {
+                    if (dataSet.getFlowMatrix().contains(origin, destination) && dataSet.getZones().containsKey(origin) &&
                             dataSet.getZones().containsKey(destination)) {
-                        ArrayList<OriginDestinationPair> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
-                        for (OriginDestinationPair originDestinationPair : flowsThisOrigDest) {
-                            for (Flow flow : originDestinationPair.getFlows().values()) {
-                                if (flow.getMode().equals(Mode.ROAD)) {
-                                    int tripOrigin = flow.getOrigin();
-                                    int tripDestination = flow.getDestination();
+                        Collection<FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination).values();
+                        for (FlowOriginToDestination flowOriginToDestination : flowsThisOrigDest) {
+                            for (FlowSegment flowSegment : flowOriginToDestination.getFlows().values()) {
+                                if (flowSegment.getMode().equals(Mode.ROAD)) {
+                                    int tripOrigin = flowSegment.getOrigin();
+                                    int tripDestination = flowSegment.getDestination();
 
                                     Zone originZone = dataSet.getZones().get(tripOrigin);
                                     Zone destinationZone = dataSet.getZones().get(tripDestination);
@@ -89,10 +99,10 @@ public class FlowsToVehicleAssignment {
 
                                     double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord) / 1000;
                                     DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);
-                                    double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(flow.getCommodity(), distanceBin);
-                                    double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(flow.getCommodity(), distanceBin);
+                                    double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
+                                    double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
 
-                                    double numberOfVehicles_double = flow.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
+                                    double numberOfVehicles_double = flowSegment.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
                                     double numberOfEmptyVehicles_double = numberOfVehicles_double / (1 - proportionEmpty) - numberOfVehicles_double;
 
                                     int loadedTrucks_int = (int) Math.floor(numberOfVehicles_double);
@@ -107,12 +117,12 @@ public class FlowsToVehicleAssignment {
                                     }
 
                                     //set new trip details
-                                    flow.setDistance_km(beelineDistance_km);
-                                    flow.setLoadedTrucks(loadedTrucks_int);
-                                    flow.setEmptyTrucks(emptyTrucks_int);
-                                    flow.setTt_s(dataSet.getUncongestedTravelTime(tripOrigin, tripDestination));
+                                    flowSegment.setDistance_km(beelineDistance_km);
+                                    flowSegment.setLoadedTrucks(loadedTrucks_int);
+                                    flowSegment.setEmptyTrucks(emptyTrucks_int);
+                                    flowSegment.setTt_s(dataSet.getUncongestedTravelTime(tripOrigin, tripDestination));
 
-                                    assignedFlows.add(flow);
+                                    dataSet.getAssignedFlowSegments().add(flowSegment);
 
                                 }
 
@@ -129,172 +139,45 @@ public class FlowsToVehicleAssignment {
 
     }
 
-    private DistributionCenter chooseDistributionCenter(int zoneId, CommodityGroup commodityGroup) {
-        ArrayList<DistributionCenter> distributionCenters = dataSet.getDistributionCenterForZoneAndCommodityGroup(zoneId, commodityGroup);
-        Collections.shuffle(distributionCenters, properties.getRand());
-        return distributionCenters.get(0);
-    }
 
 
-    public Population generatePopulation(Config config) {
-        Population population = PopulationUtils.createPopulation(config);
-        PopulationFactory factory = population.getFactory();
-
-        AtomicInteger counter = new AtomicInteger(0);
-
-        for (Flow flow : assignedFlows) {
-
-            for (int vehicle = 0; vehicle < flow.getLoadedTrucks(); vehicle++) {
-
-                if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
-
-                    LongDistanceTruckTrip longDistanceTruckTrip = createOneTruckTrip(flow, true);
-
-                    boolean intrazonal = flow.getOrigin() == flow.getDestination() ? true : false;
-
-                    String idOfVehicle = flow.getCommodity().getCommodityGroup() + "-" +
-                            vehicle + flow.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
-                            flow.getSegment() + "-" +
-                            counter;
-
-                    if (intrazonal){
-                        idOfVehicle += "-INTRA";
-                    }
-
-                    Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
-                    Plan plan = factory.createPlan();
-                    person.addPlan(plan);
-                    population.addPerson(person);
-
-                    Activity originActivity = factory.createActivityFromCoord("start", longDistanceTruckTrip.getOrigCoord());
-                    originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
-                    plan.addActivity(originActivity);
-
-                    plan.addLeg(factory.createLeg(TransportMode.truck));
-
-                    Activity destinationActivity = factory.createActivityFromCoord("end", longDistanceTruckTrip.getDestCoord());
-                    plan.addActivity(destinationActivity);
-                    counter.incrementAndGet();
-
-                }
-            }
-
-            for (int vehicle = 0; vehicle < flow.getEmptyTrucks(); vehicle++) {
-
-                if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
-
-                    LongDistanceTruckTrip longDistanceTruckTrip = createOneTruckTrip(flow, false);
-
-                    String idOfVehicle =
-                            flow.getCommodity().getCommodityGroup() + "-" +
-                                    vehicle + "-IS_EMPTY-" + flow.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
-                                    counter;
 
 
-                    Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
-                    Plan plan = factory.createPlan();
-                    person.addPlan(plan);
-                    population.addPerson(person);
-
-                    Activity originActivity = factory.createActivityFromCoord("start", longDistanceTruckTrip.getOrigCoord());
-                    originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
-                    plan.addActivity(originActivity);
-
-                    plan.addLeg(factory.createLeg(TransportMode.truck));
-
-                    Activity destinationActivity = factory.createActivityFromCoord("end", longDistanceTruckTrip.getDestCoord());
-                    plan.addActivity(destinationActivity);
-                    counter.incrementAndGet();
-                }
-
-            }
-
-        }
 
 
-        return population;
-    }
-
-    private LongDistanceTruckTrip createOneTruckTrip(Flow flow, boolean loaded) {
-
-        Zone originZone = dataSet.getZones().get(flow.getOrigin());
-        Zone destinationZone = dataSet.getZones().get(flow.getDestination());
-
-        Coord origCoord;
-        Coord destCoord;
-
-        if (flow.getSegment().equals(Segment.POST)) {
-            origCoord = dataSet.getTerminals().get(flow.getOriginTerminal()).getCoordinates();
-        } else if (!flow.getCommodity().getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
-                originZone.isInStudyArea()) {
-            //pick up a distribution center
-            DistributionCenter originDistributionCenter = chooseDistributionCenter(flow.getOrigin(), flow.getCommodity().getCommodityGroup());
-            origCoord = originDistributionCenter.getCoordinates();
-            //further disaggregate the flows, including the destination microzones if needed
-
-        } else {
-            if (!originZone.isInStudyArea()) {
-                //if zone does not have microzones
-                origCoord = originZone.getCoordinates();
-            } else {
-                //if zone does have microzones
-                InternalZone internalZone = (InternalZone) originZone;
-                int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(flow.getCommodity(), internalZone, dataSet.getMakeTable());
-                origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
-            }
-        }
-
-        origCoord = ct.transform(origCoord);
-
-
-        if (flow.getSegment().equals(Segment.PRE)) {
-            destCoord = dataSet.getTerminals().get(flow.getDestinationTerminal()).getCoordinates();
-        } else if (!flow.getCommodity().getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
-                destinationZone.isInStudyArea()) {
-            DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flow.getDestination(), flow.getCommodity().getCommodityGroup());
-            destCoord = destinationDistributionCenter.getCoordinates();
-            //further disaggregate the flows, including the destination microzones if needed
-
-        } else {
-            if (!destinationZone.isInStudyArea()) {
-                //if zone does not have microzones
-                destCoord = destinationZone.getCoordinates();
-            } else {
-                //if zone does have microzones
-                InternalZone internalZone = (InternalZone) destinationZone;
-                int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(flow.getCommodity(), internalZone, dataSet.getUseTable());
-                destCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
-            }
-        }
-        destCoord = ct.transform(destCoord);
-
-        return new LongDistanceTruckTrip(origCoord, destCoord, flow, loaded);
-    }
-
-
-    public void printOutResults() throws IOException {
+    public void printOutResults() {
 
         File file = new File("./output/" + properties.getRunId());
         file.mkdirs();
 
-        PrintWriter pw = new PrintWriter(new FileWriter("./output/" + properties.getRunId() + "/truckFlows.csv"));
+        PrintWriter pw;
 
-        pw.println("orig,dest,commodity,distanceBin,volume_tn,trucks,tt");
+        try {
+            pw = new PrintWriter(new FileWriter("./output/" + properties.getRunId() + "/truckFlows.csv"));
 
-        for (Flow Flow : assignedFlows) {
+            pw.println("orig,dest,commodity,distanceBin,volume_tn,trucks,tt");
 
-            int trucks = Flow.getEmptyTrucks() + Flow.getLoadedTrucks();
+            for (FlowSegment FlowSegment : dataSet.getAssignedFlowSegments()) {
 
-            pw.println(Flow.getOrigin() + "," +
-                    Flow.getDestination() + "," +
-                    Flow.getCommodity() + "," +
-                    Flow.getDistance_km() + "," +
-                    Flow.getVolume_tn() / properties.getDaysPerYear() + "," +
-                    trucks + "," +
-                    Flow.getTt_s());
+                int trucks = FlowSegment.getEmptyTrucks() + FlowSegment.getLoadedTrucks();
+
+                pw.println(FlowSegment.getOrigin() + "," +
+                        FlowSegment.getDestination() + "," +
+                        FlowSegment.getCommodity() + "," +
+                        FlowSegment.getDistance_km() + "," +
+                        FlowSegment.getVolume_tn() / properties.getDaysPerYear() + "," +
+                        trucks + "," +
+                        FlowSegment.getTt_s());
+            }
+
+            pw.close();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        pw.close();
+
     }
 
 }

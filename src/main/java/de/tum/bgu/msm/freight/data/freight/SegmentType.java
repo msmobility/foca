@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.freight.data.freight;
 
-public enum Segment {
+public enum SegmentType {
     PRE,
     MAIN,
     POST;

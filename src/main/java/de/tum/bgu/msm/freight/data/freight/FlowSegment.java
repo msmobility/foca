@@ -2,7 +2,10 @@ package de.tum.bgu.msm.freight.data.freight;
 
 import java.util.ArrayList;
 
-public class Flow {
+/**
+ * A flow segment is a segment of a flowOriginToDestination
+ */
+public class FlowSegment {
 
     private int origin;
     private int destination;
@@ -11,7 +14,7 @@ public class Flow {
     private Mode mode;
     private Commodity commodity;
     private double volume_tn;
-    private Segment segment;
+    private SegmentType segmentType;
     private FlowType flowType;
 
     private ArrayList<LongDistanceTruckTrip> longDistanceTruckTrips = new ArrayList<LongDistanceTruckTrip>();
@@ -23,13 +26,13 @@ public class Flow {
     private double tt_s;
 
 
-    public Flow(int origin, int destination, Mode mode, Commodity commodity, double volume_tn, Segment segment, FlowType flowType) {
+    public FlowSegment(int origin, int destination, Mode mode, Commodity commodity, double volume_tn, SegmentType segmentType, FlowType flowType) {
         this.origin = origin;
         this.destination = destination;
         this.mode = mode;
         this.commodity = commodity;
         this.volume_tn = volume_tn;
-        this.segment = segment;
+        this.segmentType = segmentType;
         this.flowType = flowType;
     }
 
@@ -53,8 +56,8 @@ public class Flow {
         return volume_tn;
     }
 
-    public Segment getSegment() {
-        return segment;
+    public SegmentType getSegmentType() {
+        return segmentType;
     }
 
     public FlowType getFlowType() {
