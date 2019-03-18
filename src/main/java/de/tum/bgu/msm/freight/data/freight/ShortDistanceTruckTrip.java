@@ -1,18 +1,20 @@
 package de.tum.bgu.msm.freight.data.freight;
 
+import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import org.matsim.api.core.v01.Coord;
 
-public class LongDistanceTruckTrip implements TruckTrip {
+public class ShortDistanceTruckTrip {
+
+    private final DistributionCenter distributionCenter;
+    private final Commodity commodity;
     private Coord origCoord;
     private Coord destCoord;
-    private FlowSegment flowSegment;
-    private boolean load;
 
-    public LongDistanceTruckTrip(Coord origCoord, Coord destCoord, FlowSegment FlowSegment, boolean load) {
+    public ShortDistanceTruckTrip(Coord origCoord, Coord destCoord, Commodity commodity, DistributionCenter distributionCenter) {
         this.origCoord = origCoord;
         this.destCoord = destCoord;
-        this.flowSegment = FlowSegment;
-        this.load = load;
+        this.commodity = commodity;
+        this.distributionCenter = distributionCenter;
     }
 
     public static String getHeader() {
@@ -21,7 +23,7 @@ public class LongDistanceTruckTrip implements TruckTrip {
         builder.append("id").append(",").
                 append("toDestination").append(",").
                 append("weight_kg").append(",").
-                append("commodity").append(",").
+                append("commodity()").append(",").
                 append("originX()").append(",").
                 append("originY()").append(",").
                 append("destX()").append(",").
@@ -38,33 +40,30 @@ public class LongDistanceTruckTrip implements TruckTrip {
         builder.append("").append(",").
                 append("").append(",").
                 append("0").append(",").
-                append(flowSegment.getCommodity()).append(",").
+                append(commodity).append(",").
                 append(origCoord.getX()).append(",").
                 append(destCoord.getY()).append(",").
                 append(destCoord.getX()).append(",").
                 append(destCoord.getY()).append(",").
-                append("");
+                append(distributionCenter.getId());
 
         return builder.toString();
 
 
     }
-
-    @Override
     public Coord getOrigCoord() {
         return origCoord;
     }
 
-    @Override
     public Coord getDestCoord() {
         return destCoord;
     }
 
-    public de.tum.bgu.msm.freight.data.freight.FlowSegment getFlowSegment() {
-        return flowSegment;
+    public DistributionCenter getDistributionCenter() {
+        return distributionCenter;
     }
 
-    public boolean isLoad() {
-        return load;
+    public Commodity getCommodity() {
+        return commodity;
     }
 }

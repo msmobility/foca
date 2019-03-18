@@ -12,6 +12,13 @@ import java.util.Set;
 public class SpatialDisaggregator {
 
 
+    /**
+     *
+     * @param commodity
+     * @param zone
+     * @param makeOrUseTable
+     * @return
+     */
     public static int disaggregateToMicroZoneBusiness(Commodity commodity, InternalZone zone, HashBasedTable<String, Commodity, Double> makeOrUseTable) {
 
         Map<Integer, Double> microZonesProbabilities = new HashMap<>();

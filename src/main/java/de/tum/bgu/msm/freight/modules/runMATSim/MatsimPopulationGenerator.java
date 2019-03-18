@@ -140,12 +140,25 @@ public class MatsimPopulationGenerator implements Module {
             origCoord = originDistributionCenter.getCoordinates();
             //further disaggregate the flows, including the destination microzones if needed
 
+            if (flowSegment.getCommodity().equals(Commodity.POST_PACKET)){
+                if (!dataSet.getFlowSegmentsDeliveredByParcel().containsKey(originDistributionCenter)){
+                    dataSet.getFlowSegmentsDeliveredByParcel().put(originDistributionCenter, new ArrayList<>());
+                }
+                dataSet.getFlowSegmentsDeliveredByParcel().get(originDistributionCenter).add(flowSegment);
+            } else {
+                if (!dataSet.getFlowSegmentsDeliveredBySmallTrucks().containsKey(originDistributionCenter)){
+                    dataSet.getFlowSegmentsDeliveredBySmallTrucks().put(originDistributionCenter, new ArrayList<>());
+                }
+                dataSet.getFlowSegmentsDeliveredBySmallTrucks().get(originDistributionCenter).add(flowSegment);
+            }
+
         } else {
             if (!originZone.isInStudyArea()) {
-                //if zone does not have microzones
+                //if zone does not have microzone
                 origCoord = originZone.getCoordinates();
             } else {
                 //if zone does have microzones
+                //all flows are here B2B
                 InternalZone internalZone = (InternalZone) originZone;
                 int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(flowSegment.getCommodity(), internalZone, dataSet.getMakeTable());
                 origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
@@ -162,6 +175,17 @@ public class MatsimPopulationGenerator implements Module {
             DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getDestination(), flowSegment.getCommodity().getCommodityGroup());
             destCoord = destinationDistributionCenter.getCoordinates();
             //further disaggregate the flows, including the destination microzones if needed
+            if (flowSegment.getCommodity().equals(Commodity.POST_PACKET)){
+                if (!dataSet.getFlowSegmentsDeliveredByParcel().containsKey(destinationDistributionCenter)){
+                    dataSet.getFlowSegmentsDeliveredByParcel().put(destinationDistributionCenter, new ArrayList<>());
+                }
+                dataSet.getFlowSegmentsDeliveredByParcel().get(destinationDistributionCenter).add(flowSegment);
+            } else {
+                if (!dataSet.getFlowSegmentsDeliveredBySmallTrucks().containsKey(destinationDistributionCenter)){
+                    dataSet.getFlowSegmentsDeliveredBySmallTrucks().put(destinationDistributionCenter, new ArrayList<>());
+                }
+                dataSet.getFlowSegmentsDeliveredBySmallTrucks().get(destinationDistributionCenter).add(flowSegment);
+            }
 
         } else {
             if (!destinationZone.isInStudyArea()) {
@@ -176,7 +200,10 @@ public class MatsimPopulationGenerator implements Module {
         }
         destCoord = ct.transform(destCoord);
 
-        return new LongDistanceTruckTrip(origCoord, destCoord, flowSegment, loaded);
+        LongDistanceTruckTrip ldtt = new LongDistanceTruckTrip(origCoord, destCoord, flowSegment, loaded);
+        dataSet.getLongDistanceTruckTrips().add(ldtt);
+
+        return ldtt;
     }
 
     private DistributionCenter chooseDistributionCenter(int zoneId, CommodityGroup commodityGroup) {

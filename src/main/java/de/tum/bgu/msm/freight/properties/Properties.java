@@ -40,6 +40,12 @@ public class Properties {
     private String makeTableFileName = "./input/makeUseCoefficients/makeTable.csv";
     private String useTableFileName = "./input/makeUseCoefficients/useTable.csv";
 
+    private String parcelWeightDistributionFile = "./input/parcel_weight_distribution.csv";
+
+    private double shareB2Bsenders = 0.8;
+    private double shareB22Recipients = 0.5;
+    private double sampleFactorForParcels = 0.10;
+
 
     public Properties(){
         FreightFlowUtils.setRandomNumber(this);
@@ -241,5 +247,37 @@ public class Properties {
 
     public String getTerminalsFile() {
         return terminalsFileName;
+    }
+
+    public String getParcelWeightDistributionFile() {
+        return parcelWeightDistributionFile;
+    }
+
+    public void setParcelWeightDistributionFile(String parcelWeightDistributionFile) {
+        this.parcelWeightDistributionFile = parcelWeightDistributionFile;
+    }
+
+    public double getShareB2Bsenders() {
+        return shareB2Bsenders;
+    }
+
+    public void setShareB2Bsenders(double shareB2Bsenders) {
+        this.shareB2Bsenders = shareB2Bsenders;
+    }
+
+    public double getShareB22Recipients() {
+        return shareB22Recipients;
+    }
+
+    public void setShareB22Recipients(double shareB22Recipients) {
+        this.shareB22Recipients = shareB22Recipients;
+    }
+
+    public void setSampleFactorForParcels(double sampleFactorForParcels) {
+        this.sampleFactorForParcels = sampleFactorForParcels;
+    }
+
+    public double getSampleFactorForParcels() {
+        return sampleFactorForParcels;
     }
 }

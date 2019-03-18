@@ -25,7 +25,7 @@ public enum Commodity {
     FURNITURE_SPORT(130, CommodityGroup.MANUFACT),
     SECONDARY_WASTE(140, CommodityGroup.WASTE),
     POST_PACKET(150, CommodityGroup.PACKET),
-    FOR_FREIGHT_MOVEMENT(160, CommodityGroup.MANUFACT),
+    FOR_FREIGHT_MOVEMENT(160, CommodityGroup.OTHER),
     NOT_MARKETED(170, CommodityGroup.MANUFACT),
     GROUPED_GOODS(180, CommodityGroup.GROUP),
     NOT_IDENTIFIED(190, CommodityGroup.OTHER),

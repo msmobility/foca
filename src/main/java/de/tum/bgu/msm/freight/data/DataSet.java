@@ -9,36 +9,48 @@ import de.tum.bgu.msm.freight.data.geo.Zone;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Population;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DataSet {
 
-    private Map<Integer, Zone> zones = new HashMap<Integer, Zone>();
+    private final Map<Integer, Zone> zones = new HashMap<Integer, Zone>();
 
-    private HashBasedTable<Integer, Integer, Map<Integer, FlowOriginToDestination>> flowMatrix = HashBasedTable.create();
+    private final HashBasedTable<Integer, Integer, Map<Integer, FlowOriginToDestination>> flowMatrix = HashBasedTable.create();
 
-    private HashBasedTable<Integer, Integer, Double> uncongestedTravelTimeMatrix = HashBasedTable.create();
+    private final HashBasedTable<Integer, Integer, Double> uncongestedTravelTimeMatrix = HashBasedTable.create();
 
-    private HashBasedTable<Commodity, DistanceBin, Double> truckLoadsByDistanceAndCommodity = HashBasedTable.create();
+    private final HashBasedTable<Commodity, DistanceBin, Double> truckLoadsByDistanceAndCommodity = HashBasedTable.create();
 
-    private HashBasedTable<Commodity, DistanceBin, Double> emptyTrucksProportionByDistanceAndCommodity = HashBasedTable.create();
+    private final HashBasedTable<Commodity, DistanceBin, Double> emptyTrucksProportionByDistanceAndCommodity = HashBasedTable.create();
 
     private Map<Id, Integer> observedCounts = new HashMap<>();
 
-    private Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> distributionCenters = new HashMap<>();
+    private final Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> distributionCenters = new HashMap<>();
 
-    private HashBasedTable<String, Commodity, Double> makeTable = HashBasedTable.create();
+    private final HashBasedTable<String, Commodity, Double> makeTable = HashBasedTable.create();
 
-    private HashBasedTable<String, Commodity, Double> useTable = HashBasedTable.create();
+    private final HashBasedTable<String, Commodity, Double> useTable = HashBasedTable.create();
 
-    private Map<Integer, Terminal> terminals = new HashMap<>();
+    private final Map<Integer, Terminal> terminals = new HashMap<>();
 
-    private final ArrayList<FlowSegment> assignedFlowSegments = new ArrayList<>();
+    private final List<FlowSegment> assignedFlowSegments = new ArrayList<>();
+
+    private final Map<DistributionCenter, ArrayList<FlowSegment>> flowSegmentsDeliveredByParcel = new HashMap<>();
+
+    private final Map<DistributionCenter, ArrayList<FlowSegment>> flowSegmentsDeliveredBySmallTrucks = new HashMap<>();
+
+    private final List<Parcel> parcels = new ArrayList<>();
 
     private Population matsimPopulation;
 
+    private final Map<Double,Double> parcelWeightDistribution = new TreeMap<>();
+
+    private final List<LongDistanceTruckTrip> longDistanceTruckTrips = new ArrayList<>();
+
+    private final List<ShortDistanceTruckTrip> shortDistanceTruckTrips = new ArrayList<>();
+
+
+    //getters and setters
 
     public Map<Integer, Zone> getZones() {
         return zones;
@@ -112,7 +124,31 @@ public class DataSet {
         this.matsimPopulation = matsimPopulation;
     }
 
-    public ArrayList<FlowSegment> getAssignedFlowSegments() {
+    public List<FlowSegment> getAssignedFlowSegments() {
         return assignedFlowSegments;
+    }
+
+    public Map<DistributionCenter, ArrayList<FlowSegment>> getFlowSegmentsDeliveredByParcel() {
+        return flowSegmentsDeliveredByParcel;
+    }
+
+    public List<Parcel> getParcels() {
+        return parcels;
+    }
+
+    public Map<Double, Double> getParcelWeightDistribution() {
+        return parcelWeightDistribution;
+    }
+
+    public Map<DistributionCenter, ArrayList<FlowSegment>> getFlowSegmentsDeliveredBySmallTrucks() {
+        return flowSegmentsDeliveredBySmallTrucks;
+    }
+
+    public List<LongDistanceTruckTrip> getLongDistanceTruckTrips() {
+        return longDistanceTruckTrips;
+    }
+
+    public List<ShortDistanceTruckTrip> getShortDistanceTruckTrips() {
+        return shortDistanceTruckTrips;
     }
 }

@@ -19,8 +19,15 @@ public class InputManager {
         readDistributionCenters();
         readTerminals();
         readMakeUseTable();
+        readWeightDistribution();
         readOrigDestFlows();
 
+
+    }
+
+    private void readWeightDistribution() {
+        ParcelWightDistributionReader parcelWightDistributionReader = new ParcelWightDistributionReader(dataSet, properties);
+        parcelWightDistributionReader.read();
     }
 
     private void readTerminals() {

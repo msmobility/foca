@@ -27,6 +27,8 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static de.tum.bgu.msm.freight.data.freight.SegmentType.POST;
+
 public class FlowsToVehicleAssignment implements de.tum.bgu.msm.freight.modules.Module {
 
     private static Logger logger = Logger.getLogger(FlowsToVehicleAssignment.class);
