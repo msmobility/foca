@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.freight.io.input;
 
+import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
@@ -9,6 +10,8 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +21,7 @@ import java.util.Map;
 public class TerminalReader extends CSVReader {
 
     private static Logger logger = Logger.getLogger(TerminalReader.class);
+
 
     private int posId;
     private int posName;
@@ -59,6 +63,7 @@ public class TerminalReader extends CSVReader {
             coord = dataSet.getZones().get(zoneId).getCoordinates();
         } else {
             coord = new Coord(x, y);
+            coord = FreightFlowUtils.convertWGS84toGK4(coord);
         }
 
         dataSet.getTerminals().put(id, new Terminal(id, name, coord, false));

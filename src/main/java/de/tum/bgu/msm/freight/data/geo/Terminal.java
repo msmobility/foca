@@ -9,19 +9,19 @@ public class Terminal implements Zone {
 
     private int id;
     private String name;
-    private Coord coord;
+    private Coord coord_gk4;
     private boolean isInStudyArea;
 
-    public Terminal(int id, String name, Coord coord, boolean isInStudyArea) {
+    public Terminal(int id, String name, Coord coord_gk4, boolean isInStudyArea) {
         this.id = id;
         this.name = name;
-        this.coord = coord;
+        this.coord_gk4 = coord_gk4;
         this.isInStudyArea = isInStudyArea;
     }
 
     @Override
     public Coord getCoordinates() {
-        return coord;
+        return coord_gk4;
     }
 
     @Override

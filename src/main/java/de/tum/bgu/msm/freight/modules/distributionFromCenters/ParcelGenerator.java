@@ -2,9 +2,10 @@ package de.tum.bgu.msm.freight.modules.distributionFromCenters;
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
-import de.tum.bgu.msm.freight.data.freight.FlowSegment;
+import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.Parcel;
 import de.tum.bgu.msm.freight.data.freight.Transaction;
+import de.tum.bgu.msm.freight.data.geo.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.data.geo.Zone;
@@ -13,9 +14,11 @@ import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ParcelGenerator implements Module {
 
@@ -24,6 +27,13 @@ public class ParcelGenerator implements Module {
     private DataSet dataSet;
     private Zone zone;
     private double minimumWeight_kg = 0.5;
+    private double weightDistributionInterval;
+    private final Map<Transaction, Double> parcelDeliveryTransactionProbabilties =
+            Arrays.stream(Transaction.values()).collect(Collectors.toMap(Function.identity(),Transaction::getShareDeliveriesAtCustomer));
+    private final Map<Transaction, Double> parcelPickUpTransactionProbabilties =
+            Arrays.stream(Transaction.values()).collect(Collectors.toMap(Function.identity(),Transaction::getSharePickupsAtCustomer));
+
+    private final AtomicInteger counter = new AtomicInteger(0);
 
 
     @Override
@@ -37,78 +47,85 @@ public class ParcelGenerator implements Module {
     @Override
     public void run() {
         generateParcels();
-        choseTransactionType();
+        chooseTransactionType();
         assignCoordinates();
     }
 
     private void generateParcels() {
-        int counter = 0;
+        this.weightDistributionInterval = dataSet.getWeightDistributionInterval();
+        for (DistributionCenter distributionCenter : dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().rowKeySet()){
+            for (Commodity commodity : dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().columnKeySet()) {
+                if (commodity.equals(Commodity.POST_PACKET)){
+                    Map<Bound,Double> volumesProcessedByThisDistributionCenter = dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().get(distributionCenter,commodity);
+                    if (volumesProcessedByThisDistributionCenter != null){
+                        double volumeDelivered = volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INBOUND, 0.) +
+                                0.5 * volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL, 0.);
 
-        for (DistributionCenter distributionCenter : dataSet.getFlowSegmentsDeliveredByParcel().keySet()){
-            for (FlowSegment flowSegment : dataSet.getFlowSegmentsDeliveredByParcel().get(distributionCenter)) {
-                double cum_weight = 0;
-                while (cum_weight < flowSegment.getVolume_tn() * 1000 / properties.getDaysPerYear()) {
-                    double weight = pickUpRandomWeight();
-                    if (dataSet.getZones().get(flowSegment.getOrigin()).isInStudyArea() ||
-                            dataSet.getZones().get(flowSegment.getDestination()).isInStudyArea()) {
-                        boolean toDestination = dataSet.getZones().get(flowSegment.getDestination()).isInStudyArea();
-                        //todo temporary! volume is estimated by uniform density
-                        if (weight > minimumWeight_kg) {
+                        dissagregateVolumeToParcels(volumeDelivered, distributionCenter,true, commodity);
 
-                            if (properties.getRand().nextDouble() < properties.getSampleFactorForParcels()) {
-                                dataSet.getParcels().add(new Parcel(counter, toDestination, weight / 16, weight, distributionCenter, flowSegment));
-                                counter++;
-                            }
-                        }
-                        cum_weight += weight;
-                    } else {
-                        throw new RuntimeException("Something failed here!!!!");
+                        double volumePickedUp = volumesProcessedByThisDistributionCenter.getOrDefault(Bound.OUTBOUND, 0.) +
+                                0.5 * volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL,0.);
+
+                        dissagregateVolumeToParcels(volumePickedUp, distributionCenter,false, commodity);
                     }
+
+
+                } else {
+                    throw new RuntimeException("No assignment for parcels for this commodity is expected: " + commodity);
                 }
+
+
             }
         }
         logger.info("Generated " + counter + " parcels to/from the study area.");
     }
 
-    private void choseTransactionType() {
+    private void chooseTransactionType() {
         for (Parcel parcel : dataSet.getParcels()){
             if (parcel.isToDestination()){
-                parcel.setTransaction(properties.getRand().nextDouble() < properties.getShareB22Recipients() ? Transaction.B2B :  Transaction.B2C);
+                Transaction transaction =
+                        FreightFlowUtils.select(parcelDeliveryTransactionProbabilties, FreightFlowUtils.getSum(parcelDeliveryTransactionProbabilties.values()));
+                parcel.setTransaction(transaction);
             } else {
-                parcel.setTransaction(properties.getRand().nextDouble() < properties.getShareB2Bsenders() ? Transaction.B2B :  Transaction.B2C);
+                Transaction transaction =
+                        FreightFlowUtils.select(parcelPickUpTransactionProbabilties, FreightFlowUtils.getSum(parcelDeliveryTransactionProbabilties.values()));
+                parcel.setTransaction(transaction);
             }
-
         }
-
 
     }
 
     private void assignCoordinates() {
         AtomicInteger counter = new AtomicInteger(0);
         for (Parcel parcel : dataSet.getParcels()){
-
             if (parcel.isToDestination()) {
                 parcel.setOriginCoord(parcel.getDistributionCenter().getCoordinates());
-                InternalZone destinationZone = (InternalZone) dataSet.getZones().get(parcel.getFlowSegment().getDestination());
+                InternalZone destinationZone = (InternalZone) dataSet.getZones().get(parcel.getDistributionCenter().getZoneId());
                 int microZone;
-                if (parcel.getTransaction().equals(Transaction.B2C)) {
+                if (parcel.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
                     microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(destinationZone);
-                } else {
-                    microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getFlowSegment().getCommodity(),
+                    parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
+                } else if (parcel.getTransaction().equals(Transaction.BUSINESS_CUSTOMER)){
+                    microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
                             destinationZone, dataSet.getUseTable());
+                    parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
+                } else {
+                    //todo nothing done now if it is not an individual customer
                 }
-                parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
             } else {
                 parcel.setDestCoord(parcel.getDistributionCenter().getCoordinates());
-                InternalZone originZone = (InternalZone) dataSet.getZones().get(parcel.getFlowSegment().getOrigin());
+                InternalZone originZone = (InternalZone) dataSet.getZones().get(parcel.getDistributionCenter().getZoneId());
                 int microZone;
-                if (parcel.getTransaction().equals(Transaction.B2C)) {
-                    microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(originZone );
-                } else {
-                    microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getFlowSegment().getCommodity(),
+                if (parcel.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
+                    microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(originZone);
+                    parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
+                } else if (parcel.getTransaction().equals(Transaction.BUSINESS_CUSTOMER)){
+                    microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
                             originZone, dataSet.getUseTable());
+                    parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
+                } else {
+                    //todo nothing done now if it is not an individual customer
                 }
-                parcel.setDestCoord(originZone.getMicroZones().get(microZone).getCoordinates());
             }
             counter.incrementAndGet();
             if (counter.get() % 10000 == 0 ){
@@ -119,12 +136,23 @@ public class ParcelGenerator implements Module {
         logger.info(counter.get() + " parcels already processed");
     }
 
-    private double pickUpRandomWeight(){
-        Map<Double,Double> weightDistribution = dataSet.getParcelWeightDistribution();
-
-
-        return FreightFlowUtils.select(weightDistribution, FreightFlowUtils.getSum(weightDistribution.values()));
-
+    private void dissagregateVolumeToParcels(double volume_tn, DistributionCenter distributionCenter, boolean toCustomer, Commodity commodity){
+        double cum_weight = 0;
+        while (cum_weight < volume_tn * 1000) {
+            double weight = pickUpRandomWeight();
+                //todo temporary! volume is estimated by uniform density
+                if (weight > minimumWeight_kg) {
+                    if (properties.getRand().nextDouble() < properties.getSampleFactorForParcels()) {
+                        dataSet.getParcels().add(new Parcel(counter.getAndIncrement(), toCustomer, weight / 16, weight, distributionCenter, commodity));
+                    }
+                }
+                cum_weight += weight;
+        }
     }
 
+    private double pickUpRandomWeight(){
+        Map<Double,Double> weightDistribution = dataSet.getParcelWeightDistribution() ;
+        return FreightFlowUtils.select(weightDistribution, FreightFlowUtils.getSum(weightDistribution.values())) - weightDistributionInterval * properties.getRand().nextDouble();
+
+    }
 }

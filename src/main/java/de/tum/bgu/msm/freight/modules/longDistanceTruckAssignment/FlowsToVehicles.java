@@ -2,36 +2,22 @@ package de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment;
 
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.data.freight.*;
-import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.data.geo.Zone;
-import de.tum.bgu.msm.freight.modules.common.DepartureTimeDistribution;
-import de.tum.bgu.msm.freight.modules.common.NormalDepartureTimeDistribution;
-import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.modules.common.UncongestedTravelTime;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.TransportMode;
-import org.matsim.api.core.v01.population.*;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
-import scala.sys.Prop;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static de.tum.bgu.msm.freight.data.freight.SegmentType.POST;
+public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
 
-public class FlowsToVehicleAssignment implements de.tum.bgu.msm.freight.modules.Module {
-
-    private static Logger logger = Logger.getLogger(FlowsToVehicleAssignment.class);
+    private static Logger logger = Logger.getLogger(FlowsToVehicles.class);
 
     private UncongestedTravelTime uncongestedTravelTime;
     private Properties properties;
@@ -85,10 +71,10 @@ public class FlowsToVehicleAssignment implements de.tum.bgu.msm.freight.modules.
                             dataSet.getZones().containsKey(destination)) {
                         Collection<FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination).values();
                         for (FlowOriginToDestination flowOriginToDestination : flowsThisOrigDest) {
-                            for (FlowSegment flowSegment : flowOriginToDestination.getFlows().values()) {
+                            for (FlowSegment flowSegment : flowOriginToDestination.getFlowSegments().values()) {
                                 if (flowSegment.getMode().equals(Mode.ROAD)) {
-                                    int tripOrigin = flowSegment.getOrigin();
-                                    int tripDestination = flowSegment.getDestination();
+                                    int tripOrigin = flowSegment.getSegmentOrigin();
+                                    int tripDestination = flowSegment.getSegmentDestination();
 
                                     Zone originZone = dataSet.getZones().get(tripOrigin);
                                     Zone destinationZone = dataSet.getZones().get(tripDestination);
@@ -119,18 +105,20 @@ public class FlowsToVehicleAssignment implements de.tum.bgu.msm.freight.modules.
                                     }
 
                                     //set new trip details
+                                    for (int truck = 0; truck < loadedTrucks_int; truck ++ ){
+                                        flowSegment.getTruckTrips().add(
+                                                new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin)));
+                                    }
+
+                                    for (int truck = 0; truck < emptyTrucks_int; truck ++ ){
+                                        flowSegment.getTruckTrips().add(
+                                                new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, 0.));
+                                    }
+
                                     flowSegment.setDistance_km(beelineDistance_km);
-                                    flowSegment.setLoadedTrucks(loadedTrucks_int);
-                                    flowSegment.setEmptyTrucks(emptyTrucks_int);
                                     flowSegment.setTt_s(dataSet.getUncongestedTravelTime(tripOrigin, tripDestination));
 
                                     dataSet.getAssignedFlowSegments().add(flowSegment);
-
-                                }
-
-                                counter.incrementAndGet();
-                                if (counter.get() % 10000 == 0) {
-                                    logger.info(counter.get() + " flows to trucks assigned");
                                 }
                             }
                         }
@@ -138,6 +126,8 @@ public class FlowsToVehicleAssignment implements de.tum.bgu.msm.freight.modules.
                 }
             }
         }
+
+        logger.info(counter.get() + " long distance trucks assigned");
 
     }
 
@@ -159,17 +149,17 @@ public class FlowsToVehicleAssignment implements de.tum.bgu.msm.freight.modules.
 
             pw.println("orig,dest,commodity,distanceBin,volume_tn,trucks,tt");
 
-            for (FlowSegment FlowSegment : dataSet.getAssignedFlowSegments()) {
+            for (FlowSegment flowSegment : dataSet.getAssignedFlowSegments()) {
 
-                int trucks = FlowSegment.getEmptyTrucks() + FlowSegment.getLoadedTrucks();
+                int trucks = flowSegment.getTruckTrips().size();
 
-                pw.println(FlowSegment.getOrigin() + "," +
-                        FlowSegment.getDestination() + "," +
-                        FlowSegment.getCommodity() + "," +
-                        FlowSegment.getDistance_km() + "," +
-                        FlowSegment.getVolume_tn() / properties.getDaysPerYear() + "," +
+                pw.println(flowSegment.getSegmentOrigin() + "," +
+                        flowSegment.getSegmentDestination() + "," +
+                        flowSegment.getCommodity() + "," +
+                        flowSegment.getDistance_km() + "," +
+                        flowSegment.getVolume_tn() / properties.getDaysPerYear() + "," +
                         trucks + "," +
-                        FlowSegment.getTt_s());
+                        flowSegment.getTt_s());
             }
 
             pw.close();

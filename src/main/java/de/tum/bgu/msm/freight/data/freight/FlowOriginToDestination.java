@@ -23,7 +23,7 @@ public class FlowOriginToDestination {
         this.flows.put(FlowSegment.getSegmentType(), FlowSegment);
     }
 
-    public Map<SegmentType, FlowSegment> getFlows(){
+    public Map<SegmentType, FlowSegment> getFlowSegments(){
         return flows;
     }
 }

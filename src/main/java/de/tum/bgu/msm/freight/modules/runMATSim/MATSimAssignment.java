@@ -2,7 +2,6 @@ package de.tum.bgu.msm.freight.modules.runMATSim;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.modules.Module;
-import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.FlowsToVehicleAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.CountEventHandler;
 import de.tum.bgu.msm.freight.io.input.LinksFileReader;
 import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.MultiDayCounts;

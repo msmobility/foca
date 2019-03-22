@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.freight.io.input;
 
+import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
@@ -54,7 +55,7 @@ public class DistributionCenterReader extends CSVReader {
         CommodityGroup commodityGroup = CommodityGroup.valueOf(record[posCommodity].toUpperCase());
         int zoneId  = Integer.parseInt(record[posZone]);
 
-        DistributionCenter dc = new DistributionCenter(id, name, new Coord(x,y), commodityGroup);
+        DistributionCenter dc = new DistributionCenter(id, name, FreightFlowUtils.convertWGS84toGK4(new Coord(x,y)), commodityGroup, zoneId);
 
         addDistributionCenter(dc, zoneId, commodityGroup);
 

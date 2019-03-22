@@ -10,21 +10,23 @@ import java.util.Objects;
  */
 public class DistributionCenter implements Zone{
 
-    private int id;
-    private String name;
-    private Coord coord;
-    private CommodityGroup commodityGroup;
+    private final int id;
+    private final String name;
+    private final Coord coord_gk4;
+    private final CommodityGroup commodityGroup;
+    private final int zoneId;
 
-    public DistributionCenter(int id, String name, Coord coord, CommodityGroup commodityGroup) {
-        this.coord = coord;
+    public DistributionCenter(int id, String name, Coord coord_gk4, CommodityGroup commodityGroup, int zoneId) {
+        this.coord_gk4 = coord_gk4;
         this.id = id;
         this.name = name;
         this.commodityGroup = commodityGroup;
+        this.zoneId = zoneId;
     }
 
     @Override
     public Coord getCoordinates() {
-        return Objects.requireNonNull(coord);
+        return Objects.requireNonNull(coord_gk4);
     }
 
     @Override
@@ -40,5 +42,9 @@ public class DistributionCenter implements Zone{
     @Override
     public boolean isInStudyArea() {
         return true;
+    }
+
+    public int getZoneId(){
+        return zoneId;
     }
 }

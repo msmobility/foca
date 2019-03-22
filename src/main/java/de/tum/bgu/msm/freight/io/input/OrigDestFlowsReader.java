@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrigDestFlowsReader extends CSVReader {
 
@@ -72,6 +73,7 @@ public class OrigDestFlowsReader extends CSVReader {
 
         FlowOriginToDestination flowOriginToDestination = new FlowOriginToDestination(origin, destination);
 
+
         if (dataSet.getFlowMatrix().contains(origin, destination)){
             int index = dataSet.getFlowMatrix().get(origin, destination).keySet().size();
             dataSet.getFlowMatrix().get(origin, destination).put(index, flowOriginToDestination);
@@ -91,7 +93,7 @@ public class OrigDestFlowsReader extends CSVReader {
         Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
         double tonsHL = Double.parseDouble(record[tonsHLIndex]);
         FlowType flowTypeHL = FlowType.getFromCode(Integer.parseInt(record[typeHLIndex]));
-        FlowSegment mainCourse = new FlowSegment(originHL, destinationHL, modeHL, commodityHL, tonsHL, SegmentType.MAIN, flowTypeHL);
+        FlowSegment mainCourse = new FlowSegment(originHL, destinationHL, modeHL, commodityHL, tonsHL, SegmentType.MAIN, flowTypeHL, origin, destination);
         flowOriginToDestination.addFlow(mainCourse);
 
         int precarriageMode;
@@ -101,7 +103,7 @@ public class OrigDestFlowsReader extends CSVReader {
             Commodity commodityVL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityVLIndex]));
             double tonsVL = Double.parseDouble(record[tonsVLIndex]);
             FlowType flowTypeVL = FlowType.getFromCode(Integer.parseInt(record[typeVLIndex]));
-            FlowSegment preCarriage = new FlowSegment(origin, originHL, modeVL, commodityVL, tonsVL, SegmentType.PRE, flowTypeVL);
+            FlowSegment preCarriage = new FlowSegment(origin, originHL, modeVL, commodityVL, tonsVL, SegmentType.PRE, flowTypeVL, origin, destination);
             preCarriage.setDestinationTerminal(originTerminal);
             mainCourse.setOriginTerminal(originTerminal);
             flowOriginToDestination.addFlow(preCarriage);
@@ -114,7 +116,7 @@ public class OrigDestFlowsReader extends CSVReader {
             Commodity commodityNL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityNLIndex]));
             double tonsNL = Double.parseDouble(record[tonsNLIndex]);
             FlowType flowTypeNL = FlowType.getFromCode(Integer.parseInt(record[typeNLIndex]));
-            FlowSegment onCarriage = new FlowSegment(destinationHL, destination, modeNL, commodityNL, tonsNL, SegmentType.POST, flowTypeNL);
+            FlowSegment onCarriage = new FlowSegment(destinationHL, destination, modeNL, commodityNL, tonsNL, SegmentType.POST, flowTypeNL, origin, destination);
             onCarriage.setOriginTerminal(destinationTerminal);
             mainCourse.setDestinationTerminal(destinationTerminal);
             flowOriginToDestination.addFlow(onCarriage);
@@ -123,6 +125,9 @@ public class OrigDestFlowsReader extends CSVReader {
 
     public void read() {
         super.read(properties.getMatrixFileName(), ";");
-        logger.info("Read " + dataSet.getFlowMatrix().size() + " origin/destination pairs with freight flows.");
+        AtomicInteger flowsCount = new AtomicInteger(0);
+        dataSet.getFlowMatrix().values().forEach(x -> flowsCount.addAndGet(x.size()));
+        logger.info("Read " + flowsCount.get() + " origin/destination pairs with freight flows.");
+
     }
 }

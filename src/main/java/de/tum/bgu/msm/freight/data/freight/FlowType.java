@@ -19,8 +19,6 @@ public enum FlowType {
                 return FlowType.CONVENTIONAL;
             case 2:
                 return FlowType.CONTAINER_RO_RO;
-            case 0:
-                return FlowType.EMPTY;
             default:
                 throw new RuntimeException("Flow type for code " + code + "not specified.");
         }

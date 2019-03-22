@@ -11,20 +11,20 @@ public class Parcel {
     private final boolean toDestination;
     private final double volume_m3;
     private final double weight_kg;
-    private final FlowSegment flowSegment;
+    private final Commodity commodity;
 
     private DistributionCenter distributionCenter;
     private Coord originCoord;
     private Coord destCoord;
 
     public Parcel(int id, boolean toDestination, double volume_m3, double weight_kg,
-                  DistributionCenter distributionCenter, FlowSegment flowSegment) {
+                  DistributionCenter distributionCenter, Commodity commodity) {
         this.id = id;
         this.toDestination = toDestination;
         this.volume_m3 = volume_m3;
         this.weight_kg = weight_kg;
         this.distributionCenter = distributionCenter;
-        this.flowSegment = flowSegment;
+        this.commodity = commodity;
     }
 
     public static String getHeader() {
@@ -35,11 +35,12 @@ public class Parcel {
                 append("toDestination").append(",").
                 append("weight_kg").append(",").
                 append("commodity").append(",").
-                append("originX()").append(",").
-                append("originY()").append(",").
-                append("destX()").append(",").
+                append("originX").append(",").
+                append("originY").append(",").
+                append("destX").append(",").
                 append("destY").append(",").
-                append("distributionCenter");
+                append("distributionCenter").append(",").
+                append("transaction");
 
         return builder.toString();
     }
@@ -50,20 +51,23 @@ public class Parcel {
         builder.append(id).append(",").
                 append(toDestination).append(",").
                 append(weight_kg).append(",").
-                append(flowSegment.getCommodity().toString()).append(",");
+                append(commodity).append(",");
 
-        try {
+        if (this.getTransaction().equals(Transaction.BUSINESS_CUSTOMER) || this.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
             builder.append(originCoord.getX()).append(",").
                     append(originCoord.getY()).append(",").
                     append(destCoord.getX()).append(",").
                     append(destCoord.getY()).append(",");
-        } catch (NullPointerException e) {
+        } else {
             builder.append("null").append(",").
                     append("null").append(",").
                     append("null").append(",").
                     append("null").append(",");
         }
-        builder.append(distributionCenter.getId());
+
+
+        builder.append(distributionCenter.getId()).append(",").
+                append(transaction.toString());
 
         return builder.toString();
 
@@ -113,7 +117,7 @@ public class Parcel {
         this.destCoord = destCoord;
     }
 
-    public FlowSegment getFlowSegment() {
-        return flowSegment;
+    public Commodity getCommodity() {
+        return commodity;
     }
 }

@@ -7,7 +7,9 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.geotools.MGC;
+import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.*;
@@ -16,6 +18,7 @@ import java.util.*;
 public class FreightFlowUtils {
 
     public static Random random;
+    private final static CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
 
     public static Coord getRandomCoordinatesFromFeature(SimpleFeature feature){
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
@@ -23,7 +26,7 @@ public class FreightFlowUtils {
         randomPointsBuilder.setExtent((Geometry) feature.getDefaultGeometry());
         Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
         Point p = MGC.coordinate2Point(coordinate);
-        return new Coord(p.getX(), p.getY());
+        return convertWGS84toGK4(new Coord(p.getX(), p.getY()));
     }
 
     public static void setRandomNumber(Properties properties){
@@ -52,6 +55,10 @@ public class FreightFlowUtils {
         }
 
         return sm;
+    }
+
+    public static Coord convertWGS84toGK4(Coord coord){
+        return ct.transform(coord);
     }
 
 }

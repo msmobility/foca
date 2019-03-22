@@ -2,10 +2,7 @@ package de.tum.bgu.msm.freight.data;
 
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.freight.data.freight.*;
-import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
-import de.tum.bgu.msm.freight.data.geo.Terminal;
-import de.tum.bgu.msm.freight.data.geo.Zone;
+import de.tum.bgu.msm.freight.data.geo.*;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Population;
 
@@ -35,9 +32,9 @@ public class DataSet {
 
     private final List<FlowSegment> assignedFlowSegments = new ArrayList<>();
 
-    private final Map<DistributionCenter, ArrayList<FlowSegment>> flowSegmentsDeliveredByParcel = new HashMap<>();
+    private final HashBasedTable<DistributionCenter, Commodity, Map<Bound,Double>> volByCommodityDistributionCenterAndBoundBySmallTrucks = HashBasedTable.create();
 
-    private final Map<DistributionCenter, ArrayList<FlowSegment>> flowSegmentsDeliveredBySmallTrucks = new HashMap<>();
+    private final HashBasedTable<DistributionCenter, Commodity, Map<Bound,Double>> volByCommodityDistributionCenterAndBoundByParcels = HashBasedTable.create();
 
     private final List<Parcel> parcels = new ArrayList<>();
 
@@ -128,8 +125,8 @@ public class DataSet {
         return assignedFlowSegments;
     }
 
-    public Map<DistributionCenter, ArrayList<FlowSegment>> getFlowSegmentsDeliveredByParcel() {
-        return flowSegmentsDeliveredByParcel;
+    public HashBasedTable<DistributionCenter, Commodity, Map<Bound,Double>>  getVolByCommodityDistributionCenterAndBoundBySmallTrucks() {
+        return volByCommodityDistributionCenterAndBoundBySmallTrucks;
     }
 
     public List<Parcel> getParcels() {
@@ -140,8 +137,8 @@ public class DataSet {
         return parcelWeightDistribution;
     }
 
-    public Map<DistributionCenter, ArrayList<FlowSegment>> getFlowSegmentsDeliveredBySmallTrucks() {
-        return flowSegmentsDeliveredBySmallTrucks;
+    public  HashBasedTable<DistributionCenter, Commodity, Map<Bound,Double>> getVolByCommodityDistributionCenterAndBoundByParcels() {
+        return volByCommodityDistributionCenterAndBoundByParcels;
     }
 
     public List<LongDistanceTruckTrip> getLongDistanceTruckTrips() {
@@ -150,5 +147,11 @@ public class DataSet {
 
     public List<ShortDistanceTruckTrip> getShortDistanceTruckTrips() {
         return shortDistanceTruckTrips;
+    }
+
+    public double getWeightDistributionInterval() {
+        Set<Double> keys = this.parcelWeightDistribution.keySet();
+       return (keys.stream().max(Double::compareTo).get() - keys.stream().min(Double::compareTo).get())/ (keys.size() - 1);
+
     }
 }
