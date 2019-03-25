@@ -2,10 +2,10 @@ package de.tum.bgu.msm.freight;
 
 
 import de.tum.bgu.msm.freight.data.DataSet;
-import de.tum.bgu.msm.freight.data.freight.FlowSegment;
-import de.tum.bgu.msm.freight.data.freight.LongDistanceTruckTrip;
-import de.tum.bgu.msm.freight.data.freight.Parcel;
-import de.tum.bgu.msm.freight.data.freight.ShortDistanceTruckTrip;
+import de.tum.bgu.msm.freight.data.freight.*;
+import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
+import de.tum.bgu.msm.freight.data.geo.InternalZone;
+import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.io.input.InputManager;
 import de.tum.bgu.msm.freight.io.output.OutputWriter;
 import de.tum.bgu.msm.freight.modules.distributionFromCenters.FirstLastMileVehicleDistribution;
@@ -13,12 +13,16 @@ import de.tum.bgu.msm.freight.modules.distributionFromCenters.ParcelGenerator;
 import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.FlowsToVehicles;
 import de.tum.bgu.msm.freight.modules.runMATSim.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.OriginDestinationAllocation;
-import de.tum.bgu.msm.freight.modules.runMATSim.MATSImPopGen;
+import de.tum.bgu.msm.freight.modules.runMATSim.MATSimPopGen;
 import de.tum.bgu.msm.freight.properties.Properties;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class FreightFlows {
+
+
+    private static final Logger logger = Logger.getLogger(FreightFlows.class);
 
     public static void main(String[] args) throws IOException {
 
@@ -45,21 +49,24 @@ public class FreightFlows {
         OriginDestinationAllocation originDestinationAllocation = new OriginDestinationAllocation();
         FirstLastMileVehicleDistribution firstLastMileVehicleDistribution = new FirstLastMileVehicleDistribution();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
-        MATSImPopGen MATSImPopGen = new MATSImPopGen();
+        MATSimPopGen MATSImPopGen = new MATSimPopGen();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
 
         flowsToVehicles.setup(dataSet, properties);
         originDestinationAllocation.setup(dataSet, properties);
-        parcelGenerator.setup(dataSet, properties);
         firstLastMileVehicleDistribution.setup(dataSet, properties);
+        parcelGenerator.setup(dataSet, properties);
         MATSImPopGen.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
         flowsToVehicles.run();
         originDestinationAllocation.run();
+        double r1 = properties.getRand().nextDouble();
         firstLastMileVehicleDistribution.run();
+        double r2 = properties.getRand().nextDouble();
         parcelGenerator.run();
+        double r3 = properties.getRand().nextDouble();
         MATSImPopGen.run();
 
 
@@ -69,8 +76,7 @@ public class FreightFlows {
         OutputWriter.printOutObjects(dataSet.getParcels(), Parcel.getHeader(), "output/parcels.csv");
 
 
-        matSimAssignment.run();
-
+        //matSimAssignment.run();
 
 
     }

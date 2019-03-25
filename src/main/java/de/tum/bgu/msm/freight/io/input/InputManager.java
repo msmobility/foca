@@ -26,8 +26,8 @@ public class InputManager {
     }
 
     private void readWeightDistribution() {
-        ParcelWightDistributionReader parcelWightDistributionReader = new ParcelWightDistributionReader(dataSet, properties);
-        parcelWightDistributionReader.read();
+        ParcelWeightDistributionReader parcelWeightDistributionReader = new ParcelWeightDistributionReader(dataSet, properties);
+        parcelWeightDistributionReader.read();
     }
 
     private void readTerminals() {

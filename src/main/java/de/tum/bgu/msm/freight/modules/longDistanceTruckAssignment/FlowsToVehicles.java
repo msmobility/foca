@@ -35,7 +35,6 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
     public void setup(DataSet dataSet, Properties properties){
         ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
 
-
         this.properties = properties;
         this.dataSet = dataSet;
 
@@ -82,9 +81,6 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
                                     Coord origCoord = originZone.getCoordinates();
                                     Coord destCoord = destinationZone.getCoordinates();
 
-                                    origCoord = ct.transform(origCoord);
-                                    destCoord = ct.transform(destCoord);
-
                                     double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord) / 1000;
                                     DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);
                                     double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
@@ -105,9 +101,9 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
                                     }
 
                                     //set new trip details
-                                    for (int truck = 0; truck < loadedTrucks_int; truck ++ ){
+                                    for (int truck = 0; truck < loadedTrucks_int; truck ++){
                                         flowSegment.getTruckTrips().add(
-                                                new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin)));
+                                                new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, truckLoad));
                                     }
 
                                     for (int truck = 0; truck < emptyTrucks_int; truck ++ ){

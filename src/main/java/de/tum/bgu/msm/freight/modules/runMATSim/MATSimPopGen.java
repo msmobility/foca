@@ -15,7 +15,7 @@ import org.matsim.core.population.PopulationUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MATSImPopGen implements Module {
+public class MATSimPopGen implements Module {
 
     private DataSet dataSet;
     private Properties properties;
@@ -27,7 +27,7 @@ public class MATSImPopGen implements Module {
     public void setup(DataSet dataSet, Properties properties) {
         this.dataSet = dataSet;
         this.properties = properties;
-        departureTimeDistribution = new NormalDepartureTimeDistribution();
+        departureTimeDistribution = new NormalDepartureTimeDistribution(properties);
     }
 
     @Override

@@ -11,7 +11,7 @@ public enum CommodityGroup {
     CHEMICAL (GoodDistribution.DOOR_TO_DOOR),
     WASTE (GoodDistribution.DOOR_TO_DOOR),
     GROUP(GoodDistribution.SINGLE_VEHICLE),
-    PACKET(GoodDistribution.SINGLE_DELIVERY),
+    PACKET(GoodDistribution.PARCEL_DELIVERY),
     OTHER (GoodDistribution.DOOR_TO_DOOR),
     EMPTY(GoodDistribution.DOOR_TO_DOOR);
 

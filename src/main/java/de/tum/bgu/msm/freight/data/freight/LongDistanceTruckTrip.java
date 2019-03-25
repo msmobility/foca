@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.freight.data.freight;
 
+import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import org.matsim.api.core.v01.Coord;
 
 public class LongDistanceTruckTrip implements TruckTrip {
@@ -9,14 +10,14 @@ public class LongDistanceTruckTrip implements TruckTrip {
     private FlowSegment flowSegment;
     private double load_tn;
 
+    private DistributionCenter originDistributionCenter = null;
+    private DistributionCenter destinationDistributionCenter = null;
+
     public LongDistanceTruckTrip(int id, FlowSegment FlowSegment, double load_tn) {
         this.id = id;
         this.flowSegment = FlowSegment;
         this.load_tn = load_tn;
     }
-
-
-
 
 
     public static String getHeader() {
@@ -32,7 +33,11 @@ public class LongDistanceTruckTrip implements TruckTrip {
                 append("originY").append(",").
                 append("destX").append(",").
                 append("destY").append(",").
-                append("distributionCenter");
+                append("originDistributionCenter").append(",").
+                append("destinationDistributionCenter").append(",").
+                append("segment").append(",").
+                append("segmentOrigin").append(",").
+                append("segmentDestination");
 
         return builder.toString();
     }
@@ -50,8 +55,19 @@ public class LongDistanceTruckTrip implements TruckTrip {
                 append(origCoord.getX()).append(",").
                 append(origCoord.getY()).append(",").
                 append(destCoord.getX()).append(",").
-                append(destCoord.getY()).append(",").
-                append("null");
+                append(destCoord.getY()).append(",");
+
+        if (originDistributionCenter != null && destinationDistributionCenter != null) {
+            builder.append(originDistributionCenter.getId()).append(",").
+                    append(destinationDistributionCenter.getId()).append(",");
+        } else {
+            builder.append("null").append(",").
+                    append("null").append(",");
+        }
+
+        builder.append(flowSegment.getSegmentType()).append(",").
+                append(flowSegment.getSegmentOrigin()).append(",").
+                append(flowSegment.getSegmentDestination());
 
         return builder.toString();
 
@@ -82,5 +98,13 @@ public class LongDistanceTruckTrip implements TruckTrip {
 
     public double getLoad_tn() {
         return load_tn;
+    }
+
+    public void setOriginDistributionCenter(DistributionCenter originDistributionCenter) {
+        this.originDistributionCenter = originDistributionCenter;
+    }
+
+    public void setDestinationDistributionCenter(DistributionCenter destinationDistributionCenter) {
+        this.destinationDistributionCenter = destinationDistributionCenter;
     }
 }

@@ -6,12 +6,12 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-public class ParcelWightDistributionReader  extends CSVReader {
+public class ParcelWeightDistributionReader extends CSVReader {
 
-    private final static Logger logger = Logger.getLogger(ParcelWightDistributionReader.class);
+    private final static Logger logger = Logger.getLogger(ParcelWeightDistributionReader.class);
     private final Properties properties;
 
-    protected ParcelWightDistributionReader(DataSet dataSet, Properties properties) {
+    protected ParcelWeightDistributionReader(DataSet dataSet, Properties properties) {
         super(dataSet);
         this.properties = properties;
     }

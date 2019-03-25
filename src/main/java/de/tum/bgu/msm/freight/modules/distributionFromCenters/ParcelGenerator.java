@@ -8,13 +8,15 @@ import de.tum.bgu.msm.freight.data.freight.Transaction;
 import de.tum.bgu.msm.freight.data.geo.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
-import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.modules.Module;
+import de.tum.bgu.msm.freight.modules.common.ParcelEmpiricalWeightDistribution_kg;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
+import de.tum.bgu.msm.freight.modules.common.WeightDistribution;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -25,22 +27,26 @@ public class ParcelGenerator implements Module {
     private static final Logger logger = Logger.getLogger(ParcelGenerator.class);
     private Properties properties;
     private DataSet dataSet;
-    private Zone zone;
     private double minimumWeight_kg = 0.5;
-    private double weightDistributionInterval;
-    private final Map<Transaction, Double> parcelDeliveryTransactionProbabilties =
-            Arrays.stream(Transaction.values()).collect(Collectors.toMap(Function.identity(),Transaction::getShareDeliveriesAtCustomer));
-    private final Map<Transaction, Double> parcelPickUpTransactionProbabilties =
-            Arrays.stream(Transaction.values()).collect(Collectors.toMap(Function.identity(),Transaction::getSharePickupsAtCustomer));
+    private Map<Transaction, Double> parcelDeliveryTransactionProbabilties;
+    private Map<Transaction, Double> parcelPickUpTransactionProbabilties;
 
     private final AtomicInteger counter = new AtomicInteger(0);
+    private WeightDistribution weightDistribution;
 
 
     @Override
     public void setup(DataSet dataSet, Properties properties) {
         this.dataSet = dataSet;
         this.properties = properties;
-        this.zone = zone;
+        parcelDeliveryTransactionProbabilties = new HashMap<>();
+        parcelPickUpTransactionProbabilties = new HashMap<>();
+        for (Transaction transaction : Transaction.values()){
+            parcelDeliveryTransactionProbabilties.put(transaction, transaction.getShareDeliveriesAtCustomer());
+            parcelPickUpTransactionProbabilties.put(transaction, transaction.getSharePickupsAtCustomer());
+        }
+        weightDistribution = new ParcelEmpiricalWeightDistribution_kg(dataSet, properties);
+
 
     }
 
@@ -52,19 +58,18 @@ public class ParcelGenerator implements Module {
     }
 
     private void generateParcels() {
-        this.weightDistributionInterval = dataSet.getWeightDistributionInterval();
         for (DistributionCenter distributionCenter : dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().rowKeySet()){
             for (Commodity commodity : dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().columnKeySet()) {
                 if (commodity.equals(Commodity.POST_PACKET)){
                     Map<Bound,Double> volumesProcessedByThisDistributionCenter = dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().get(distributionCenter,commodity);
                     if (volumesProcessedByThisDistributionCenter != null){
                         double volumeDelivered = volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INBOUND, 0.) +
-                                0.5 * volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL, 0.);
+                                volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL, 0.) * 0.5;
 
                         dissagregateVolumeToParcels(volumeDelivered, distributionCenter,true, commodity);
 
                         double volumePickedUp = volumesProcessedByThisDistributionCenter.getOrDefault(Bound.OUTBOUND, 0.) +
-                                0.5 * volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL,0.);
+                                volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL,0.) * 0.5;
 
                         dissagregateVolumeToParcels(volumePickedUp, distributionCenter,false, commodity);
                     }
@@ -139,20 +144,15 @@ public class ParcelGenerator implements Module {
     private void dissagregateVolumeToParcels(double volume_tn, DistributionCenter distributionCenter, boolean toCustomer, Commodity commodity){
         double cum_weight = 0;
         while (cum_weight < volume_tn * 1000) {
-            double weight = pickUpRandomWeight();
+            double weight_kg = weightDistribution.getRandomWeight(Commodity.POST_PACKET, 0.);
                 //todo temporary! volume is estimated by uniform density
-                if (weight > minimumWeight_kg) {
+                if (weight_kg > minimumWeight_kg) {
                     if (properties.getRand().nextDouble() < properties.getSampleFactorForParcels()) {
-                        dataSet.getParcels().add(new Parcel(counter.getAndIncrement(), toCustomer, weight / 16, weight, distributionCenter, commodity));
+                        dataSet.getParcels().add(new Parcel(counter.getAndIncrement(), toCustomer, weight_kg / 16, weight_kg, distributionCenter, commodity));
                     }
                 }
-                cum_weight += weight;
+                cum_weight += weight_kg;
         }
     }
 
-    private double pickUpRandomWeight(){
-        Map<Double,Double> weightDistribution = dataSet.getParcelWeightDistribution() ;
-        return FreightFlowUtils.select(weightDistribution, FreightFlowUtils.getSum(weightDistribution.values())) - weightDistributionInterval * properties.getRand().nextDouble();
-
-    }
 }

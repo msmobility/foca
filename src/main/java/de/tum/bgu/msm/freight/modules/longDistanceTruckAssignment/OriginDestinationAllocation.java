@@ -9,19 +9,19 @@ import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
-import org.matsim.core.utils.geometry.CoordinateTransformation;
-import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OriginDestinationAllocation implements Module {
 
     private Properties properties;
     private DataSet dataSet;
+    private double cumulatedV = 0; //debug-only variable
+
+    private static final Logger logger = Logger.getLogger(OriginDestinationAllocation.class);
 
 
     @Override
@@ -33,22 +33,30 @@ public class OriginDestinationAllocation implements Module {
 
     @Override
     public void run() {
+
         subsampleTrucksAndAssignCoordinates();
+        logger.warn(cumulatedV);
     }
 
 
     private void subsampleTrucksAndAssignCoordinates() {
+
+        List<Zone> zonesInStudyArea = dataSet.getZones().values().stream().filter(z -> z.isInStudyArea()).collect(Collectors.toList());
+
         for (FlowSegment flowSegment : dataSet.getAssignedFlowSegments()) {
             for (LongDistanceTruckTrip longDistanceTruckTrip : flowSegment.getTruckTrips()) {
                 if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
-                    setOriginAndDestination(longDistanceTruckTrip);
+                    for (Zone zone : zonesInStudyArea){
+                        setOriginAndDestination(longDistanceTruckTrip, zone);
+                    }
+
                 }
             }
         }
 
     }
 
-    private boolean setOriginAndDestination(LongDistanceTruckTrip longDistanceTruckTrip) {
+    private boolean setOriginAndDestination(LongDistanceTruckTrip longDistanceTruckTrip, Zone zone) {
 
         FlowSegment flowSegment = longDistanceTruckTrip.getFlowSegment();
 
@@ -60,67 +68,98 @@ public class OriginDestinationAllocation implements Module {
         Commodity commodity = flowSegment.getCommodity();
 
         Bound bound;
-        if (dataSet.getZones().get(flowSegment.getFlowOrigin()).isInStudyArea()) {
-            if (dataSet.getZones().get(flowSegment.getFlowDestination()).isInStudyArea()) {
+
+        double thisTruckEffectiveLoad = longDistanceTruckTrip.getLoad_tn();
+
+        if (dataSet.getZones().get(flowSegment.getFlowOrigin()).equals(zone)) {
+            if (dataSet.getZones().get(flowSegment.getFlowDestination()).equals(zone)) {
                 bound = Bound.INTRAZONAL;
             } else {
                 bound = Bound.OUTBOUND;
             }
-        } else if (dataSet.getZones().get(flowSegment.getFlowDestination()).isInStudyArea()) {
+        } else if (dataSet.getZones().get(flowSegment.getFlowDestination()).equals(zone)) {
             bound = Bound.INBOUND;
         } else {
             return false;
         }
 
+
         if (flowSegment.getSegmentType().equals(SegmentType.POST)) {
             origCoord = dataSet.getTerminals().get(flowSegment.getOriginTerminal()).getCoordinates();
-        } else if (!commodity.getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
-                originZone.isInStudyArea()) {
-            //pick up a distribution center
-            DistributionCenter originDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentOrigin(), commodity.getCommodityGroup());
-            origCoord = originDistributionCenter.getCoordinates();
-            //further disaggregate the flows, including the destination microzones if needed
-            if (commodity.equals(Commodity.POST_PACKET)) {
-                addVolumeForParcelDelivery(originDistributionCenter, commodity, bound, longDistanceTruckTrip.getLoad_tn());
-            } else {
-                addVolumeForSmallTruckDelivery(originDistributionCenter, commodity, bound, longDistanceTruckTrip.getLoad_tn());
-            }
-
         } else {
-            if (!originZone.isInStudyArea()) {
-                //if zone does not have microzone
-                origCoord = originZone.getCoordinates();
-            } else {
-                //if zone does have microzones
-                //all flows are here BUSINESS_CUSTOMER
-                InternalZone internalZone = (InternalZone) originZone;
-                int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone, dataSet.getMakeTable());
-                origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+            switch (commodity.getCommodityGroup().getGoodDistribution()) {
+                case DOOR_TO_DOOR:
+                    if (!originZone.equals(zone)) {
+                        origCoord = originZone.getCoordinates();
+                    } else {
+                        InternalZone internalZone = (InternalZone) originZone;
+                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone, dataSet.getMakeTable());
+                        origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+                    }
+                    break;
+                case SINGLE_VEHICLE:
+                    if (!originZone.equals(zone)) {
+                        origCoord = originZone.getCoordinates();
+                    } else {
+                        DistributionCenter originDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentOrigin(), commodity.getCommodityGroup());
+                        longDistanceTruckTrip.setOriginDistributionCenter(originDistributionCenter);
+                        origCoord = originDistributionCenter.getCoordinates();
+                        addVolumeForSmallTruckDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                    }
+                    break;
+                case PARCEL_DELIVERY:
+                    if (!originZone.equals(zone)) {
+                        //if zone does not have microzone
+                        origCoord = originZone.getCoordinates();
+                    } else {
+                        DistributionCenter originDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentOrigin(), commodity.getCommodityGroup());
+                        origCoord = originDistributionCenter.getCoordinates();
+                        longDistanceTruckTrip.setOriginDistributionCenter(originDistributionCenter);
+                        addVolumeForParcelDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("Unaccepted good distribution type");
             }
         }
 
+
         if (flowSegment.getSegmentType().equals(SegmentType.PRE)) {
             destCoord = dataSet.getTerminals().get(flowSegment.getDestinationTerminal()).getCoordinates();
-        } else if (!commodity.getCommodityGroup().getGoodDistribution().equals(GoodDistribution.DOOR_TO_DOOR) &&
-                destinationZone.isInStudyArea()) {
-            DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentDestination(), commodity.getCommodityGroup());
-            destCoord = destinationDistributionCenter.getCoordinates();
-            //further disaggregate the flows, including the destination microzones if needed
-            if (commodity.equals(Commodity.POST_PACKET)) {
-                addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, longDistanceTruckTrip.getLoad_tn());
-            } else {
-                addVolumeForSmallTruckDelivery(destinationDistributionCenter, commodity, bound, longDistanceTruckTrip.getLoad_tn());
-            }
-
         } else {
-            if (!destinationZone.isInStudyArea()) {
-                //if zone does not have microzones
-                destCoord = destinationZone.getCoordinates();
-            } else {
-                //if zone does have microzones
-                InternalZone internalZone = (InternalZone) destinationZone;
-                int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone, dataSet.getUseTable());
-                destCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+            switch (commodity.getCommodityGroup().getGoodDistribution()) {
+                case DOOR_TO_DOOR:
+                    if (!destinationZone.equals(zone)) {
+                        destCoord = destinationZone.getCoordinates();
+                    } else {
+                        InternalZone internalZone = (InternalZone) destinationZone;
+                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone, dataSet.getUseTable());
+                        destCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+                    }
+                    break;
+                case SINGLE_VEHICLE:
+                    if (!destinationZone.equals(zone)) {
+                        destCoord = destinationZone.getCoordinates();
+                    } else {
+                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentDestination(), commodity.getCommodityGroup());
+                        destCoord = destinationDistributionCenter.getCoordinates();
+                        longDistanceTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
+                        addVolumeForSmallTruckDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                    }
+                    break;
+                case PARCEL_DELIVERY:
+                    if (!destinationZone.equals(zone)) {
+                        destCoord = destinationZone.getCoordinates();
+                    } else {
+                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentDestination(), commodity.getCommodityGroup());
+                        destCoord = destinationDistributionCenter.getCoordinates();
+                        longDistanceTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
+                        addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("Unaccepted good distribution type");
+
             }
         }
 
@@ -130,6 +169,7 @@ public class OriginDestinationAllocation implements Module {
             dataSet.getLongDistanceTruckTrips().add(longDistanceTruckTrip);
             return true;
         } else {
+            logger.warn("Cannot assign coordinates to flow with id: " + flowSegment.toString());
             return false;
         }
     }
@@ -141,6 +181,7 @@ public class OriginDestinationAllocation implements Module {
     }
 
     private void addVolumeForSmallTruckDelivery(DistributionCenter distributionCenter, Commodity commodity, Bound bound, double load_tn) {
+        cumulatedV +=load_tn;
         if (dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().contains(distributionCenter, commodity)) {
             if (dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).containsKey(bound)) {
                 double current_load = dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).get(bound);
@@ -172,5 +213,8 @@ public class OriginDestinationAllocation implements Module {
         }
 
     }
+
+
+
 
 }

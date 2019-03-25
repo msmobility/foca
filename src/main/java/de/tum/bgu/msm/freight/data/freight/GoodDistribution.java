@@ -9,7 +9,7 @@ public enum GoodDistribution {
     /**
      * If the truck arrives/departs to/from the study areas, dissagregate to parcels from distribution centers
      */
-    SINGLE_DELIVERY,
+    PARCEL_DELIVERY,
     /**
      * Deliveris of single - small trucks from distribution centers
      */

@@ -39,6 +39,9 @@ public class FirstLastMileVehicleDistribution implements Module {
     }
 
     private void generateCoordinates() {
+
+        double totalVolume_tn = 0;
+
         for (DistributionCenter distributionCenter : dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().rowKeySet()) {
             for (Commodity commodity : dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().columnKeySet()) {
 
@@ -57,11 +60,14 @@ public class FirstLastMileVehicleDistribution implements Module {
 
                     disaggregateToSmallTrucks(receivedVolume_tn, commodity, distributionCenter, zoneServedByDistributionCenter, true);
 
+                    totalVolume_tn += sentVolume_tn;
+                    totalVolume_tn += receivedVolume_tn;
+
                     logger.info("Generated small truck trips for commodity " + commodity + " and distribution center " + distributionCenter.getId());
                 }
             }
         }
-        logger.info("Generated " + dataSet.getShortDistanceTruckTrips().size() + " short distance trips.");
+        logger.info("Generated " + dataSet.getShortDistanceTruckTrips().size() + " short distance trips: " + totalVolume_tn + " tn");
     }
 
 
@@ -75,6 +81,9 @@ public class FirstLastMileVehicleDistribution implements Module {
             trucks_int++;
         }
 
+        //re-adjust load:
+        load = volume / trucks_int;
+
         for (int t = 0; t < trucks_int; t++) {
             ShortDistanceTruckTrip sdtt;
             Coord distributionCenterCoord = distributionCenter.getCoordinates();
@@ -85,7 +94,7 @@ public class FirstLastMileVehicleDistribution implements Module {
                 sdtt = new ShortDistanceTruckTrip(counter.getAndIncrement(), distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
 
             } else {
-                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, (InternalZone) zone, dataSet.getUseTable());
+                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, (InternalZone) zone, dataSet.getMakeTable());
                 Coord customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
 
                 sdtt = new ShortDistanceTruckTrip(counter.getAndIncrement(), customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);

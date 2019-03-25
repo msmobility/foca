@@ -23,7 +23,8 @@ public class Properties {
     private int iterations = 1;
     private double scaleFactor = 1.;
     private String runId = "assignmentFull";
-    private Random rand = new Random(1);
+    private int randomSeed = 1;
+    private Random rand = new Random(randomSeed);
     private int[] selectedDestinations = new int[]{-1};
     private boolean storeExpectedTimes = false;
     private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
@@ -261,5 +262,9 @@ public class Properties {
 
     public double getSampleFactorForParcels() {
         return sampleFactorForParcels;
+    }
+
+    public int getRandomSeed() {
+        return randomSeed;
     }
 }

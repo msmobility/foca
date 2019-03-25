@@ -3,6 +3,7 @@ package de.tum.bgu.msm.freight.modules.common;
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
+import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
 
 import java.util.HashMap;
@@ -26,13 +27,13 @@ public class SpatialDisaggregator {
         Map<String, Double> coefficientsForThisCommodity = makeOrUseTable.column(commodity);
         Set<String> jobTypes = makeOrUseTable.rowKeySet();
 
-        zone.getMicroZones().values().stream().forEach(microZone -> {
+        for (InternalMicroZone microZone : zone.getMicroZones().values()) {
             double utility = 0;
             for (String jobType : jobTypes){
                 utility += microZone.getAttribute(jobType) * coefficientsForThisCommodity.get(jobType);
             }
             microZonesProbabilities.put(microZone.getId(), utility);
-        });
+        }
         return FreightFlowUtils.select(microZonesProbabilities,
                 FreightFlowUtils.getSum(microZonesProbabilities.values()));
 
@@ -42,9 +43,9 @@ public class SpatialDisaggregator {
 
         Map<Integer, Double> microZonesProbabilities = new HashMap<>();
 
-        zone.getMicroZones().values().stream().forEach(microZone -> {
+       for (InternalMicroZone microZone : zone.getMicroZones().values()) {
             microZonesProbabilities.put(microZone.getId(), microZone.getAttribute("population"));
-        });
+        }
         return FreightFlowUtils.select(microZonesProbabilities,
                 FreightFlowUtils.getSum(microZonesProbabilities.values()));
 

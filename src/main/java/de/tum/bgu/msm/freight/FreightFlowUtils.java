@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.freight;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Coord;
@@ -24,9 +21,10 @@ public class FreightFlowUtils {
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) feature.getDefaultGeometry());
-        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
-        Point p = MGC.coordinate2Point(coordinate);
-        return convertWGS84toGK4(new Coord(p.getX(), p.getY()));
+        Envelope envelope = randomPointsBuilder.getExtent();
+        double x = envelope.getMinX() + envelope.getWidth() * random.nextDouble();
+        double y = envelope.getMinY() + envelope.getHeight() * random.nextDouble();
+        return convertWGS84toGK4(new Coord(x, y));
     }
 
     public static void setRandomNumber(Properties properties){

@@ -2,10 +2,12 @@ package de.tum.bgu.msm.freight.modules.common;
 
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
+import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class NormalDepartureTimeDistribution implements DepartureTimeDistribution{
 
@@ -17,11 +19,11 @@ public class NormalDepartureTimeDistribution implements DepartureTimeDistributio
     private Map<Integer, Double> preCalculatedProbabilities;
 
 
-    public NormalDepartureTimeDistribution(){
+    public NormalDepartureTimeDistribution(Properties properties){
         preCalculatedProbabilities = new HashMap<>();
 
         NormalDistribution normalDistribution = new NormalDistribution(mean, standardDeviation);
-        normalDistribution.reseedRandomGenerator(1);
+        normalDistribution.reseedRandomGenerator(properties.getRandomSeed());
 
         for (int minute = 0; minute < 24*60; minute++){
             double minuteInHours = Double.valueOf(minute)/60;

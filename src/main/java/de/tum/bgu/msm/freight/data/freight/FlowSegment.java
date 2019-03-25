@@ -48,6 +48,8 @@ public class FlowSegment {
         builder.append("flowOrigin").append(",");
         builder.append("flowDestination").append(",");
         builder.append("commodity").append(",");
+        builder.append("commodityGroup").append(",");
+        builder.append("goodDistribution").append(",");
         builder.append("volume_tn").append(",");
         builder.append("segmentType").append(",");
         builder.append("mode").append(",");
@@ -65,6 +67,8 @@ public class FlowSegment {
         builder.append(flowOrigin).append(",");
         builder.append(flowDestination).append(",");
         builder.append(commodity).append(",");
+        builder.append(commodity.getCommodityGroup()).append(",");
+        builder.append(commodity.getCommodityGroup().getGoodDistribution()).append(",");
         builder.append(volume_tn).append(",");
         builder.append(segmentType).append(",");
         builder.append(mode).append(",");
