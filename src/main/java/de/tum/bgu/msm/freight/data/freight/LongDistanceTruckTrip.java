@@ -57,12 +57,16 @@ public class LongDistanceTruckTrip implements TruckTrip {
                 append(destCoord.getX()).append(",").
                 append(destCoord.getY()).append(",");
 
-        if (originDistributionCenter != null && destinationDistributionCenter != null) {
-            builder.append(originDistributionCenter.getId()).append(",").
-                    append(destinationDistributionCenter.getId()).append(",");
+        if (originDistributionCenter != null) {
+            builder.append(originDistributionCenter.getId()).append(",");
         } else {
-            builder.append("null").append(",").
-                    append("null").append(",");
+            builder.append("null").append(",");
+        }
+
+        if (destinationDistributionCenter != null) {
+            builder.append(destinationDistributionCenter.getId()).append(",");
+        } else {
+            builder.append("null").append(",");
         }
 
         builder.append(flowSegment.getSegmentType()).append(",").
