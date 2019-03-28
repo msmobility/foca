@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class OriginDestinationAllocation implements Module {
@@ -41,22 +42,19 @@ public class OriginDestinationAllocation implements Module {
 
     private void subsampleTrucksAndAssignCoordinates() {
 
+        AtomicInteger counter = new AtomicInteger(0);
         for (FlowSegment flowSegment : dataSet.getAssignedFlowSegments()) {
             for (LongDistanceTruckTrip longDistanceTruckTrip : flowSegment.getTruckTrips()) {
-                //todo this is not correct for extra-zonal trips!!
-                //if none of the zones are in study area --> random zone
-                //if only one of the zones is in study area --> detailed assignment in such zone like inbound/outbound
-                //if both zones are in the same study area zone --> intrazonal
-                //if both are in study area but different zones --> interzonal --> do twice!
                 setOrigin(longDistanceTruckTrip);
                 setDestination(longDistanceTruckTrip);
-
-                //
-
                 dataSet.getLongDistanceTruckTrips().add(longDistanceTruckTrip);
 
+                if (counter.incrementAndGet() % 100000 == 0){
+                    logger.info("Assigned o/d to " + counter.get() + " LD trucks");
+                }
             }
         }
+        logger.info("Assigned o/d to " + counter.get() + " LD trucks");
 
     }
 
@@ -74,7 +72,7 @@ public class OriginDestinationAllocation implements Module {
 
         double thisTruckEffectiveLoad = longDistanceTruckTrip.getLoad_tn();
 
-        if (dataSet.getZones().get(flowSegment.getFlowOrigin()).isInStudyArea()) {
+        if (originZone.isInStudyArea()) {
             if (originZone.equals(destinationZone)) {
                 bound = Bound.INTRAZONAL;
             } else {
@@ -102,7 +100,7 @@ public class OriginDestinationAllocation implements Module {
                     if (!originZone.isInStudyArea()) {
                         origCoord = originZone.getCoordinates();
                     } else {
-                        DistributionCenter originDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentOrigin(), commodity.getCommodityGroup());
+                        DistributionCenter originDistributionCenter = chooseDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
                         longDistanceTruckTrip.setOriginDistributionCenter(originDistributionCenter);
                         origCoord = originDistributionCenter.getCoordinates();
                         addVolumeForSmallTruckDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
@@ -113,7 +111,7 @@ public class OriginDestinationAllocation implements Module {
                         //if zone does not have microzone
                         origCoord = originZone.getCoordinates();
                     } else {
-                        DistributionCenter originDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentOrigin(), commodity.getCommodityGroup());
+                        DistributionCenter originDistributionCenter = chooseDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
                         origCoord = originDistributionCenter.getCoordinates();
                         longDistanceTruckTrip.setOriginDistributionCenter(originDistributionCenter);
                         addVolumeForParcelDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
@@ -148,7 +146,7 @@ public class OriginDestinationAllocation implements Module {
 
         double thisTruckEffectiveLoad = longDistanceTruckTrip.getLoad_tn();
 
-        if (dataSet.getZones().get(flowSegment.getFlowDestination()).isInStudyArea()) {
+        if (destinationZone.isInStudyArea()) {
             if (originZone.equals(destinationZone)) {
                 bound = Bound.INTRAZONAL;
             } else {
@@ -157,8 +155,6 @@ public class OriginDestinationAllocation implements Module {
         } else {
             bound = Bound.EXTRAZONAL;
         }
-
-
 
         if (flowSegment.getSegmentType().equals(SegmentType.PRE)) {
             destCoord = dataSet.getTerminals().get(flowSegment.getDestinationTerminal()).getCoordinates();
@@ -177,7 +173,7 @@ public class OriginDestinationAllocation implements Module {
                     if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();
                     } else {
-                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentDestination(), commodity.getCommodityGroup());
+                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
                         longDistanceTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
                         addVolumeForSmallTruckDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
@@ -187,7 +183,7 @@ public class OriginDestinationAllocation implements Module {
                     if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();
                     } else {
-                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentDestination(), commodity.getCommodityGroup());
+                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
                         longDistanceTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
                         addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);

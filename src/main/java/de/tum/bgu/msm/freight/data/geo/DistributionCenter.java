@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * A distribution center is a location where goods are transferred between one truck to other trucks
  */
-public class DistributionCenter implements Zone{
+public class DistributionCenter {
 
     private final int id;
     private final String name;
@@ -24,24 +24,16 @@ public class DistributionCenter implements Zone{
         this.zoneId = zoneId;
     }
 
-    @Override
     public Coord getCoordinates() {
         return Objects.requireNonNull(coord_gk4);
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public int getId() {
         return id;
-    }
-
-    @Override
-    public boolean isInStudyArea() {
-        return true;
     }
 
     public int getZoneId(){

@@ -5,7 +5,7 @@ import org.matsim.api.core.v01.Coord;
 /**
  * A terminal is a distribution center where the goods end or start the pre-carriage or on-carriage to be transferred from/to road to other modes
  */
-public class Terminal implements Zone {
+public class Terminal {
 
     private int id;
     private String name;
@@ -19,23 +19,17 @@ public class Terminal implements Zone {
         this.isInStudyArea = isInStudyArea;
     }
 
-    @Override
     public Coord getCoordinates() {
         return coord_gk4;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public int getId() {
         return id;
     }
 
-    @Override
-    public boolean isInStudyArea() {
-        return isInStudyArea;
-    }
+
 }

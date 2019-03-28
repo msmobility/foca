@@ -26,13 +26,11 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
 
     private CoordinateTransformation ct;
 
-
-    private Set<Integer> selectedDestinations = new HashSet<>();
-
+    private boolean doAllZones;
 
 
     @Override
-    public void setup(DataSet dataSet, Properties properties){
+    public void setup(DataSet dataSet, Properties properties) {
         ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
 
         this.properties = properties;
@@ -45,16 +43,16 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
 
         for (int destId : properties.getSelectedDestinations()) {
             if (destId == -1) {
-                selectedDestinations = dataSet.getFlowMatrix().columnKeySet();
+                doAllZones = true;
                 break;
             } else {
-                selectedDestinations.add(destId);
+                doAllZones = true;
             }
         }
     }
 
     @Override
-    public void run(){
+    public void run() {
         generateNumberOfTrucks();
         printOutResults();
     }
@@ -65,18 +63,19 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
 
         for (int origin : dataSet.getFlowMatrix().rowKeySet()) {
             for (int destination : dataSet.getFlowMatrix().columnKeySet()) {
-                if (selectedDestinations.contains(origin) || selectedDestinations.contains(destination)) {
-                    if (dataSet.getFlowMatrix().contains(origin, destination) && dataSet.getZones().containsKey(origin) &&
-                            dataSet.getZones().containsKey(destination)) {
-                        Collection<FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination).values();
-                        for (FlowOriginToDestination flowOriginToDestination : flowsThisOrigDest) {
-                            for (FlowSegment flowSegment : flowOriginToDestination.getFlowSegments().values()) {
-                                if (flowSegment.getMode().equals(Mode.ROAD)) {
-                                    int tripOrigin = flowSegment.getSegmentOrigin();
-                                    int tripDestination = flowSegment.getSegmentDestination();
 
-                                    Zone originZone = dataSet.getZones().get(tripOrigin);
-                                    Zone destinationZone = dataSet.getZones().get(tripDestination);
+                if (dataSet.getFlowMatrix().contains(origin, destination) && dataSet.getZones().containsKey(origin) &&
+                        dataSet.getZones().containsKey(destination)) {
+                    Collection<FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination).values();
+                    for (FlowOriginToDestination flowOriginToDestination : flowsThisOrigDest) {
+                        for (FlowSegment flowSegment : flowOriginToDestination.getFlowSegments().values()) {
+                            if (flowSegment.getMode().equals(Mode.ROAD)) {
+                                int tripOrigin = flowSegment.getSegmentOrigin();
+                                int tripDestination = flowSegment.getSegmentDestination();
+                                Zone originZone = dataSet.getZones().get(tripOrigin);
+                                Zone destinationZone = dataSet.getZones().get(tripDestination);
+
+                                if (originZone.isInStudyArea() || destinationZone.isInStudyArea() || doAllZones) {
 
                                     Coord origCoord = originZone.getCoordinates();
                                     Coord destCoord = destinationZone.getCoordinates();
@@ -101,12 +100,12 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
                                     }
 
                                     //set new trip details
-                                    for (int truck = 0; truck < loadedTrucks_int; truck ++){
+                                    for (int truck = 0; truck < loadedTrucks_int; truck++) {
                                         flowSegment.getTruckTrips().add(
                                                 new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, truckLoad));
                                     }
 
-                                    for (int truck = 0; truck < emptyTrucks_int; truck ++ ){
+                                    for (int truck = 0; truck < emptyTrucks_int; truck++) {
                                         flowSegment.getTruckTrips().add(
                                                 new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, 0.));
                                     }
@@ -126,11 +125,6 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
         logger.info(counter.get() + " long distance trucks assigned");
 
     }
-
-
-
-
-
 
 
     public void printOutResults() {
