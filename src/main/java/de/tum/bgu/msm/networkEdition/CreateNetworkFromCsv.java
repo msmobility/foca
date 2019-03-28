@@ -14,7 +14,6 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
-import sun.nio.ch.Net;
 
 import java.lang.reflect.Field;
 import java.util.*;

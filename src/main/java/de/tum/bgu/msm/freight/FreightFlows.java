@@ -32,8 +32,9 @@ public class FreightFlows {
         Place to configure the properties according to users' prefrereces, otherwise the default values are chosen
          */
 
-        properties.setSelectedDestinations(new int[]{9162, 9362});
-        properties.setRunId("assignmentFull4");
+       // properties.setSelectedDestinations(new int[]{9162, 9362});
+        properties.setScaleFactor(0.05);
+        properties.setRunId("test");
         properties.setIterations(1);
 
         //properties.setStoreExpectedTimes(true);

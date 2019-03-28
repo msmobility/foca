@@ -1,9 +1,5 @@
 package de.tum.bgu.msm.freight.io.input;
 
-
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import de.tum.bgu.msm.freight.data.*;
 
 import de.tum.bgu.msm.freight.data.geo.ExternalZone;
@@ -13,6 +9,8 @@ import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 

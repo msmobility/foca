@@ -1,9 +1,13 @@
 package de.tum.bgu.msm.freight;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.freight.properties.Properties;
+
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.shape.random.RandomPointsBuilder;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.contrib.accessibility.utils.GeoJsonPolygonFeatureWriter;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public abstract class CSVReader extends AbstractReader {
 
-    private static final Logger logger = Logger.getLogger(de.tum.bgu.msm.io.input.CSVReader.class);
+    private static final Logger logger = Logger.getLogger(CSVReader.class);
 
     private BufferedReader reader;
 

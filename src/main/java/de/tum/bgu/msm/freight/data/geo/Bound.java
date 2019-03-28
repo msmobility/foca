@@ -4,6 +4,7 @@ public enum Bound {
 
     INBOUND,
     OUTBOUND,
-    INTRAZONAL;
+    INTRAZONAL,
+    EXTRAZONAL;
 
 }

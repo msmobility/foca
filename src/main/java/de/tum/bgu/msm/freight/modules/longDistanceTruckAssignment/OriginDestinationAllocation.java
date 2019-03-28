@@ -41,22 +41,26 @@ public class OriginDestinationAllocation implements Module {
 
     private void subsampleTrucksAndAssignCoordinates() {
 
-        List<Zone> zonesInStudyArea = dataSet.getZones().values().stream().filter(z -> z.isInStudyArea()).collect(Collectors.toList());
-
         for (FlowSegment flowSegment : dataSet.getAssignedFlowSegments()) {
             for (LongDistanceTruckTrip longDistanceTruckTrip : flowSegment.getTruckTrips()) {
-                if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
-                    for (Zone zone : zonesInStudyArea){
-                        setOriginAndDestination(longDistanceTruckTrip, zone);
-                    }
+                //todo this is not correct for extra-zonal trips!!
+                //if none of the zones are in study area --> random zone
+                //if only one of the zones is in study area --> detailed assignment in such zone like inbound/outbound
+                //if both zones are in the same study area zone --> intrazonal
+                //if both are in study area but different zones --> interzonal --> do twice!
+                setOrigin(longDistanceTruckTrip);
+                setDestination(longDistanceTruckTrip);
 
-                }
+                //
+
+                dataSet.getLongDistanceTruckTrips().add(longDistanceTruckTrip);
+
             }
         }
 
     }
 
-    private boolean setOriginAndDestination(LongDistanceTruckTrip longDistanceTruckTrip, Zone zone) {
+    private boolean setOrigin(LongDistanceTruckTrip longDistanceTruckTrip) {
 
         FlowSegment flowSegment = longDistanceTruckTrip.getFlowSegment();
 
@@ -64,23 +68,20 @@ public class OriginDestinationAllocation implements Module {
         Zone destinationZone = dataSet.getZones().get(flowSegment.getSegmentDestination());
 
         Coord origCoord;
-        Coord destCoord;
         Commodity commodity = flowSegment.getCommodity();
 
         Bound bound;
 
         double thisTruckEffectiveLoad = longDistanceTruckTrip.getLoad_tn();
 
-        if (dataSet.getZones().get(flowSegment.getFlowOrigin()).equals(zone)) {
-            if (dataSet.getZones().get(flowSegment.getFlowDestination()).equals(zone)) {
+        if (dataSet.getZones().get(flowSegment.getFlowOrigin()).isInStudyArea()) {
+            if (originZone.equals(destinationZone)) {
                 bound = Bound.INTRAZONAL;
             } else {
                 bound = Bound.OUTBOUND;
             }
-        } else if (dataSet.getZones().get(flowSegment.getFlowDestination()).equals(zone)) {
-            bound = Bound.INBOUND;
         } else {
-            return false;
+            bound = Bound.EXTRAZONAL;
         }
 
 
@@ -89,7 +90,7 @@ public class OriginDestinationAllocation implements Module {
         } else {
             switch (commodity.getCommodityGroup().getGoodDistribution()) {
                 case DOOR_TO_DOOR:
-                    if (!originZone.equals(zone)) {
+                    if (!originZone.isInStudyArea()) {
                         origCoord = originZone.getCoordinates();
                     } else {
                         InternalZone internalZone = (InternalZone) originZone;
@@ -98,7 +99,7 @@ public class OriginDestinationAllocation implements Module {
                     }
                     break;
                 case SINGLE_VEHICLE:
-                    if (!originZone.equals(zone)) {
+                    if (!originZone.isInStudyArea()) {
                         origCoord = originZone.getCoordinates();
                     } else {
                         DistributionCenter originDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentOrigin(), commodity.getCommodityGroup());
@@ -108,7 +109,7 @@ public class OriginDestinationAllocation implements Module {
                     }
                     break;
                 case PARCEL_DELIVERY:
-                    if (!originZone.equals(zone)) {
+                    if (!originZone.isInStudyArea()) {
                         //if zone does not have microzone
                         origCoord = originZone.getCoordinates();
                     } else {
@@ -124,12 +125,47 @@ public class OriginDestinationAllocation implements Module {
         }
 
 
+        if (origCoord != null) {
+            longDistanceTruckTrip.setOrigCoord(origCoord);
+            return true;
+        } else {
+            logger.warn("Cannot assign origin coordinates to flow with id: " + flowSegment.toString());
+            return false;
+        }
+    }
+
+    private boolean setDestination(LongDistanceTruckTrip longDistanceTruckTrip) {
+
+        FlowSegment flowSegment = longDistanceTruckTrip.getFlowSegment();
+
+        Zone originZone = dataSet.getZones().get(flowSegment.getSegmentOrigin());
+        Zone destinationZone = dataSet.getZones().get(flowSegment.getSegmentDestination());
+
+        Coord destCoord;
+        Commodity commodity = flowSegment.getCommodity();
+
+        Bound bound;
+
+        double thisTruckEffectiveLoad = longDistanceTruckTrip.getLoad_tn();
+
+        if (dataSet.getZones().get(flowSegment.getFlowDestination()).isInStudyArea()) {
+            if (originZone.equals(destinationZone)) {
+                bound = Bound.INTRAZONAL;
+            } else {
+                bound = Bound.INBOUND;
+            }
+        } else {
+            bound = Bound.EXTRAZONAL;
+        }
+
+
+
         if (flowSegment.getSegmentType().equals(SegmentType.PRE)) {
             destCoord = dataSet.getTerminals().get(flowSegment.getDestinationTerminal()).getCoordinates();
         } else {
             switch (commodity.getCommodityGroup().getGoodDistribution()) {
                 case DOOR_TO_DOOR:
-                    if (!destinationZone.equals(zone)) {
+                    if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();
                     } else {
                         InternalZone internalZone = (InternalZone) destinationZone;
@@ -138,7 +174,7 @@ public class OriginDestinationAllocation implements Module {
                     }
                     break;
                 case SINGLE_VEHICLE:
-                    if (!destinationZone.equals(zone)) {
+                    if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();
                     } else {
                         DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentDestination(), commodity.getCommodityGroup());
@@ -148,7 +184,7 @@ public class OriginDestinationAllocation implements Module {
                     }
                     break;
                 case PARCEL_DELIVERY:
-                    if (!destinationZone.equals(zone)) {
+                    if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();
                     } else {
                         DistributionCenter destinationDistributionCenter = chooseDistributionCenter(flowSegment.getSegmentDestination(), commodity.getCommodityGroup());
@@ -163,13 +199,11 @@ public class OriginDestinationAllocation implements Module {
             }
         }
 
-        if (origCoord != null && destCoord != null) {
-            longDistanceTruckTrip.setOrigCoord(origCoord);
+        if (destCoord != null) {
             longDistanceTruckTrip.setDestCoord(destCoord);
-            dataSet.getLongDistanceTruckTrips().add(longDistanceTruckTrip);
             return true;
         } else {
-            logger.warn("Cannot assign coordinates to flow with id: " + flowSegment.toString());
+            logger.warn("Cannot assign destination coordinates to flow with id: " + flowSegment.toString());
             return false;
         }
     }
@@ -181,7 +215,7 @@ public class OriginDestinationAllocation implements Module {
     }
 
     private void addVolumeForSmallTruckDelivery(DistributionCenter distributionCenter, Commodity commodity, Bound bound, double load_tn) {
-        cumulatedV +=load_tn;
+        cumulatedV += load_tn;
         if (dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().contains(distributionCenter, commodity)) {
             if (dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).containsKey(bound)) {
                 double current_load = dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).get(bound);
@@ -213,8 +247,6 @@ public class OriginDestinationAllocation implements Module {
         }
 
     }
-
-
 
 
 }

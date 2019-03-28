@@ -40,38 +40,39 @@ public class MATSimPopGen implements Module {
 
         for (LongDistanceTruckTrip longDistanceTruckTrip : dataSet.getLongDistanceTruckTrips()) {
 
-            FlowSegment flowSegment = longDistanceTruckTrip.getFlowSegment();
+            if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
+                FlowSegment flowSegment = longDistanceTruckTrip.getFlowSegment();
 
-            boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
+                boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
 
-            String idOfVehicle = flowSegment.getCommodity().getCommodityGroup() + "-" +
-                    flowSegment.getTruckTrips().indexOf(longDistanceTruckTrip) + flowSegment.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
-                    flowSegment.getSegmentType() + "-" +
-                    counter;
+                String idOfVehicle = flowSegment.getCommodity().getCommodityGroup() + "-" +
+                        flowSegment.getTruckTrips().indexOf(longDistanceTruckTrip) + flowSegment.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
+                        flowSegment.getSegmentType() + "-" +
+                        counter;
 
-            if (intrazonal) {
-                idOfVehicle += "-INTRA";
+                if (intrazonal) {
+                    idOfVehicle += "-INTRA";
+                }
+
+                if (longDistanceTruckTrip.getLoad_tn() == 0.) {
+                    idOfVehicle += "-EMPTY";
+                }
+
+                Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
+                Plan plan = factory.createPlan();
+                person.addPlan(plan);
+                population.addPerson(person);
+
+                Activity originActivity = factory.createActivityFromCoord("start", longDistanceTruckTrip.getOrigCoord());
+                originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
+                plan.addActivity(originActivity);
+
+                plan.addLeg(factory.createLeg(TransportMode.truck));
+
+                Activity destinationActivity = factory.createActivityFromCoord("end", longDistanceTruckTrip.getDestCoord());
+                plan.addActivity(destinationActivity);
+                counter.incrementAndGet();
             }
-
-            if (longDistanceTruckTrip.getLoad_tn() == 0.) {
-                idOfVehicle += "-EMPTY";
-            }
-
-            Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
-            Plan plan = factory.createPlan();
-            person.addPlan(plan);
-            population.addPerson(person);
-
-            Activity originActivity = factory.createActivityFromCoord("start", longDistanceTruckTrip.getOrigCoord());
-            originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
-            plan.addActivity(originActivity);
-
-            plan.addLeg(factory.createLeg(TransportMode.truck));
-
-            Activity destinationActivity = factory.createActivityFromCoord("end", longDistanceTruckTrip.getDestCoord());
-            plan.addActivity(destinationActivity);
-            counter.incrementAndGet();
-
         }
 
         dataSet.setMatsimPopulation(population);
