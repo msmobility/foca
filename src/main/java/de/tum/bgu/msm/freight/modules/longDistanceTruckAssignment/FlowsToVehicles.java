@@ -43,7 +43,7 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
 
         for (int destId : properties.getSelectedDestinations()) {
             if (destId == -1) {
-                doAllZones = true;
+                doAllZones = false;
                 break;
             } else {
                 doAllZones = true;
@@ -74,45 +74,42 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
                                 int tripDestination = flowSegment.getSegmentDestination();
                                 Zone originZone = dataSet.getZones().get(tripOrigin);
                                 Zone destinationZone = dataSet.getZones().get(tripDestination);
+                                Coord origCoord = originZone.getCoordinates();
+                                Coord destCoord = destinationZone.getCoordinates();
+
+                                double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord) / 1000;
+                                DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);
+                                double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
+                                double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
+
+                                double numberOfVehicles_double = flowSegment.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
+                                double numberOfEmptyVehicles_double = numberOfVehicles_double / (1 - proportionEmpty) - numberOfVehicles_double;
+
+                                int loadedTrucks_int = (int) Math.floor(numberOfVehicles_double);
+                                int emptyTrucks_int = (int) Math.floor(numberOfEmptyVehicles_double);
+
+                                if (properties.getRand().nextDouble() < (numberOfVehicles_double - loadedTrucks_int)) {
+                                    loadedTrucks_int++;
+                                }
+
+                                if (properties.getRand().nextDouble() < (numberOfEmptyVehicles_double - emptyTrucks_int)) {
+                                    emptyTrucks_int++;
+                                }
+                                //set new trip details
+                                for (int truck = 0; truck < loadedTrucks_int; truck++) {
+                                    flowSegment.getTruckTrips().add(
+                                            new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, truckLoad));
+                                }
+
+                                for (int truck = 0; truck < emptyTrucks_int; truck++) {
+                                    flowSegment.getTruckTrips().add(
+                                            new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, 0.));
+                                }
+
+                                flowSegment.setDistance_km(beelineDistance_km);
+                                flowSegment.setTt_s(dataSet.getUncongestedTravelTime(tripOrigin, tripDestination));
 
                                 if (originZone.isInStudyArea() || destinationZone.isInStudyArea() || doAllZones) {
-
-                                    Coord origCoord = originZone.getCoordinates();
-                                    Coord destCoord = destinationZone.getCoordinates();
-
-                                    double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord) / 1000;
-                                    DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);
-                                    double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
-                                    double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
-
-                                    double numberOfVehicles_double = flowSegment.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
-                                    double numberOfEmptyVehicles_double = numberOfVehicles_double / (1 - proportionEmpty) - numberOfVehicles_double;
-
-                                    int loadedTrucks_int = (int) Math.floor(numberOfVehicles_double);
-                                    int emptyTrucks_int = (int) Math.floor(numberOfEmptyVehicles_double);
-
-                                    if (properties.getRand().nextDouble() < (numberOfVehicles_double - loadedTrucks_int)) {
-                                        loadedTrucks_int++;
-                                    }
-
-                                    if (properties.getRand().nextDouble() < (numberOfEmptyVehicles_double - emptyTrucks_int)) {
-                                        emptyTrucks_int++;
-                                    }
-
-                                    //set new trip details
-                                    for (int truck = 0; truck < loadedTrucks_int; truck++) {
-                                        flowSegment.getTruckTrips().add(
-                                                new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, truckLoad));
-                                    }
-
-                                    for (int truck = 0; truck < emptyTrucks_int; truck++) {
-                                        flowSegment.getTruckTrips().add(
-                                                new LongDistanceTruckTrip(counter.getAndIncrement(), flowSegment, 0.));
-                                    }
-
-                                    flowSegment.setDistance_km(beelineDistance_km);
-                                    flowSegment.setTt_s(dataSet.getUncongestedTravelTime(tripOrigin, tripDestination));
-
                                     dataSet.getAssignedFlowSegments().add(flowSegment);
                                 }
                             }
