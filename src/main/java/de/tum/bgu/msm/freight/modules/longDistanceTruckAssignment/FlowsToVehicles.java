@@ -41,12 +41,12 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
             uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet);
         }
 
-        for (int destId : properties.getSelectedDestinations()) {
+        for (int destId : properties.getSelectedZones()) {
             if (destId == -1) {
-                doAllZones = false;
+                doAllZones = true;
                 break;
             } else {
-                doAllZones = true;
+                doAllZones = false;
             }
         }
     }
@@ -63,7 +63,6 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
 
         for (int origin : dataSet.getFlowMatrix().rowKeySet()) {
             for (int destination : dataSet.getFlowMatrix().columnKeySet()) {
-
                 if (dataSet.getFlowMatrix().contains(origin, destination) && dataSet.getZones().containsKey(origin) &&
                         dataSet.getZones().containsKey(destination)) {
                     Collection<FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination).values();

@@ -3,9 +3,6 @@ package de.tum.bgu.msm.freight;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.*;
-import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.InternalZone;
-import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.io.input.InputManager;
 import de.tum.bgu.msm.freight.io.output.OutputWriter;
 import de.tum.bgu.msm.freight.modules.distributionFromCenters.FirstLastMileVehicleDistribution;
@@ -32,8 +29,8 @@ public class FreightFlows {
         Place to configure the properties according to users' prefrereces, otherwise the default values are chosen
          */
 
-        properties.setSelectedDestinations(new int[]{9162, 9362});
-        properties.setScaleFactor(0.05);
+        properties.setSelectedZones(new int[]{9162, 9362});
+        properties.setScaleFactor(0.10);
         properties.setRunId("test");
         properties.setIterations(1);
 
@@ -63,11 +60,8 @@ public class FreightFlows {
 
         flowsToVehicles.run();
         originDestinationAllocation.run();
-        double r1 = properties.getRand().nextDouble();
         firstLastMileVehicleDistribution.run();
-        double r2 = properties.getRand().nextDouble();
         parcelGenerator.run();
-        double r3 = properties.getRand().nextDouble();
         MATSImPopGen.run();
 
 
@@ -77,7 +71,7 @@ public class FreightFlows {
         OutputWriter.printOutObjects(dataSet.getParcels(), Parcel.getHeader(), "output/parcels.csv");
 
 
-        //matSimAssignment.run();
+        matSimAssignment.run();
 
 
     }

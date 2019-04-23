@@ -25,7 +25,7 @@ public class Properties {
     private String runId = "assignmentFull";
     private int randomSeed = 1;
     private Random rand = new Random(randomSeed);
-    private int[] selectedDestinations = new int[]{-1};
+    private int[] selectedZones = new int[]{-1};
     private boolean storeExpectedTimes = false;
     private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
     private  int daysPerYear = 365;
@@ -164,12 +164,12 @@ public class Properties {
         this.rand = rand;
     }
 
-    public int[] getSelectedDestinations() {
-        return selectedDestinations;
+    public int[] getSelectedZones() {
+        return selectedZones;
     }
 
-    public void setSelectedDestinations(int[] selectedDestinations) {
-        this.selectedDestinations = selectedDestinations;
+    public void setSelectedZones(int[] selectedZones) {
+        this.selectedZones = selectedZones;
     }
 
     public boolean isStoreExpectedTimes() {

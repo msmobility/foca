@@ -3,6 +3,7 @@ package de.tum.bgu.msm.freight.modules.runMATSim;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.FlowSegment;
 import de.tum.bgu.msm.freight.data.freight.LongDistanceTruckTrip;
+import de.tum.bgu.msm.freight.data.freight.ShortDistanceTruckTrip;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.DepartureTimeDistribution;
 import de.tum.bgu.msm.freight.modules.common.NormalDepartureTimeDistribution;
@@ -74,6 +75,30 @@ public class MATSimPopGen implements Module {
                 counter.incrementAndGet();
             }
         }
+
+        for (ShortDistanceTruckTrip shortDistanceTruckTrip : dataSet.getShortDistanceTruckTrips()){
+            if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
+                String idOfVehicle = "SD_";
+                idOfVehicle+= shortDistanceTruckTrip.getCommodity().getCommodityGroup().toString() + "_";
+                idOfVehicle+= shortDistanceTruckTrip.getId();
+
+                Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
+                Plan plan = factory.createPlan();
+                person.addPlan(plan);
+                population.addPerson(person);
+
+                Activity originActivity = factory.createActivityFromCoord("start",  shortDistanceTruckTrip.getOrigCoord());
+                originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
+                plan.addActivity(originActivity);
+
+                plan.addLeg(factory.createLeg(TransportMode.car));
+
+                Activity destinationActivity = factory.createActivityFromCoord("end",  shortDistanceTruckTrip.getDestCoord());
+                plan.addActivity(destinationActivity);
+
+            }
+        }
+
 
         dataSet.setMatsimPopulation(population);
 
