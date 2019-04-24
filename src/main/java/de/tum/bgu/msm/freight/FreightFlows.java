@@ -15,6 +15,8 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FreightFlows {
 
@@ -26,11 +28,14 @@ public class FreightFlows {
         Properties properties = new Properties();
 
         /*
-        Place to configure the properties according to users' prefrereces, otherwise the default values are chosen
+        Place to configure the properties according to users' prefrerences, otherwise the default values are chosen
          */
 
+        //properties.setFlowsScaleFactor();
+
         properties.setSelectedZones(new int[]{9162, 9362});
-        properties.setScaleFactor(0.10);
+        properties.setTruckScaleFactor(0.05);
+        properties.setSampleFactorForParcels(0.01);
         properties.setRunId("test");
         properties.setIterations(1);
 
@@ -68,7 +73,11 @@ public class FreightFlows {
         OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), "output/flowSegments.csv");
         OutputWriter.printOutObjects(dataSet.getLongDistanceTruckTrips(), LongDistanceTruckTrip.getHeader(), "output/ld_trucks.csv");
         OutputWriter.printOutObjects(dataSet.getShortDistanceTruckTrips(), ShortDistanceTruckTrip.getHeader(), "output/sd_trucks.csv");
-        OutputWriter.printOutObjects(dataSet.getParcels(), Parcel.getHeader(), "output/parcels.csv");
+        List<Parcel> parcelsList = new ArrayList<>();
+        for (List<Parcel> listOfParcelsInDc : dataSet.getParcelsByDistributionCenter().values()){
+            parcelsList.addAll(listOfParcelsInDc);
+        }
+        OutputWriter.printOutObjects(parcelsList, Parcel.getHeader(), "output/parcels.csv");
 
 
         matSimAssignment.run();

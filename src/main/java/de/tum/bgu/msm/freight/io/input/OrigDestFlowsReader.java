@@ -68,58 +68,62 @@ public class OrigDestFlowsReader extends CSVReader {
     }
 
     protected void processRecord(String[] record) {
-        int origin = Integer.parseInt(record[originIndex]);
-        int destination = Integer.parseInt(record[destinationIndex]);
+        if(properties.getRand().nextDouble() < properties.getFlowsScaleFactor()) {
 
-        FlowOriginToDestination flowOriginToDestination = new FlowOriginToDestination(origin, destination);
+            int origin = Integer.parseInt(record[originIndex]);
+            int destination = Integer.parseInt(record[destinationIndex]);
+
+            FlowOriginToDestination flowOriginToDestination = new FlowOriginToDestination(origin, destination);
 
 
-        if (dataSet.getFlowMatrix().contains(origin, destination)){
-            int index = dataSet.getFlowMatrix().get(origin, destination).keySet().size();
-            dataSet.getFlowMatrix().get(origin, destination).put(index, flowOriginToDestination);
-        } else {
-            Map<Integer, FlowOriginToDestination> flowsThisOrigDestPair = new HashMap<>();
-            flowsThisOrigDestPair.put(0, flowOriginToDestination);
-            dataSet.getFlowMatrix().put(origin, destination, flowsThisOrigDestPair);
-        }
+            if (dataSet.getFlowMatrix().contains(origin, destination)) {
+                int index = dataSet.getFlowMatrix().get(origin, destination).keySet().size();
+                dataSet.getFlowMatrix().get(origin, destination).put(index, flowOriginToDestination);
+            } else {
+                Map<Integer, FlowOriginToDestination> flowsThisOrigDestPair = new HashMap<>();
+                flowsThisOrigDestPair.put(0, flowOriginToDestination);
+                dataSet.getFlowMatrix().put(origin, destination, flowsThisOrigDestPair);
+            }
 
-        int originHL = Integer.parseInt(record[originHLIndex]);
-        int destinationHL = Integer.parseInt(record[destinationHLIndex]);
+            int originHL = Integer.parseInt(record[originHLIndex]);
+            int destinationHL = Integer.parseInt(record[destinationHLIndex]);
 
-        int originTerminal = Integer.parseInt(record[originTerminalIndex]);
-        int destinationTerminal = Integer.parseInt(record[destinationTerminalIndex]);
+            int originTerminal = Integer.parseInt(record[originTerminalIndex]);
+            int destinationTerminal = Integer.parseInt(record[destinationTerminalIndex]);
 
-        Mode modeHL = Mode.valueOf(Integer.parseInt(record[modeHLIndex]));
-        Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
-        double tonsHL = Double.parseDouble(record[tonsHLIndex]);
-        FlowType flowTypeHL = FlowType.getFromCode(Integer.parseInt(record[typeHLIndex]));
-        FlowSegment mainCourse = new FlowSegment(originHL, destinationHL, modeHL, commodityHL, tonsHL, SegmentType.MAIN, flowTypeHL, origin, destination);
-        flowOriginToDestination.addFlow(mainCourse);
+            Mode modeHL = Mode.valueOf(Integer.parseInt(record[modeHLIndex]));
+            Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
+            double tonsHL = Double.parseDouble(record[tonsHLIndex]);
+            FlowType flowTypeHL = FlowType.getFromCode(Integer.parseInt(record[typeHLIndex]));
+            FlowSegment mainCourse = new FlowSegment(originHL, destinationHL, modeHL, commodityHL, tonsHL, SegmentType.MAIN, flowTypeHL, origin, destination);
+            flowOriginToDestination.addFlow(mainCourse);
 
-        int precarriageMode;
-        if ((precarriageMode = Integer.parseInt(record[modeVLIndex])) != 0){
-            //there is a VorLauf
-            Mode modeVL = Mode.valueOf(precarriageMode);
-            Commodity commodityVL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityVLIndex]));
-            double tonsVL = Double.parseDouble(record[tonsVLIndex]);
-            FlowType flowTypeVL = FlowType.getFromCode(Integer.parseInt(record[typeVLIndex]));
-            FlowSegment preCarriage = new FlowSegment(origin, originHL, modeVL, commodityVL, tonsVL, SegmentType.PRE, flowTypeVL, origin, destination);
-            preCarriage.setDestinationTerminal(originTerminal);
-            mainCourse.setOriginTerminal(originTerminal);
-            flowOriginToDestination.addFlow(preCarriage);
-        }
+            int precarriageMode;
+            if ((precarriageMode = Integer.parseInt(record[modeVLIndex])) != 0) {
+                //there is a VorLauf
+                Mode modeVL = Mode.valueOf(precarriageMode);
+                Commodity commodityVL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityVLIndex]));
+                double tonsVL = Double.parseDouble(record[tonsVLIndex]);
+                FlowType flowTypeVL = FlowType.getFromCode(Integer.parseInt(record[typeVLIndex]));
+                FlowSegment preCarriage = new FlowSegment(origin, originHL, modeVL, commodityVL, tonsVL, SegmentType.PRE, flowTypeVL, origin, destination);
+                preCarriage.setDestinationTerminal(originTerminal);
+                mainCourse.setOriginTerminal(originTerminal);
+                flowOriginToDestination.addFlow(preCarriage);
+            }
 
-        int onCarriageMode;
-        if ((onCarriageMode = Integer.parseInt(record[modeNLIndex]))!=0){
-            //there is a NachLauf
-            Mode modeNL = Mode.valueOf(onCarriageMode);
-            Commodity commodityNL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityNLIndex]));
-            double tonsNL = Double.parseDouble(record[tonsNLIndex]);
-            FlowType flowTypeNL = FlowType.getFromCode(Integer.parseInt(record[typeNLIndex]));
-            FlowSegment onCarriage = new FlowSegment(destinationHL, destination, modeNL, commodityNL, tonsNL, SegmentType.POST, flowTypeNL, origin, destination);
-            onCarriage.setOriginTerminal(destinationTerminal);
-            mainCourse.setDestinationTerminal(destinationTerminal);
-            flowOriginToDestination.addFlow(onCarriage);
+            int onCarriageMode;
+            if ((onCarriageMode = Integer.parseInt(record[modeNLIndex])) != 0) {
+                //there is a NachLauf
+                Mode modeNL = Mode.valueOf(onCarriageMode);
+                Commodity commodityNL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityNLIndex]));
+                double tonsNL = Double.parseDouble(record[tonsNLIndex]);
+                FlowType flowTypeNL = FlowType.getFromCode(Integer.parseInt(record[typeNLIndex]));
+                FlowSegment onCarriage = new FlowSegment(destinationHL, destination, modeNL, commodityNL, tonsNL, SegmentType.POST, flowTypeNL, origin, destination);
+                onCarriage.setOriginTerminal(destinationTerminal);
+                mainCourse.setDestinationTerminal(destinationTerminal);
+                flowOriginToDestination.addFlow(onCarriage);
+            }
+
         }
     }
 

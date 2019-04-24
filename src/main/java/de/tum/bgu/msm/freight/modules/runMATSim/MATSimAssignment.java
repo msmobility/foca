@@ -8,17 +8,34 @@ import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.MultiDa
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
+import org.matsim.contrib.freight.Freight;
+import org.matsim.contrib.freight.carrier.*;
+import org.matsim.contrib.freight.controler.CarrierModule;
+import org.matsim.contrib.freight.replanning.CarrierPlanStrategyManagerFactory;
+import org.matsim.contrib.freight.scoring.CarrierScoringFunctionFactory;
+import org.matsim.contrib.freight.usecases.analysis.CarrierScoreStats;
+import org.matsim.contrib.freight.usecases.analysis.LegHistogram;
+import org.matsim.contrib.freight.usecases.chessboard.RunChessboard;
+import org.matsim.contrib.freight.utils.FreightUtils;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
+import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.controler.events.IterationEndsEvent;
+import org.matsim.core.controler.listener.IterationEndsListener;
+import org.matsim.core.mobsim.qsim.AbstractQSimModule;
+import org.matsim.core.replanning.GenericStrategyManager;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.io.IOUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.*;
 
@@ -26,6 +43,8 @@ public class MATSimAssignment implements Module {
 
     private Config config;
     private MutableScenario scenario;
+    private Network network;
+    private Controler controler;
 
     private Properties properties;
     private DataSet dataSet;
@@ -86,6 +105,8 @@ public class MATSimAssignment implements Module {
         config.controler().setOutputDirectory("./output/" + properties.getRunId() + "/matsim");
         config.network().setInputFile(properties.getNetworkFile());
 
+
+
         config.qsim().setNumberOfThreads(16);
         config.global().setNumberOfThreads(16);
         config.parallelEventHandling().setNumberOfThreads(16);
@@ -132,16 +153,98 @@ public class MATSimAssignment implements Module {
         config.qsim().setLinkDynamics(QSimConfigGroup.LinkDynamics.FIFO);
         config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.queue);
 
+
+        scenario = (MutableScenario) ScenarioUtils.loadScenario(config);
+        network = scenario.getNetwork();
+        controler = new Controler(scenario);
+
     }
+
+    private void configureMATSimForFreight() {
+
+
+        Freight.configure(controler);
+
+        final Carriers carriers = FreightUtils.getCarriers( scenario ) ;
+
+        final CarrierVehicleTypes types = new CarrierVehicleTypes();
+        new CarrierVehicleTypeReader(types).readFile(properties.getVehicleFileForParcelDelivery());
+        new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(types);
+
+                //create carriers
+        new CarriersGen(dataSet, network, properties).generateCarriers(carriers, types);
+
+
+
+
+        //assign plans to carriers
+        new CarriersPlanGen(scenario.getNetwork()).generateCarriersPlan(carriers);
+
+        controler.addOverridingModule(new AbstractModule() {
+            @Override
+            public void install() {
+                                CarrierModule carrierModule = new CarrierModule(carriers);
+                                carrierModule.setPhysicallyEnforceTimeWindowBeginnings(true);
+                                install(carrierModule);
+
+                bind(CarrierPlanStrategyManagerFactory.class).toInstance(new FreightFlowUtils.MyCarrierPlanStrategyManagerFactory(types));
+                bind(CarrierScoringFunctionFactory.class).toInstance( new FreightFlowUtils.MyCarrierScoringFunctionFactory() );
+            }
+        });
+        controler.addOverridingModule(new AbstractModule() {
+
+            @Override
+            public void install() {
+                final CarrierScoreStats scores = new CarrierScoreStats(carriers, config.controler().getOutputDirectory() +"/carrier_scores", true);
+                final int statInterval = 1;
+                final LegHistogram freightOnly = new LegHistogram(900);
+                freightOnly.setInclPop(false);
+                binder().requestInjection(freightOnly);
+                final LegHistogram withoutFreight = new LegHistogram(900);
+                binder().requestInjection(withoutFreight);
+
+                addEventHandlerBinding().toInstance(withoutFreight);
+                addEventHandlerBinding().toInstance(freightOnly);
+                addControlerListenerBinding().toInstance(scores);
+                addControlerListenerBinding().toInstance(new IterationEndsListener() {
+
+                    @Inject
+                    private OutputDirectoryHierarchy controlerIO;
+
+                    @Override
+                    public void notifyIterationEnds(IterationEndsEvent event) {
+                        if (event.getIteration() % statInterval != 0) return;
+                        //write plans
+                        String dir = controlerIO.getIterationPath(event.getIteration());
+                        new CarrierPlanXmlWriterV2(carriers).write(dir + "/" + event.getIteration() + ".carrierPlans.xml");
+
+                        //write stats
+                        freightOnly.writeGraphic(dir + "/" + event.getIteration() + ".legHistogram_freight.png");
+                        freightOnly.reset(event.getIteration());
+
+                        withoutFreight.writeGraphic(dir + "/" + event.getIteration() + ".legHistogram_withoutFreight.png");
+                        withoutFreight.reset(event.getIteration());
+                    }
+                });
+            }
+        });
+    }
+
+
 
     private void createPopulation(){
         Population population = dataSet.getMatsimPopulation();
-        scenario = (MutableScenario) ScenarioUtils.loadScenario(config);
+
         scenario.setPopulation(population);
     }
 
     private void runMatsim() {
-        final Controler controler = new Controler(scenario);
+
+        if (properties.isRunParcelDelivery()){
+            //configure MATSim for freight extension
+            configureMATSimForFreight();
+        }
+
 
         CountEventHandler countEventHandler = new CountEventHandler(properties);
         if (properties.isReadEventsForCounts()) {
@@ -154,6 +257,7 @@ public class MATSimAssignment implements Module {
             controler.getEvents().addHandler(countEventHandler);
         }
         controler.run();
+
         if (properties.isReadEventsForCounts()) {
             try {
                 MultiDayCounts.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName(), countEventHandler.getMapOfCOunts());

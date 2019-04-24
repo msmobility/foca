@@ -21,7 +21,8 @@ public class Properties {
     private String networkFile = "./networks/matsim/final_v3.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe.xml.gz";
     private int iterations = 1;
-    private double scaleFactor = 1.;
+    private double flowsScaleFactor = 1.;
+    private double truckScaleFactor = 1.;
     private String runId = "assignmentFull";
     private int randomSeed = 1;
     private Random rand = new Random(randomSeed);
@@ -38,12 +39,14 @@ public class Properties {
     private  String  terminalsFileName = "input/distributionCenters/intermodal_terminals.csv";
 
     private String[] jobTypes = new String[]{"Mnft","Util","Cons","Retl","Trns","Finc","Rlst","Admn","Serv","Agri"};
-    private String makeTableFileName = "./input/makeUseCoefficients/makeTable.csv";
-    private String useTableFileName = "./input/makeUseCoefficients/useTable.csv";
+    private String makeTableFileName = "./input/makeUseCoefficients/makeTable_eurostat.csv";
+    private String useTableFileName = "./input/makeUseCoefficients/useTable_eurostat.csv";
 
     private String parcelWeightDistributionFile = "./input/parcel_weight_distribution.csv";
 
-    private double sampleFactorForParcels = 1.;
+    private double sampleFactorForParcels = 1;
+    private boolean runParcelDelivery = true;
+    private String vehicleFileForParcelDelivery = "./input/vehicleTypesForParcelDelivery.xml";
 
 
     public Properties(){
@@ -140,12 +143,12 @@ public class Properties {
         this.iterations = iterations;
     }
 
-    public double getScaleFactor() {
-        return scaleFactor;
+    public double getTruckScaleFactor() {
+        return truckScaleFactor;
     }
 
-    public void setScaleFactor(double scaleFactor) {
-        this.scaleFactor = scaleFactor;
+    public void setTruckScaleFactor(double truckScaleFactor) {
+        this.truckScaleFactor = truckScaleFactor;
     }
 
     public String getRunId() {
@@ -266,5 +269,21 @@ public class Properties {
 
     public int getRandomSeed() {
         return randomSeed;
+    }
+
+    public boolean isRunParcelDelivery() {
+        return runParcelDelivery;
+    }
+
+    public String getVehicleFileForParcelDelivery() {
+        return vehicleFileForParcelDelivery;
+    }
+
+    public double getFlowsScaleFactor() {
+        return flowsScaleFactor;
+    }
+
+    public void setFlowsScaleFactor(double flowsScaleFactor) {
+        this.flowsScaleFactor = flowsScaleFactor;
     }
 }

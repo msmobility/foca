@@ -36,7 +36,7 @@ public class DataSet {
 
     private final HashBasedTable<DistributionCenter, Commodity, Map<Bound,Double>> volByCommodityDistributionCenterAndBoundByParcels = HashBasedTable.create();
 
-    private final List<Parcel> parcels = new ArrayList<>();
+    private final Map<DistributionCenter, List<Parcel>> parcelsByDistributionCenter = new HashMap<>();
 
     private Population matsimPopulation;
 
@@ -129,8 +129,8 @@ public class DataSet {
         return volByCommodityDistributionCenterAndBoundBySmallTrucks;
     }
 
-    public List<Parcel> getParcels() {
-        return parcels;
+    public Map<DistributionCenter, List<Parcel>> getParcelsByDistributionCenter() {
+        return parcelsByDistributionCenter;
     }
 
     public Map<Double, Double> getParcelWeightDistribution() {

@@ -41,7 +41,7 @@ public class MATSimPopGen implements Module {
 
         for (LongDistanceTruckTrip longDistanceTruckTrip : dataSet.getLongDistanceTruckTrips()) {
 
-            if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
+            if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
                 FlowSegment flowSegment = longDistanceTruckTrip.getFlowSegment();
 
                 boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
@@ -77,7 +77,7 @@ public class MATSimPopGen implements Module {
         }
 
         for (ShortDistanceTruckTrip shortDistanceTruckTrip : dataSet.getShortDistanceTruckTrips()){
-            if (properties.getRand().nextDouble() < properties.getScaleFactor()) {
+            if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
                 String idOfVehicle = "SD_";
                 idOfVehicle+= shortDistanceTruckTrip.getCommodity().getCommodityGroup().toString() + "_";
                 idOfVehicle+= shortDistanceTruckTrip.getId();
