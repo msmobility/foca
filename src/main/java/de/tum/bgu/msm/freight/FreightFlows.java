@@ -32,12 +32,14 @@ public class FreightFlows {
          */
 
         //properties.setFlowsScaleFactor();
+        properties.setMatrixFileName("./input/matrices/ketten-2030.csv");
+        properties.setRunId("results_2030");
 
         properties.setSelectedZones(new int[]{9162, 9362});
         properties.setTruckScaleFactor(0.05);
-        properties.setSampleFactorForParcels(0.01);
-        properties.setRunId("test");
-        properties.setIterations(1);
+        properties.setSampleFactorForParcels(0.05);
+
+        properties.setIterations(10);
 
         //properties.setStoreExpectedTimes(true);
 
@@ -70,14 +72,14 @@ public class FreightFlows {
         MATSImPopGen.run();
 
 
-        OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), "output/flowSegments.csv");
-        OutputWriter.printOutObjects(dataSet.getLongDistanceTruckTrips(), LongDistanceTruckTrip.getHeader(), "output/ld_trucks.csv");
-        OutputWriter.printOutObjects(dataSet.getShortDistanceTruckTrips(), ShortDistanceTruckTrip.getHeader(), "output/sd_trucks.csv");
+        OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), "output/" + properties.getRunId() +  "/flowSegments.csv");
+        OutputWriter.printOutObjects(dataSet.getLongDistanceTruckTrips(), LongDistanceTruckTrip.getHeader(), "output/" + properties.getRunId() +  "/ld_trucks.csv");
+        OutputWriter.printOutObjects(dataSet.getShortDistanceTruckTrips(), ShortDistanceTruckTrip.getHeader(), "output/" + properties.getRunId() +  "/sd_trucks.csv");
         List<Parcel> parcelsList = new ArrayList<>();
         for (List<Parcel> listOfParcelsInDc : dataSet.getParcelsByDistributionCenter().values()){
             parcelsList.addAll(listOfParcelsInDc);
         }
-        OutputWriter.printOutObjects(parcelsList, Parcel.getHeader(), "output/parcels.csv");
+        OutputWriter.printOutObjects(parcelsList, Parcel.getHeader(), "output/" + properties.getRunId() +  "/parcels.csv");
 
 
         matSimAssignment.run();
