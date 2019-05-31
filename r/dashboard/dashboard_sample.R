@@ -1,11 +1,10 @@
 pacman::p_load(data.table, ggplot2, dplyr, reshape, shiny, shinydashboard, plotly)
 
 
-
 folder = "c:/models/freightFlows/"
-source("c:/code/freightFlows/src/main/r/input/input_zones.R")
-source("c:/code/freightFlows/src/main/r/input/input_commodities.R")
-source("c:/code/freightFlows/src/main/r/input/input_matrices.R")
+source("c:/code/freightFlows/r/input/input_zones.R")
+source("c:/code/freightFlows/r/input/input_commodities.R")
+source("c:/code/freightFlows/r/input/input_matrices.R")
 #need to clean up variables!
 
 zones_aux = zones %>% select(orig = Verkehrszelle, origType = type)

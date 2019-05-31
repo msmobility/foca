@@ -16,6 +16,8 @@ public class Parcel {
     private DistributionCenter distributionCenter;
     private Coord originCoord;
     private Coord destCoord;
+    private int origMicroZoneId;
+    private int destMicroZoneId;
 
     public Parcel(int id, boolean toDestination, double volume_m3, double weight_kg,
                   DistributionCenter distributionCenter, Commodity commodity) {
@@ -39,8 +41,11 @@ public class Parcel {
                 append("originY").append(",").
                 append("destX").append(",").
                 append("destY").append(",").
+                append("origMicroZone").append(",").
+                append("destMicroZone").append(",").
                 append("distributionCenter").append(",").
                 append("transaction");
+
 
         return builder.toString();
     }
@@ -57,9 +62,13 @@ public class Parcel {
             builder.append(originCoord.getX()).append(",").
                     append(originCoord.getY()).append(",").
                     append(destCoord.getX()).append(",").
-                    append(destCoord.getY()).append(",");
+                    append(destCoord.getY()).append(",").
+                    append(origMicroZoneId).append(",").
+                    append(destMicroZoneId).append(",");
         } else {
             builder.append("null").append(",").
+                    append("null").append(",").
+                    append("null").append(",").
                     append("null").append(",").
                     append("null").append(",").
                     append("null").append(",");
@@ -119,5 +128,13 @@ public class Parcel {
 
     public Commodity getCommodity() {
         return commodity;
+    }
+
+    public void setOrigMicroZone(int microZone) {
+        this.origMicroZoneId = microZone;
+    }
+
+    public void setDestMicroZone(int microZone) {
+        this.destMicroZoneId = microZone;
     }
 }

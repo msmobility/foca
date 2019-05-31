@@ -15,7 +15,7 @@ for(year in years){
   
 }
 
-source("c:/code/freightFlows/src/main/r/analysis/load_labels.R")
+source("c:/code/freightFlows/r/analysis/load_labels.R")
 
 matrices$ModeHL = factor(matrices$ModeHL, levels = mode_code, labels = mode_lab)
 matrices$ModeVL = factor(matrices$ModeVL, levels = mode_code, labels = mode_lab)

@@ -33,6 +33,8 @@ public class ParcelGenerator implements Module {
     private final AtomicInteger counter = new AtomicInteger(0);
     private WeightDistribution weightDistribution;
 
+    private final int density_kg_m3 = 16;
+
 
     @Override
     public void setup(DataSet dataSet, Properties properties) {
@@ -111,10 +113,12 @@ public class ParcelGenerator implements Module {
                     int microZone;
                     if (parcel.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
                         microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(destinationZone);
+                        parcel.setDestMicroZone(microZone);
                         parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
                     } else if (parcel.getTransaction().equals(Transaction.BUSINESS_CUSTOMER)) {
                         microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
                                 destinationZone, dataSet.getUseTable());
+                        parcel.setDestMicroZone(microZone);
                         parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
                     } else {
                         //todo nothing done now if it is not an individual customer
@@ -125,10 +129,13 @@ public class ParcelGenerator implements Module {
                     int microZone;
                     if (parcel.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
                         microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(originZone);
+                        parcel.setOrigMicroZone(microZone);
                         parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
                     } else if (parcel.getTransaction().equals(Transaction.BUSINESS_CUSTOMER)) {
+
                         microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
                                 originZone, dataSet.getUseTable());
+                        parcel.setOrigMicroZone(microZone);
                         parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
                     } else {
                         //todo nothing done now if it is not an individual customer
@@ -159,9 +166,8 @@ public class ParcelGenerator implements Module {
         double cum_weight = 0;
         while (cum_weight < volume_tn * 1000) {
             double weight_kg = weightDistribution.getRandomWeight(Commodity.POST_PACKET, 0.);
-                //todo temporary! volume is estimated by uniform density
                 if (weight_kg > minimumWeight_kg) {
-                        parcelsThisDistributionCenter.add(new Parcel(counter.getAndIncrement(), toCustomer, weight_kg / 16, weight_kg, distributionCenter, commodity));
+                    parcelsThisDistributionCenter.add(new Parcel(counter.getAndIncrement(), toCustomer, weight_kg / density_kg_m3, weight_kg, distributionCenter, commodity));
                 }
                 cum_weight += weight_kg;
         }
