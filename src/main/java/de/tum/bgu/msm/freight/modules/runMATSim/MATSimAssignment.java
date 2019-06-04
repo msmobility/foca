@@ -7,38 +7,18 @@ import de.tum.bgu.msm.freight.io.input.LinksFileReader;
 import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.MultiDayCounts;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.contrib.freight.Freight;
 import org.matsim.contrib.freight.carrier.*;
-import org.matsim.contrib.freight.controler.CarrierModule;
-import org.matsim.contrib.freight.replanning.CarrierPlanStrategyManagerFactory;
-import org.matsim.contrib.freight.scoring.CarrierScoringFunctionFactory;
-import org.matsim.contrib.freight.usecases.analysis.CarrierScoreStats;
-import org.matsim.contrib.freight.usecases.analysis.LegHistogram;
-import org.matsim.contrib.freight.usecases.chessboard.RunChessboard;
-import org.matsim.contrib.freight.utils.FreightUtils;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
-import org.matsim.core.config.groups.QSimConfigGroup;
-import org.matsim.core.config.groups.StrategyConfigGroup;
-import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
-import org.matsim.core.controler.OutputDirectoryHierarchy;
-import org.matsim.core.controler.events.IterationEndsEvent;
-import org.matsim.core.controler.listener.IterationEndsListener;
-import org.matsim.core.mobsim.qsim.AbstractQSimModule;
-import org.matsim.core.replanning.GenericStrategyManager;
+import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.population.io.PopulationReader;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.core.utils.io.IOUtils;
 
-import javax.inject.Inject;
 import java.io.IOException;
-import java.util.*;
 
 public class MATSimAssignment implements Module {
 
@@ -50,6 +30,8 @@ public class MATSimAssignment implements Module {
     private Properties properties;
     private DataSet dataSet;
     private MATSimFreightManager matSimFreightManager;
+
+    private MATSimPopGen matSimPopGen;
 
     public MATSimAssignment() {
 
@@ -68,6 +50,9 @@ public class MATSimAssignment implements Module {
 
         matSimFreightManager = new MATSimFreightManager(config, scenario, controler, properties);
 
+        matSimPopGen = new MATSimPopGen();
+        matSimPopGen.setup(dataSet, properties);
+
         if (properties.isRunParcelDelivery()) {
             //configure MATSim for freight extension
             matSimFreightManager.configureMATSimForFreight();
@@ -78,30 +63,30 @@ public class MATSimAssignment implements Module {
 
     @Override
     public void run() {
-        createPopulation();
-
+        loadPopulation();
         runMatsim();
+    }
+
+    private void loadPopulation() {
+
+        if (!properties.getMatsimBackgroundTraffic().equals("")){
+            new PopulationReader(scenario).readFile(properties.getMatsimBackgroundTraffic());
+        } else {
+            scenario.setPopulation(PopulationUtils.createPopulation(config));
+        }
+        matSimPopGen.addTrucks(scenario.getPopulation());
+        generateCarriersPopulation(matSimFreightManager.getCarriers(), matSimFreightManager.getCarrierVehicleTypes());
     }
 
 
     private void generateCarriersPopulation(Carriers carriers, CarrierVehicleTypes carrierVehicleTypes){
-
         //create carriers
         new CarriersGen(dataSet, network, properties).generateCarriers(carriers, carrierVehicleTypes);
-
         //assign plans to carriers
         new CarriersPlanGen(scenario.getNetwork()).generateCarriersPlan(carriers);
 
     }
 
-
-
-    private void createPopulation() {
-        Population population = dataSet.getMatsimPopulation();
-        scenario.setPopulation(population);
-
-        generateCarriersPopulation(matSimFreightManager.getCarriers(), matSimFreightManager.getCarrierVehicleTypes());
-    }
 
     private void runMatsim() {
 

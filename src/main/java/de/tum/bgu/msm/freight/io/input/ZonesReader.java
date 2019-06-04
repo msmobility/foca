@@ -65,11 +65,11 @@ public class ZonesReader extends CSVReader {
     }
 
     public void read() {
-        super.read(properties.getZoneInputFile(), ",");
+        super.read(properties.zoneSystem().getZoneInputFile(), ",");
         logger.info("Read " + dataSet.getZones().size() + " zones.");
         mapFeaturesToZones(dataSet);
-        mapFeaturesToMicroZones(dataSet, 9162, properties.getMunichMicroZonesShapeFile());
-        mapFeaturesToMicroZones(dataSet, 9362, properties.getRegensburgMicroZonesShapeFile());
+        mapFeaturesToMicroZones(dataSet, 9162, properties.zoneSystem().getMunichMicroZonesShapeFile());
+        mapFeaturesToMicroZones(dataSet, 9362, properties.zoneSystem().getRegensburgMicroZonesShapeFile());
 
     }
 
@@ -77,10 +77,10 @@ public class ZonesReader extends CSVReader {
 
     private void mapFeaturesToZones(DataSet dataSet) {
         int counter = 1;
-        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(properties.getZoneShapeFile());
+        Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(properties.zoneSystem().getZoneShapeFile());
 
         for (SimpleFeature feature: features) {
-            int zoneId = Integer.parseInt(feature.getAttribute(properties.getIdFieldInZonesShp()).toString());
+            int zoneId = Integer.parseInt(feature.getAttribute(properties.zoneSystem().getIdFieldInZonesShp()).toString());
             InternalZone zone = (InternalZone) dataSet.getZones().get(zoneId);
             if (zone != null){
                 zone.setShapeFeature(feature);
@@ -101,7 +101,7 @@ public class ZonesReader extends CSVReader {
         int n_microzones = 0;
         for (SimpleFeature feature: features) {
             if (polygon.contains((Geometry) feature.getDefaultGeometry())){
-                int zoneId = Integer.parseInt(feature.getAttribute(properties.getIdFieldInMicroZonesShp()).toString());
+                int zoneId = Integer.parseInt(feature.getAttribute(properties.zoneSystem().getIdFieldInMicroZonesShp()).toString());
                 InternalMicroZone microZone = new InternalMicroZone(zoneId, feature);
                 macroZone.addMicroZone(microZone);
 

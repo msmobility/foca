@@ -7,17 +7,18 @@ import java.lang.reflect.Field;
 import java.util.Random;
 
 
-public class Properties {
+public class Properties extends PropertiesGroup {
 
+    private ZoneSystemProperties zoneSystemProperties;
+    private FlowsProperties flowsProperties;
+    private DisaggregationProperties disaggregationProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
-    private String zoneInputFile = "./input/zones_edit.csv";
-    private String zoneShapeFile = "./input/shp/de_lkr_4326.shp";
-    private String munichMicroZonesShapeFile = "input/shp/zones_4326_jobs.shp";
-    private String regensburgMicroZonesShapeFile = "input/shp/zones_regensburg_4326.shp";
-    private String idFieldInZonesShp = "RS";
-    private String idFieldInMicroZonesShp = "id";
     private String matrixFileName = "./input/matrices/ketten-2010.csv";
+    private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
+    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
+    private String terminalsFileName = "input/distributionCenters/intermodal_terminals.csv";
+
     private String networkFile = "./networks/matsim/final_v3.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe.xml.gz";
     private int iterations = 1;
@@ -28,89 +29,59 @@ public class Properties {
     private Random rand = new Random(randomSeed);
     private int[] selectedZones = new int[]{-1};
     private boolean storeExpectedTimes = false;
-    private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
-    private  int daysPerYear = 365;
 
-    private  boolean readEventsForCounts = true;
-    private  String countStationLinkListFile = "input/matsim_links_stations.csv";
-    private  String countsFileName = "counts_multi_day.csv";
+    private int daysPerYear = 365;
+
+    private boolean readEventsForCounts = true;
+    private String countStationLinkListFile = "input/matsim_links_stations.csv";
+    private String countsFileName = "counts_multi_day.csv";
     private String vehicleFile = "input/vehicleFile.xml";
-    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
-    private  String  terminalsFileName = "input/distributionCenters/intermodal_terminals.csv";
 
-    private String[] jobTypes = new String[]{"Mnft","Util","Cons","Retl","Trns","Finc","Rlst","Admn","Serv","Agri"};
+
+    private String[] jobTypes = new String[]{"Mnft", "Util", "Cons", "Retl", "Trns", "Finc", "Rlst", "Admn", "Serv", "Agri"};
     private String makeTableFileName = "./input/makeUseCoefficients/makeTable_eurostat.csv";
     private String useTableFileName = "./input/makeUseCoefficients/useTable_eurostat.csv";
 
     private String parcelWeightDistributionFile = "./input/parcel_weight_distribution.csv";
 
-    private double sampleFactorForParcels = 1;
+    private double sampleFactorForParcels = 1.;
     private boolean runParcelDelivery = true;
     private String vehicleFileForParcelDelivery = "./input/vehicleTypesForParcelDelivery.xml";
 
-    String distributionCentersCatchmenAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
+    private String distributionCentersCatchmenAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
+
+    private String matsimBackgroundTrafficPlanFile = "";
+
+    private String outputFolder = "output/";
 
 
-    public Properties(){
+    public Properties() {
         FreightFlowUtils.setRandomNumber(this);
+        zoneSystemProperties = new ZoneSystemProperties();
+        flowsProperties = new FlowsProperties();
+        disaggregationProperties = new DisaggregationProperties();
+
     }
 
-    public void logUsedProperties(){
-        for (Field x : Properties.class.getDeclaredFields()) {
-            x.setAccessible(true);
-            try {
-                LOGGER.info(x.getName() + ": " + x.get(this).toString());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+    public void logProperties(){
+        this.logUsedProperties();
+        zoneSystemProperties.logUsedProperties();
+        flowsProperties.logUsedProperties();
+        disaggregationProperties.logUsedProperties();
     }
 
-    public String getZoneInputFile() {
-        return zoneInputFile;
-    }
-    public String getZoneShapeFile() {
-        return zoneShapeFile;
+
+
+    public ZoneSystemProperties zoneSystem() {
+        return zoneSystemProperties;
     }
 
-    public String getMunichMicroZonesShapeFile() {
-        return munichMicroZonesShapeFile;
+    public FlowsProperties flows() {
+        return flowsProperties;
     }
 
-    public String getRegensburgMicroZonesShapeFile() {
-        return regensburgMicroZonesShapeFile;
-    }
-
-    public String getIdFieldInZonesShp() {
-        return idFieldInZonesShp;
-    }
-
-    public void setZoneInputFile(String zoneInputFile) {
-        this.zoneInputFile = zoneInputFile;
-    }
-
-    public void setZoneShapeFile(String zoneShapeFile) {
-        this.zoneShapeFile = zoneShapeFile;
-    }
-
-    public void setMunichMicroZonesShapeFile(String munichMicroZonesShapeFile) {
-        this.munichMicroZonesShapeFile = munichMicroZonesShapeFile;
-    }
-
-    public void setRegensburgMicroZonesShapeFile(String regensburgMicroZonesShapeFile) {
-        this.regensburgMicroZonesShapeFile = regensburgMicroZonesShapeFile;
-    }
-
-    public void setIdFieldInZonesShp(String idFieldInZonesShp) {
-        this.idFieldInZonesShp = idFieldInZonesShp;
-    }
-
-    public String getIdFieldInMicroZonesShp() {
-        return idFieldInMicroZonesShp;
-    }
-
-    public void setIdFieldInMicroZonesShp(String idFieldInMicroZonesShp) {
-        this.idFieldInMicroZonesShp = idFieldInMicroZonesShp;
+    public DisaggregationProperties disaggregation() {
+        return disaggregationProperties;
     }
 
     public String getMatrixFileName() {
@@ -229,7 +200,7 @@ public class Properties {
         return vehicleFile;
     }
 
-    public void setVehicleFile(String vehicleFile){
+    public void setVehicleFile(String vehicleFile) {
         this.vehicleFile = vehicleFile;
     }
 
@@ -291,5 +262,21 @@ public class Properties {
 
     public String getDistributionCentersCatchmentAreaFile() {
         return distributionCentersCatchmenAreaFile;
+    }
+
+    public String getMatsimBackgroundTraffic() {
+        return matsimBackgroundTrafficPlanFile;
+    }
+
+    public void setMatsimBackgroundTrafficPlanFile(String matsimBackgroundTrafficPlanFile) {
+        this.matsimBackgroundTrafficPlanFile = matsimBackgroundTrafficPlanFile;
+    }
+
+    public String getOutputFolder() {
+        return outputFolder;
+    }
+
+    public void setOutputFolder(String outputFolder) {
+        this.outputFolder = outputFolder;
     }
 }

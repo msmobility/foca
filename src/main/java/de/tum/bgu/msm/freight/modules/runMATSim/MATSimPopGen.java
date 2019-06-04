@@ -9,14 +9,16 @@ import de.tum.bgu.msm.freight.modules.common.DepartureTimeDistribution;
 import de.tum.bgu.msm.freight.modules.common.NormalDepartureTimeDistribution;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.population.io.PopulationReader;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MATSimPopGen implements Module {
+public class MATSimPopGen {
 
     private DataSet dataSet;
     private Properties properties;
@@ -24,19 +26,14 @@ public class MATSimPopGen implements Module {
 
 
 
-    @Override
     public void setup(DataSet dataSet, Properties properties) {
         this.dataSet = dataSet;
         this.properties = properties;
         departureTimeDistribution = new NormalDepartureTimeDistribution(properties);
     }
 
-    @Override
-    public void run() {
-
-        Population population = PopulationUtils.createPopulation(ConfigUtils.createConfig());
+    public void addTrucks(Population population) {
         PopulationFactory factory = population.getFactory();
-
         AtomicInteger counter = new AtomicInteger(0);
 
         for (LongDistanceTruckTrip longDistanceTruckTrip : dataSet.getLongDistanceTruckTrips()) {
@@ -47,7 +44,8 @@ public class MATSimPopGen implements Module {
                 boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
 
                 String idOfVehicle = flowSegment.getCommodity().getCommodityGroup() + "-" +
-                        flowSegment.getTruckTrips().indexOf(longDistanceTruckTrip) + flowSegment.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
+                        flowSegment.getTruckTrips().indexOf(longDistanceTruckTrip) + "-" +
+                        flowSegment.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
                         flowSegment.getSegmentType() + "-" +
                         counter;
 
@@ -91,7 +89,7 @@ public class MATSimPopGen implements Module {
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
-                plan.addLeg(factory.createLeg(TransportMode.car));
+                plan.addLeg(factory.createLeg(TransportMode.truck));
 
                 Activity destinationActivity = factory.createActivityFromCoord("end",  shortDistanceTruckTrip.getDestCoord());
                 plan.addActivity(destinationActivity);
@@ -99,8 +97,7 @@ public class MATSimPopGen implements Module {
             }
         }
 
-
-        dataSet.setMatsimPopulation(population);
+        //dataSet.setMatsimPopulation(population);
 
     }
 }
