@@ -88,13 +88,13 @@ public class FirstLastMileVehicleDistribution implements Module {
             ShortDistanceTruckTrip sdtt;
             Coord distributionCenterCoord = distributionCenter.getCoordinates();
             if (toDestination) {
-                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, (InternalZone) zone, dataSet.getUseTable());
+                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
                 Coord customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
 
                 sdtt = new ShortDistanceTruckTrip(counter.getAndIncrement(), distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
 
             } else {
-                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, (InternalZone) zone, dataSet.getMakeTable());
+                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity,  distributionCenter.getZonesServedByThis(), dataSet.getMakeTable());
                 Coord customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
 
                 sdtt = new ShortDistanceTruckTrip(counter.getAndIncrement(), customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);

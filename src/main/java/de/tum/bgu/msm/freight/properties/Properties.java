@@ -48,6 +48,8 @@ public class Properties {
     private boolean runParcelDelivery = true;
     private String vehicleFileForParcelDelivery = "./input/vehicleTypesForParcelDelivery.xml";
 
+    String distributionCentersCatchmenAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
+
 
     public Properties(){
         FreightFlowUtils.setRandomNumber(this);
@@ -285,5 +287,9 @@ public class Properties {
 
     public void setFlowsScaleFactor(double flowsScaleFactor) {
         this.flowsScaleFactor = flowsScaleFactor;
+    }
+
+    public String getDistributionCentersCatchmentAreaFile() {
+        return distributionCentersCatchmenAreaFile;
     }
 }

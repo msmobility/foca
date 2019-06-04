@@ -22,7 +22,7 @@ public class DataSet {
 
     private Map<Id, Integer> observedCounts = new HashMap<>();
 
-    private final Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> distributionCenters = new HashMap<>();
+    private final Map<Integer, Map<CommodityGroup, Map<Integer, DistributionCenter>>> distributionCenters = new HashMap<>();
 
     private final HashBasedTable<String, Commodity, Double> makeTable = HashBasedTable.create();
 
@@ -93,11 +93,11 @@ public class DataSet {
         return uncongestedTravelTimeMatrix;
     }
 
-    public ArrayList<DistributionCenter> getDistributionCenterForZoneAndCommodityGroup(int zoneId, CommodityGroup commodityGroup) {
+    public Map<Integer, DistributionCenter> getDistributionCentersForZoneAndCommodityGroup(int zoneId, CommodityGroup commodityGroup) {
             return distributionCenters.get(zoneId).get(commodityGroup);
     }
 
-    public Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> getDistributionCenters() {
+    public Map<Integer, Map<CommodityGroup, Map<Integer, DistributionCenter>>> getDistributionCenters() {
         return distributionCenters;
     }
 

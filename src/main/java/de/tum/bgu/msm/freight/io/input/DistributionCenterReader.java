@@ -64,9 +64,9 @@ public class DistributionCenterReader extends CSVReader {
 
     private void addDistributionCenter(DistributionCenter dc, int zoneId, CommodityGroup commodityGroup) {
 
-        Map<Integer, Map<CommodityGroup, ArrayList<DistributionCenter>>> distributionCenters = dataSet.getDistributionCenters();
-        Map<CommodityGroup, ArrayList<DistributionCenter>> distributionCentersAtThisZone;
-        ArrayList<DistributionCenter> distributionCentersAtThisZoneAndCommodityGroup;
+        Map<Integer, Map<CommodityGroup, Map<Integer, DistributionCenter>>> distributionCenters = dataSet.getDistributionCenters();
+        Map<CommodityGroup, Map<Integer, DistributionCenter>> distributionCentersAtThisZone;
+        Map<Integer, DistributionCenter> distributionCentersAtThisZoneAndCommodityGroup;
         if (distributionCenters.containsKey(zoneId)){
             //there is some dc for this zone
             distributionCentersAtThisZone = distributionCenters.get(zoneId);
@@ -75,16 +75,16 @@ public class DistributionCenterReader extends CSVReader {
                distributionCentersAtThisZoneAndCommodityGroup = distributionCentersAtThisZone.get(commodityGroup);
             } else {
                 //thre is not a dc for this zone and commodity, but other dc for other commodities
-                distributionCentersAtThisZoneAndCommodityGroup = new ArrayList<>();
+                distributionCentersAtThisZoneAndCommodityGroup = new HashMap<>();
                 distributionCentersAtThisZone.put(commodityGroup, distributionCentersAtThisZoneAndCommodityGroup);
             }
         } else {
             //there was nothing for this zone;
             distributionCentersAtThisZone = new HashMap<>();
-            distributionCentersAtThisZoneAndCommodityGroup = new ArrayList<>();
+            distributionCentersAtThisZoneAndCommodityGroup = new HashMap<>();
 
         }
-        distributionCentersAtThisZoneAndCommodityGroup.add(dc);
+        distributionCentersAtThisZoneAndCommodityGroup.put(dc.getId(), dc);
         distributionCentersAtThisZone.put(commodityGroup, distributionCentersAtThisZoneAndCommodityGroup);
         distributionCenters.put(zoneId, distributionCentersAtThisZone);
 

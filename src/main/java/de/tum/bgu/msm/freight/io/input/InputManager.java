@@ -17,12 +17,17 @@ public class InputManager {
         readZones();
         readCommodityAttributes();
         readDistributionCenters();
+        readDistributionCenterCatchmentAreas();
         readTerminals();
         readMakeUseTable();
         readWeightDistribution();
         readOrigDestFlows();
 
 
+    }
+
+    private void readDistributionCenterCatchmentAreas() {
+        new DistributionCenterCatchmentAreaReader(dataSet, properties).read();
     }
 
     private void readWeightDistribution() {

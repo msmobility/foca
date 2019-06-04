@@ -14,7 +14,6 @@ import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class OriginDestinationAllocation implements Module {
 
@@ -92,7 +91,7 @@ public class OriginDestinationAllocation implements Module {
                         origCoord = originZone.getCoordinates();
                     } else {
                         InternalZone internalZone = (InternalZone) originZone;
-                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone, dataSet.getMakeTable());
+                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone.getMicroZones().values(), dataSet.getMakeTable());
                         origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
                     }
                     break;
@@ -165,7 +164,7 @@ public class OriginDestinationAllocation implements Module {
                         destCoord = destinationZone.getCoordinates();
                     } else {
                         InternalZone internalZone = (InternalZone) destinationZone;
-                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone, dataSet.getUseTable());
+                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone.getMicroZones().values(), dataSet.getUseTable());
                         destCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
                     }
                     break;
@@ -205,7 +204,9 @@ public class OriginDestinationAllocation implements Module {
     }
 
     private DistributionCenter chooseDistributionCenter(int zoneId, CommodityGroup commodityGroup) {
-        ArrayList<DistributionCenter> distributionCenters = dataSet.getDistributionCenterForZoneAndCommodityGroup(zoneId, commodityGroup);
+        //todo not random distribution center
+        ArrayList<DistributionCenter> distributionCenters = new ArrayList<>();
+        distributionCenters.addAll(dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, commodityGroup).values());
         Collections.shuffle(distributionCenters, properties.getRand());
         return distributionCenters.get(0);
     }

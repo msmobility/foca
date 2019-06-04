@@ -33,11 +33,11 @@ public class FreightFlows {
 
         //properties.setFlowsScaleFactor();
         properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setRunId("results_2010");
+        properties.setRunId("test");
 
         properties.setSelectedZones(new int[]{9162, 9362});
-        properties.setTruckScaleFactor(0.05);
-        properties.setSampleFactorForParcels(0.05);
+        properties.setTruckScaleFactor(0.01);
+        properties.setSampleFactorForParcels(0.01);
 
         properties.setIterations(10);
 
@@ -82,7 +82,7 @@ public class FreightFlows {
         OutputWriter.printOutObjects(parcelsList, Parcel.getHeader(), "output/" + properties.getRunId() +  "/parcels.csv");
 
 
-        //matSimAssignment.run();
+        matSimAssignment.run();
 
 
     }

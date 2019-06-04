@@ -112,12 +112,12 @@ public class ParcelGenerator implements Module {
                     InternalZone destinationZone = (InternalZone) dataSet.getZones().get(parcel.getDistributionCenter().getZoneId());
                     int microZone;
                     if (parcel.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
-                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(destinationZone);
+                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(distributionCenter.getZonesServedByThis());
                         parcel.setDestMicroZone(microZone);
                         parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
                     } else if (parcel.getTransaction().equals(Transaction.BUSINESS_CUSTOMER)) {
                         microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
-                                destinationZone, dataSet.getUseTable());
+                                distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
                         parcel.setDestMicroZone(microZone);
                         parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
                     } else {
@@ -128,13 +128,13 @@ public class ParcelGenerator implements Module {
                     InternalZone originZone = (InternalZone) dataSet.getZones().get(parcel.getDistributionCenter().getZoneId());
                     int microZone;
                     if (parcel.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
-                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(originZone);
+                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(distributionCenter.getZonesServedByThis());
                         parcel.setOrigMicroZone(microZone);
                         parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
                     } else if (parcel.getTransaction().equals(Transaction.BUSINESS_CUSTOMER)) {
 
                         microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
-                                originZone, dataSet.getUseTable());
+                                distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
                         parcel.setOrigMicroZone(microZone);
                         parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
                     } else {
