@@ -16,14 +16,6 @@ public class ZoneSystemProperties extends PropertiesGroup {
         return zoneShapeFile;
     }
 
-    public String getMunichMicroZonesShapeFile() {
-        return munichMicroZonesShapeFile;
-    }
-
-    public String getRegensburgMicroZonesShapeFile() {
-        return regensburgMicroZonesShapeFile;
-    }
-
     public String getIdFieldInZonesShp() {
         return idFieldInZonesShp;
     }
@@ -57,5 +49,14 @@ public class ZoneSystemProperties extends PropertiesGroup {
     }
 
 
+    public String getMicroZonesShapeFile(int zoneId) {
+        if (zoneId == 9162){
+            return munichMicroZonesShapeFile;
+        } else if (zoneId == 9362){
+            return regensburgMicroZonesShapeFile;
+        } else {
+            throw new RuntimeException("This zone does not have micro zones: " + zoneId);
+        }
 
+    }
 }

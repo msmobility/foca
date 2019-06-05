@@ -68,8 +68,11 @@ public class ZonesReader extends CSVReader {
         super.read(properties.zoneSystem().getZoneInputFile(), ",");
         logger.info("Read " + dataSet.getZones().size() + " zones.");
         mapFeaturesToZones(dataSet);
-        mapFeaturesToMicroZones(dataSet, 9162, properties.zoneSystem().getMunichMicroZonesShapeFile());
-        mapFeaturesToMicroZones(dataSet, 9362, properties.zoneSystem().getRegensburgMicroZonesShapeFile());
+        for (int zoneId : properties.getSelectedZones()){
+            mapFeaturesToMicroZones(dataSet, zoneId, properties.zoneSystem().getMicroZonesShapeFile(zoneId));
+        }
+
+
 
     }
 

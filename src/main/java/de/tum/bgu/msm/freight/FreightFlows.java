@@ -38,7 +38,7 @@ public class FreightFlows {
 
         properties.setIterations(1);
 
-        properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/mito_plans_5_percent.xml.gz");
+        properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
 
         //properties.setStoreExpectedTimes(true);
 
