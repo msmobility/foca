@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.freight.data.geo;
 
+import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
 import org.matsim.api.core.v01.Coord;
 
@@ -18,6 +19,8 @@ public class DistributionCenter {
     private final CommodityGroup commodityGroup;
     private final int zoneId;
     private final List<InternalMicroZone> zonesServedByThis;
+    private final List<MicroDepot> microDeportsServedByThis;
+    private final List<ParcelShop> parcelShopsServedByThis;
 
     public DistributionCenter(int id, String name, Coord coord_gk4, CommodityGroup commodityGroup, int zoneId) {
         this.coord_gk4 = coord_gk4;
@@ -26,6 +29,8 @@ public class DistributionCenter {
         this.commodityGroup = commodityGroup;
         this.zoneId = zoneId;
         this.zonesServedByThis = new ArrayList<>();
+        microDeportsServedByThis = new ArrayList<>();
+        parcelShopsServedByThis = new ArrayList<>();
     }
 
     public Coord getCoordinates() {
@@ -46,5 +51,17 @@ public class DistributionCenter {
 
     public List<InternalMicroZone> getZonesServedByThis() {
         return zonesServedByThis;
+    }
+
+    public List<MicroDepot> getMicroDeportsServedByThis() {
+        return microDeportsServedByThis;
+    }
+
+    public List<ParcelShop> getParcelShopsServedByThis() {
+        return parcelShopsServedByThis;
+    }
+
+    public CommodityGroup getCommodityGroup() {
+        return commodityGroup;
     }
 }

@@ -85,7 +85,7 @@ public class OriginDestinationAllocation implements Module {
         if (flowSegment.getSegmentType().equals(SegmentType.POST)) {
             origCoord = dataSet.getTerminals().get(flowSegment.getOriginTerminal()).getCoordinates();
         } else {
-            switch (commodity.getCommodityGroup().getGoodDistribution()) {
+            switch (commodity.getCommodityGroup().getLongDistanceGoodDistribution()) {
                 case DOOR_TO_DOOR:
                     if (!originZone.isInStudyArea()) {
                         origCoord = originZone.getCoordinates();
@@ -158,7 +158,7 @@ public class OriginDestinationAllocation implements Module {
         if (flowSegment.getSegmentType().equals(SegmentType.PRE)) {
             destCoord = dataSet.getTerminals().get(flowSegment.getDestinationTerminal()).getCoordinates();
         } else {
-            switch (commodity.getCommodityGroup().getGoodDistribution()) {
+            switch (commodity.getCommodityGroup().getLongDistanceGoodDistribution()) {
                 case DOOR_TO_DOOR:
                     if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();

@@ -68,7 +68,7 @@ public class FlowsToVehicles implements de.tum.bgu.msm.freight.modules.Module {
                     Collection<FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination).values();
                     for (FlowOriginToDestination flowOriginToDestination : flowsThisOrigDest) {
                         for (FlowSegment flowSegment : flowOriginToDestination.getFlowSegments().values()) {
-                            if (flowSegment.getMode().equals(Mode.ROAD)) {
+                            if (flowSegment.getLongDistanceMode().equals(LongDistanceMode.ROAD)) {
                                 int tripOrigin = flowSegment.getSegmentOrigin();
                                 int tripDestination = flowSegment.getSegmentDestination();
                                 Zone originZone = dataSet.getZones().get(tripOrigin);

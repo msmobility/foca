@@ -16,7 +16,7 @@ public class Properties extends PropertiesGroup {
 
     private String matrixFileName = "./input/matrices/ketten-2010.csv";
     private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
-    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
+    private String distributionCentersFile = "input/distributionCenters/distributionCenters.xml";
     private String terminalsFileName = "input/distributionCenters/intermodal_terminals.csv";
 
     private String networkFile = "./networks/matsim/final_v3.xml.gz";
@@ -48,6 +48,7 @@ public class Properties extends PropertiesGroup {
     private boolean runParcelDelivery = true;
     private String vehicleFileForParcelDelivery = "./input/vehicleTypesForParcelDelivery.xml";
 
+    @Deprecated
     private String distributionCentersCatchmenAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
 
     private String matsimBackgroundTrafficPlanFile = "";
@@ -260,6 +261,7 @@ public class Properties extends PropertiesGroup {
         this.flowsScaleFactor = flowsScaleFactor;
     }
 
+    @Deprecated
     public String getDistributionCentersCatchmentAreaFile() {
         return distributionCentersCatchmenAreaFile;
     }

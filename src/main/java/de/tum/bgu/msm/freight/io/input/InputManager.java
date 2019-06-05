@@ -17,7 +17,7 @@ public class InputManager {
         readZones();
         readCommodityAttributes();
         readDistributionCenters();
-        readDistributionCenterCatchmentAreas();
+//        readDistributionCenterCatchmentAreas();
         readTerminals();
         readMakeUseTable();
         readWeightDistribution();
@@ -26,9 +26,9 @@ public class InputManager {
 
     }
 
-    private void readDistributionCenterCatchmentAreas() {
-        new DistributionCenterCatchmentAreaReader(dataSet, properties).read();
-    }
+//    private void readDistributionCenterCatchmentAreas() {
+//        new DistributionCenterCatchmentAreaReader(dataSet, properties).read();
+//    }
 
     private void readWeightDistribution() {
         ParcelWeightDistributionReader parcelWeightDistributionReader = new ParcelWeightDistributionReader(dataSet, properties);
@@ -49,8 +49,14 @@ public class InputManager {
     }
 
     private void readDistributionCenters() {
-        DistributionCenterReader distributionCenterReader = new DistributionCenterReader(dataSet, properties);
-        distributionCenterReader.read();
+
+        DistributionCenterReaderXML distributionCenterReaderXML = new DistributionCenterReaderXML(dataSet);
+        distributionCenterReaderXML.setValidating(false);
+        distributionCenterReaderXML.read(properties.getDistributionCentersFile());
+
+
+//        DistributionCenterReader distributionCenterReader = new DistributionCenterReader(dataSet, properties);
+//        distributionCenterReader.read();
     }
 
 

@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.freight.data.freight;
 
-public enum Mode {
+public enum LongDistanceMode {
 
     RAIL(1),
     ROAD(2),
@@ -8,11 +8,11 @@ public enum Mode {
 
     private final int code;
 
-    Mode(int code){
+    LongDistanceMode(int code){
         this.code = code;
     }
 
-    public static Mode valueOf(int code){
+    public static LongDistanceMode valueOf(int code){
         switch (code){
             case 1:
                 return RAIL;

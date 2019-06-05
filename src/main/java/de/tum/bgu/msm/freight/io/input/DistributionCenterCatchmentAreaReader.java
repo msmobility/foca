@@ -10,7 +10,7 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-
+@Deprecated
 public class DistributionCenterCatchmentAreaReader extends CSVReader {
 
 
@@ -58,18 +58,7 @@ public class DistributionCenterCatchmentAreaReader extends CSVReader {
     public void read() {
         super.read(properties.getDistributionCentersCatchmentAreaFile(), ",");
 
-        //fill distribution centers with catchment areas equal to all the areas, if no information is given
-        for (int zone : dataSet.getDistributionCenters().keySet()){
-            for(CommodityGroup commodityGroup : dataSet.getDistributionCenters().get(zone).keySet()){
-                for (DistributionCenter distributionCenter : dataSet.getDistributionCenters().get(zone).get(commodityGroup).values()){
-                    if (distributionCenter.getZonesServedByThis().isEmpty()){
-                        InternalZone internalZone = (InternalZone) dataSet.getZones().get(zone);
-                        distributionCenter.getZonesServedByThis().addAll(internalZone.getMicroZones().values());
-                        logger.warn("Distribution center " + distributionCenter.getName() + " has not a defined catchment area");
-                    }
-                }
-            }
-        }
+
 
 
     }

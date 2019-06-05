@@ -4,17 +4,12 @@ import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.FlowSegment;
 import de.tum.bgu.msm.freight.data.freight.LongDistanceTruckTrip;
 import de.tum.bgu.msm.freight.data.freight.ShortDistanceTruckTrip;
-import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.DepartureTimeDistribution;
 import de.tum.bgu.msm.freight.modules.common.NormalDepartureTimeDistribution;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.*;
-import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.population.PopulationUtils;
-import org.matsim.core.population.io.PopulationReader;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,7 +40,7 @@ public class MATSimPopGen {
 
                 String idOfVehicle = flowSegment.getCommodity().getCommodityGroup() + "-" +
                         flowSegment.getTruckTrips().indexOf(longDistanceTruckTrip) + "-" +
-                        flowSegment.getCommodity().getCommodityGroup().getGoodDistribution() + "-" +
+                        flowSegment.getCommodity().getCommodityGroup().getLongDistanceGoodDistribution() + "-" +
                         flowSegment.getSegmentType() + "-" +
                         counter;
 

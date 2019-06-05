@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.freight.data.freight;
 
-public enum GoodDistribution {
+public enum LDDistributionType {
 
     /**
      * One truck from origin to destination

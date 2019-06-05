@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.freight.data.freight;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class FlowSegment {
     private final int flowDestination;
     private int originTerminal = -1;
     private int destinationTerminal = -1;
-    private Mode mode;
+    private LongDistanceMode longDistanceMode;
     private Commodity commodity;
     private double volume_tn;
     private SegmentType segmentType;
@@ -27,10 +26,10 @@ public class FlowSegment {
     private double tt_s;
 
 
-    public FlowSegment(int segmentOrigin, int segmentDestination, Mode mode, Commodity commodity, double volume_tn, SegmentType segmentType, FlowType flowType, int flowOrigin, int flowDestination) {
+    public FlowSegment(int segmentOrigin, int segmentDestination, LongDistanceMode longDistanceMode, Commodity commodity, double volume_tn, SegmentType segmentType, FlowType flowType, int flowOrigin, int flowDestination) {
         this.segmentOrigin = segmentOrigin;
         this.segmentDestination = segmentDestination;
-        this.mode = mode;
+        this.longDistanceMode = longDistanceMode;
         this.commodity = commodity;
         this.volume_tn = volume_tn;
         this.segmentType = segmentType;
@@ -68,10 +67,10 @@ public class FlowSegment {
         builder.append(flowDestination).append(",");
         builder.append(commodity).append(",");
         builder.append(commodity.getCommodityGroup()).append(",");
-        builder.append(commodity.getCommodityGroup().getGoodDistribution()).append(",");
+        builder.append(commodity.getCommodityGroup().getLongDistanceGoodDistribution()).append(",");
         builder.append(volume_tn).append(",");
         builder.append(segmentType).append(",");
-        builder.append(mode).append(",");
+        builder.append(longDistanceMode).append(",");
         builder.append(longDistanceTruckTrips.size());
 
 
@@ -87,8 +86,8 @@ public class FlowSegment {
         return segmentDestination;
     }
 
-    public Mode getMode() {
-        return mode;
+    public LongDistanceMode getLongDistanceMode() {
+        return longDistanceMode;
     }
 
     public Commodity getCommodity() {

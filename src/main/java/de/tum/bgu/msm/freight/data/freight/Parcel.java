@@ -1,7 +1,8 @@
 package de.tum.bgu.msm.freight.data.freight;
 
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.Zone;
+import de.tum.bgu.msm.freight.data.geo.MicroDepot;
+import de.tum.bgu.msm.freight.data.geo.ParcelShop;
 import org.matsim.api.core.v01.Coord;
 
 public class Parcel {
@@ -12,8 +13,11 @@ public class Parcel {
     private final double volume_m3;
     private final double weight_kg;
     private final Commodity commodity;
+    private final DistributionCenter distributionCenter;
 
-    private DistributionCenter distributionCenter;
+    private ParcelDistributionType parcelDistributionType;
+    private MicroDepot microDepot = null;
+    private ParcelShop parcelShop = null;
     private Coord originCoord;
     private Coord destCoord;
     private int origMicroZoneId;
@@ -44,7 +48,9 @@ public class Parcel {
                 append("origMicroZone").append(",").
                 append("destMicroZone").append(",").
                 append("distributionCenter").append(",").
-                append("transaction");
+                append("transaction").append(",").
+                append("microDepot").append(",").
+                append("parcelShop");
 
 
         return builder.toString();
@@ -76,7 +82,9 @@ public class Parcel {
 
 
         builder.append(distributionCenter.getId()).append(",").
-                append(transaction.toString());
+                append(transaction.toString()).append(",").
+                append(microDepot).append(",").
+                append(parcelShop);
 
         return builder.toString();
 
@@ -136,5 +144,37 @@ public class Parcel {
 
     public void setDestMicroZone(int microZone) {
         this.destMicroZoneId = microZone;
+    }
+
+    public int getDestMicroZoneId() {
+        return destMicroZoneId;
+    }
+
+    public int getOrigMicroZoneId(){
+        return origMicroZoneId;
+    }
+
+    public ParcelDistributionType getParcelDistributionType() {
+        return parcelDistributionType;
+    }
+
+    public void setParcelDistributionType(ParcelDistributionType parcelDistributionType) {
+        this.parcelDistributionType = parcelDistributionType;
+    }
+
+    public MicroDepot getMicroDepot() {
+        return microDepot;
+    }
+
+    public void setMicroDepot(MicroDepot microDepot) {
+        this.microDepot = microDepot;
+    }
+
+    public ParcelShop getParcelShop() {
+        return parcelShop;
+    }
+
+    public void setParcelShop(ParcelShop parcelShop) {
+        this.parcelShop = parcelShop;
     }
 }

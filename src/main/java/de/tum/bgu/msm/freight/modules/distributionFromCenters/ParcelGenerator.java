@@ -4,10 +4,12 @@ import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.Parcel;
+import de.tum.bgu.msm.freight.data.freight.ParcelDistributionType;
 import de.tum.bgu.msm.freight.data.freight.Transaction;
 import de.tum.bgu.msm.freight.data.geo.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
+import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.ParcelEmpiricalWeightDistribution_kg;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
@@ -34,6 +36,7 @@ public class ParcelGenerator implements Module {
     private WeightDistribution weightDistribution;
 
     private final int density_kg_m3 = 16;
+    private double MAX_WEIGHT_FOR_CARGO_BIKE_KG = 10.;
 
 
     @Override
@@ -56,6 +59,28 @@ public class ParcelGenerator implements Module {
         generateParcels();
         chooseTransactionType();
         assignCoordinates();
+        chooseParcelDistributionType();
+    }
+
+    private void chooseParcelDistributionType() {
+
+        for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
+            for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
+                if(!distributionCenter.getMicroDeportsServedByThis().isEmpty()){
+                    for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()){
+                        InternalZone internalZone = (InternalZone)dataSet.getZones().get(distributionCenter.getZoneId());
+                        if (microDepot.getZonesServedByThis().contains(internalZone.getMicroZones().get(parcel.getOrigMicroZoneId()))
+                        && parcel.getWeight_kg() < MAX_WEIGHT_FOR_CARGO_BIKE_KG){
+                            parcel.setParcelDistributionType(ParcelDistributionType.CARGO_BIKE);
+                        }
+                    }
+                } else {
+                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+                }
+
+
+            }
+        }
     }
 
     private void generateParcels() {
@@ -121,7 +146,7 @@ public class ParcelGenerator implements Module {
                         parcel.setDestMicroZone(microZone);
                         parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
                     } else {
-                        //todo nothing done now if it is not an individual customer
+                        //todo choose a parcel shop
                     }
                 } else {
                     parcel.setDestCoord(parcel.getDistributionCenter().getCoordinates());
@@ -138,7 +163,7 @@ public class ParcelGenerator implements Module {
                         parcel.setOrigMicroZone(microZone);
                         parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
                     } else {
-                        //todo nothing done now if it is not an individual customer
+                        //todo coose a parcel shop
                     }
                 }
                 counter.incrementAndGet();
@@ -167,7 +192,8 @@ public class ParcelGenerator implements Module {
         while (cum_weight < volume_tn * 1000) {
             double weight_kg = weightDistribution.getRandomWeight(Commodity.POST_PACKET, 0.);
                 if (weight_kg > minimumWeight_kg) {
-                    parcelsThisDistributionCenter.add(new Parcel(counter.getAndIncrement(), toCustomer, weight_kg / density_kg_m3, weight_kg, distributionCenter, commodity));
+                    parcelsThisDistributionCenter.add(new Parcel(counter.getAndIncrement(),
+                            toCustomer, weight_kg / density_kg_m3, weight_kg, distributionCenter, commodity));
                 }
                 cum_weight += weight_kg;
         }

@@ -51,7 +51,7 @@ public class LongDistanceTruckTrip implements TruckTrip {
                 append(load_tn).append(",").
                 append(flowSegment.getCommodity()).append(",").
                 append(flowSegment.getCommodity().getCommodityGroup()).append(",").
-                append(flowSegment.getCommodity().getCommodityGroup().getGoodDistribution()).append(",").
+                append(flowSegment.getCommodity().getCommodityGroup().getLongDistanceGoodDistribution()).append(",").
                 append(origCoord.getX()).append(",").
                 append(origCoord.getY()).append(",").
                 append(destCoord.getX()).append(",").

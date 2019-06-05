@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Deprecated
 public class DistributionCenterReader extends CSVReader {
 
     private static Logger logger = Logger.getLogger(DistributionCenter.class);

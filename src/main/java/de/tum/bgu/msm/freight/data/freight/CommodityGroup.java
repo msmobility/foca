@@ -2,26 +2,26 @@ package de.tum.bgu.msm.freight.data.freight;
 
 public enum CommodityGroup {
 
-    AGRI (GoodDistribution.DOOR_TO_DOOR),
-    PRIMARY (GoodDistribution.DOOR_TO_DOOR),
-    SOIL_ROCK (GoodDistribution.DOOR_TO_DOOR),
-    FOOD (GoodDistribution.SINGLE_VEHICLE),
-    MANUFACT(GoodDistribution.SINGLE_VEHICLE),
-    HEAVY_MANUFACT (GoodDistribution.DOOR_TO_DOOR),
-    CHEMICAL (GoodDistribution.DOOR_TO_DOOR),
-    WASTE (GoodDistribution.DOOR_TO_DOOR),
-    GROUP(GoodDistribution.SINGLE_VEHICLE),
-    PACKET(GoodDistribution.PARCEL_DELIVERY),
-    OTHER (GoodDistribution.DOOR_TO_DOOR),
-    EMPTY(GoodDistribution.DOOR_TO_DOOR);
+    AGRI (LDDistributionType.DOOR_TO_DOOR),
+    PRIMARY (LDDistributionType.DOOR_TO_DOOR),
+    SOIL_ROCK (LDDistributionType.DOOR_TO_DOOR),
+    FOOD (LDDistributionType.SINGLE_VEHICLE),
+    MANUFACT(LDDistributionType.SINGLE_VEHICLE),
+    HEAVY_MANUFACT (LDDistributionType.DOOR_TO_DOOR),
+    CHEMICAL (LDDistributionType.DOOR_TO_DOOR),
+    WASTE (LDDistributionType.DOOR_TO_DOOR),
+    GROUP(LDDistributionType.SINGLE_VEHICLE),
+    PACKET(LDDistributionType.PARCEL_DELIVERY),
+    OTHER (LDDistributionType.DOOR_TO_DOOR),
+    EMPTY(LDDistributionType.DOOR_TO_DOOR);
 
-    private GoodDistribution goodDistribution;
+    private LDDistributionType longDistanceGoodDistribution;
 
-    CommodityGroup(GoodDistribution goodDistribution) {
-        this.goodDistribution = goodDistribution;
+    CommodityGroup(LDDistributionType LDDistributionType) {
+        this.longDistanceGoodDistribution = LDDistributionType;
     }
 
-    public GoodDistribution getGoodDistribution() {
-        return goodDistribution;
+    public LDDistributionType getLongDistanceGoodDistribution() {
+        return longDistanceGoodDistribution;
     }
 }
