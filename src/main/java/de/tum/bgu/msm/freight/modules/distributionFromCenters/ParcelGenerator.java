@@ -66,19 +66,20 @@ public class ParcelGenerator implements Module {
 
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
             for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
-                if(!distributionCenter.getMicroDeportsServedByThis().isEmpty()){
-                    for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()){
-                        InternalZone internalZone = (InternalZone)dataSet.getZones().get(distributionCenter.getZoneId());
-                        if (microDepot.getZonesServedByThis().contains(internalZone.getMicroZones().get(parcel.getOrigMicroZoneId()))
-                        && parcel.getWeight_kg() < MAX_WEIGHT_FOR_CARGO_BIKE_KG){
-                            parcel.setParcelDistributionType(ParcelDistributionType.CARGO_BIKE);
+                if(parcel.isToDestination()){
+                    if(!distributionCenter.getMicroDeportsServedByThis().isEmpty()){
+                        for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()){
+                            InternalZone internalZone = (InternalZone) dataSet.getZones().get(distributionCenter.getZoneId());
+                            if (microDepot.getZonesServedByThis().contains(internalZone.getMicroZones().get(parcel.getDestMicroZoneId()))
+                                    && parcel.getWeight_kg() < MAX_WEIGHT_FOR_CARGO_BIKE_KG){
+                                parcel.setParcelDistributionType(ParcelDistributionType.CARGO_BIKE);
+                                parcel.setMicroDepot(microDepot);
+                            }
                         }
+                    } else {
+                        parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     }
-                } else {
-                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                 }
-
-
             }
         }
     }

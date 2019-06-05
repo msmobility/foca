@@ -25,6 +25,7 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
     private final static String MICRO_DEPOT = "microDepot";
     private final static String MICRO_DEPOT_CATCHMENT_AREA = "microDepotCatchmentArea";
 
+    private int counterDistributionCenters;
     private final DataSet dataSet;
 
     private DistributionCenter currentDistributionCenter;
@@ -71,7 +72,7 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
 
     private void startMicroZone(Attributes atts) {
         InternalZone internalZone = (InternalZone) dataSet.getZones().get(currentDistributionCenter.getZoneId());
-        InternalMicroZone internalMicroZone = internalZone.getMicroZones().get(atts.getValue("id"));
+        InternalMicroZone internalMicroZone = internalZone.getMicroZones().get(Integer.parseInt(atts.getValue("id")));
         currentCatchmentArea.add(internalMicroZone);
 
 
@@ -100,6 +101,7 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
             currentDistributionCenter.getZonesServedByThis().addAll(currentCatchmentArea);
             currentCatchmentArea = null;
         } else if (name.equals(MICRO_DEPOT)){
+            currentDistributionCenter.getMicroDeportsServedByThis().add(currentMicroDepot);
             currentMicroDepot = null;
         } else if (name.equals(MICRO_DEPOT_CATCHMENT_AREA)){
             currentMicroDepot.getZonesServedByThis().addAll(currentCatchmentArea);
