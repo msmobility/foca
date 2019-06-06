@@ -22,7 +22,8 @@ public class FreightFlowsTest {
         properties.setFlowsScaleFactor(0.05);
         properties.setTruckScaleFactor(1);
         properties.setSampleFactorForParcels(0.05);
-        properties.setIterations(20);
+        properties.setIterations(1);
+        properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
 
         properties.logProperties();
 

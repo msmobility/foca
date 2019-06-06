@@ -1,17 +1,15 @@
-package de.tum.bgu.msm.freight.io.output.counts;
+package de.tum.bgu.msm.analysis;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.io.input.LinksFileReader;
+import de.tum.bgu.msm.freight.io.output.CountEventHandler;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.events.EventsUtils;
 import org.matsim.core.events.MatsimEventsReader;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
 
 public class MultiDayCounts {
 
@@ -37,30 +35,11 @@ public class MultiDayCounts {
 
         eventsManager.addHandler(countEventHandler);
         new MatsimEventsReader(eventsManager).readFile(eventsFile);
-
-        Map<Id, Map<Integer, Integer>>  counts = countEventHandler.getMapOfCOunts();
-
-        printOutCounts(countsFile, counts);
+        countEventHandler.printOutCounts(countsFile);
 
 
 
     }
 
-    public static void printOutCounts(String countsFile, Map<Id, Map<Integer, Integer>>  counts) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(countsFile));
 
-        pw.println("link,hour,count");
-
-        for (Id id : counts.keySet()){
-            Map<Integer, Integer> countsByHour = counts.get(id);
-            for (int hour : countsByHour.keySet()){
-                pw.println(id.toString() + "," +
-                        hour + "," +
-                        countsByHour.get(hour));
-            }
-        }
-
-        pw.close();
-
-    }
 }

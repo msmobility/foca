@@ -38,7 +38,7 @@ public class MATSimTruckPlanGenerator {
 
                 boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
 
-                String idOfVehicle = flowSegment.getCommodity().getCommodityGroup() + "-" +
+                String idOfVehicle = "lDTruck" + flowSegment.getCommodity().getCommodityGroup() + "-" +
                         flowSegment.getTruckTrips().indexOf(LDTruckTrip) + "-" +
                         flowSegment.getCommodity().getCommodityGroup().getLongDistanceGoodDistribution() + "-" +
                         flowSegment.getSegmentType() + "-" +
@@ -71,7 +71,7 @@ public class MATSimTruckPlanGenerator {
 
         for (SDTruckTrip SDTruckTrip : dataSet.getSDTruckTrips()){
             if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
-                String idOfVehicle = "SD_";
+                String idOfVehicle = "sDTruck_";
                 idOfVehicle+= SDTruckTrip.getCommodity().getCommodityGroup().toString() + "_";
                 idOfVehicle+= SDTruckTrip.getId();
 

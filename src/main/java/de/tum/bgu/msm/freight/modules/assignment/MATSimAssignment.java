@@ -2,9 +2,8 @@ package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.modules.Module;
-import de.tum.bgu.msm.freight.io.output.counts.CountEventHandler;
+import de.tum.bgu.msm.freight.io.output.CountEventHandler;
 import de.tum.bgu.msm.freight.io.input.LinksFileReader;
-import de.tum.bgu.msm.freight.io.output.counts.MultiDayCounts;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
@@ -86,6 +85,8 @@ public class MATSimAssignment implements Module {
 
     private void runMatsim() {
 
+
+
         CountEventHandler countEventHandler = new CountEventHandler(properties);
         if (properties.isReadEventsForCounts()) {
             LinksFileReader linksFileReader = new LinksFileReader(dataSet, properties.getCountStationLinkListFile());
@@ -101,7 +102,7 @@ public class MATSimAssignment implements Module {
 
         if (properties.isReadEventsForCounts()) {
             try {
-                MultiDayCounts.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName(), countEventHandler.getMapOfCOunts());
+                countEventHandler.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName());
             } catch (IOException e) {
                 e.printStackTrace();
             }
