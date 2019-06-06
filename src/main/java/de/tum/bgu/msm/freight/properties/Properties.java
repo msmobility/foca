@@ -3,7 +3,6 @@ package de.tum.bgu.msm.freight.properties;
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import org.apache.log4j.Logger;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
 
@@ -11,7 +10,8 @@ public class Properties extends PropertiesGroup {
 
     private ZoneSystemProperties zoneSystemProperties;
     private FlowsProperties flowsProperties;
-    private DisaggregationProperties disaggregationProperties;
+    private LDProperties lDProperties;
+    private SDProperties sDProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
     private String matrixFileName = "./input/matrices/ketten-2010.csv";
@@ -60,7 +60,8 @@ public class Properties extends PropertiesGroup {
         FreightFlowUtils.setRandomNumber(this);
         zoneSystemProperties = new ZoneSystemProperties();
         flowsProperties = new FlowsProperties();
-        disaggregationProperties = new DisaggregationProperties();
+        lDProperties = new LDProperties();
+        sDProperties = new SDProperties();
 
     }
 
@@ -68,7 +69,8 @@ public class Properties extends PropertiesGroup {
         this.logUsedProperties();
         zoneSystemProperties.logUsedProperties();
         flowsProperties.logUsedProperties();
-        disaggregationProperties.logUsedProperties();
+        lDProperties.logUsedProperties();
+        sDProperties.logUsedProperties();
     }
 
 
@@ -81,8 +83,12 @@ public class Properties extends PropertiesGroup {
         return flowsProperties;
     }
 
-    public DisaggregationProperties disaggregation() {
-        return disaggregationProperties;
+    public LDProperties longDistance() {
+        return lDProperties;
+    }
+
+    public SDProperties shortDistance() {
+        return sDProperties;
     }
 
     public String getMatrixFileName() {

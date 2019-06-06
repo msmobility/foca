@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.longDistance;
 
 public enum SegmentType {
     PRE,

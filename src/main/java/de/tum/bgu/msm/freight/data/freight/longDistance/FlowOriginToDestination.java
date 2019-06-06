@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.longDistance;
 
 import java.util.HashMap;
 import java.util.Map;

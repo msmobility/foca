@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.runMATSim;
+package de.tum.bgu.msm.freight.modules.assignment;
 
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;

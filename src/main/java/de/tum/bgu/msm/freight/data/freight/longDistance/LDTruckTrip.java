@@ -1,9 +1,10 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.longDistance;
 
+import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import org.matsim.api.core.v01.Coord;
 
-public class LongDistanceTruckTrip implements TruckTrip {
+public class LDTruckTrip implements TruckTrip {
     private final int id;
     private Coord origCoord;
     private Coord destCoord;
@@ -13,7 +14,7 @@ public class LongDistanceTruckTrip implements TruckTrip {
     private DistributionCenter originDistributionCenter = null;
     private DistributionCenter destinationDistributionCenter = null;
 
-    public LongDistanceTruckTrip(int id, FlowSegment FlowSegment, double load_tn) {
+    public LDTruckTrip(int id, FlowSegment FlowSegment, double load_tn) {
         this.id = id;
         this.flowSegment = FlowSegment;
         this.load_tn = load_tn;
@@ -96,7 +97,7 @@ public class LongDistanceTruckTrip implements TruckTrip {
         this.destCoord = destCoord;
     }
 
-    public de.tum.bgu.msm.freight.data.freight.FlowSegment getFlowSegment() {
+    public FlowSegment getFlowSegment() {
         return flowSegment;
     }
 

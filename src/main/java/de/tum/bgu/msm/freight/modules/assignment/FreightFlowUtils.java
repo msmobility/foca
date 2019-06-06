@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.runMATSim;
+package de.tum.bgu.msm.freight.modules.assignment;
 
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
@@ -9,7 +9,6 @@ import org.matsim.contrib.freight.replanning.CarrierPlanStrategyManagerFactory;
 import org.matsim.contrib.freight.replanning.modules.ReRouteVehicles;
 import org.matsim.contrib.freight.replanning.modules.TimeAllocationMutator;
 import org.matsim.contrib.freight.scoring.CarrierScoringFunctionFactory;
-import org.matsim.contrib.freight.usecases.chessboard.CarrierScoringFunctionFactoryImpl;
 import org.matsim.contrib.freight.usecases.chessboard.TravelDisutilities;
 import org.matsim.core.replanning.GenericPlanStrategyImpl;
 import org.matsim.core.replanning.GenericStrategyManager;

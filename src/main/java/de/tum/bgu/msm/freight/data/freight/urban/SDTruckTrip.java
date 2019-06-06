@@ -1,9 +1,11 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.urban;
 
+import de.tum.bgu.msm.freight.data.freight.Commodity;
+import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import org.matsim.api.core.v01.Coord;
 
-public class ShortDistanceTruckTrip {
+public class SDTruckTrip implements TruckTrip {
 
     private final int id;
     private final DistributionCenter distributionCenter;
@@ -13,7 +15,7 @@ public class ShortDistanceTruckTrip {
     private final boolean toCustomer;
     private final double weight_tn;
 
-    public ShortDistanceTruckTrip(int id, Coord origCoord, Coord destCoord, Commodity commodity, DistributionCenter distributionCenter, boolean toCustomer, double weight_tn) {
+    public SDTruckTrip(int id, Coord origCoord, Coord destCoord, Commodity commodity, DistributionCenter distributionCenter, boolean toCustomer, double weight_tn) {
         this.id = id;
         this.origCoord = origCoord;
         this.destCoord = destCoord;

@@ -2,6 +2,11 @@ package de.tum.bgu.msm.freight.data;
 
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.freight.data.freight.*;
+import de.tum.bgu.msm.freight.data.freight.longDistance.FlowOriginToDestination;
+import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
+import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
+import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
+import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
 import de.tum.bgu.msm.freight.data.geo.*;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Population;
@@ -42,9 +47,9 @@ public class DataSet {
 
     private final Map<Double,Double> parcelWeightDistribution = new TreeMap<>();
 
-    private final List<LongDistanceTruckTrip> longDistanceTruckTrips = new ArrayList<>();
+    private final List<LDTruckTrip> LDTruckTrips = new ArrayList<>();
 
-    private final List<ShortDistanceTruckTrip> shortDistanceTruckTrips = new ArrayList<>();
+    private final List<SDTruckTrip> SDTruckTrips = new ArrayList<>();
 
 
     //getters and setters
@@ -141,12 +146,12 @@ public class DataSet {
         return volByCommodityDistributionCenterAndBoundByParcels;
     }
 
-    public List<LongDistanceTruckTrip> getLongDistanceTruckTrips() {
-        return longDistanceTruckTrips;
+    public List<LDTruckTrip> getLDTruckTrips() {
+        return LDTruckTrips;
     }
 
-    public List<ShortDistanceTruckTrip> getShortDistanceTruckTrips() {
-        return shortDistanceTruckTrips;
+    public List<SDTruckTrip> getSDTruckTrips() {
+        return SDTruckTrips;
     }
 
     public double getWeightDistributionInterval() {

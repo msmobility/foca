@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.runMATSim;
+package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Scenario;

@@ -1,6 +1,6 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.urban;
 
-public enum Transaction {
+public enum ParcelTransaction {
 
     /**
      * a private company that sends/receives an individual parcel or a small group of them
@@ -18,7 +18,7 @@ public enum Transaction {
     private double shareDeliveriesAtCustomer;
     private double sharePickupsAtCustomer;
 
-    Transaction(double shareDeliveriesAtCustomer, double sharePickupsAtCustomer) {
+    ParcelTransaction(double shareDeliveriesAtCustomer, double sharePickupsAtCustomer) {
         this.shareDeliveriesAtCustomer = shareDeliveriesAtCustomer;
         this.sharePickupsAtCustomer = sharePickupsAtCustomer;
     }

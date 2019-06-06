@@ -1,14 +1,13 @@
-package de.tum.bgu.msm.freight.modules.runMATSim;
+package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.modules.Module;
-import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.CountEventHandler;
+import de.tum.bgu.msm.freight.modules.longDistance.counts.CountEventHandler;
 import de.tum.bgu.msm.freight.io.input.LinksFileReader;
-import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.counts.MultiDayCounts;
+import de.tum.bgu.msm.freight.modules.longDistance.counts.MultiDayCounts;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.freight.carrier.*;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -31,7 +30,7 @@ public class MATSimAssignment implements Module {
     private DataSet dataSet;
     private MATSimFreightManager matSimFreightManager;
 
-    private MATSimPopGen matSimPopGen;
+    private MATSimTruckPlanGenerator matSimTruckPlanGenerator;
 
     public MATSimAssignment() {
 
@@ -43,15 +42,12 @@ public class MATSimAssignment implements Module {
         this.dataSet = dataSet;
 
         config = MATSimConfigUtils.configure(ConfigUtils.createConfig(), properties);
-
         scenario = (MutableScenario) ScenarioUtils.loadScenario(config);
         network = scenario.getNetwork();
         controler = new Controler(scenario);
-
         matSimFreightManager = new MATSimFreightManager(config, scenario, controler, properties);
-
-        matSimPopGen = new MATSimPopGen();
-        matSimPopGen.setup(dataSet, properties);
+        matSimTruckPlanGenerator = new MATSimTruckPlanGenerator();
+        matSimTruckPlanGenerator.setup(dataSet, properties);
 
         if (properties.isRunParcelDelivery()) {
             //configure MATSim for freight extension
@@ -74,7 +70,7 @@ public class MATSimAssignment implements Module {
         } else {
             scenario.setPopulation(PopulationUtils.createPopulation(config));
         }
-        matSimPopGen.addTrucks(scenario.getPopulation());
+        matSimTruckPlanGenerator.addTrucks(scenario.getPopulation());
         generateCarriersPopulation(matSimFreightManager.getCarriers(), matSimFreightManager.getCarrierVehicleTypes());
     }
 

@@ -1,5 +1,6 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.urban;
 
+import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.data.geo.ParcelShop;
@@ -8,7 +9,7 @@ import org.matsim.api.core.v01.Coord;
 public class Parcel {
 
     private final int id;
-    private Transaction transaction;
+    private ParcelTransaction parcelTransaction;
     private final boolean toDestination;
     private final double volume_m3;
     private final double weight_kg;
@@ -50,7 +51,8 @@ public class Parcel {
                 append("distributionCenter").append(",").
                 append("transaction").append(",").
                 append("microDepot").append(",").
-                append("parcelShop");
+                append("parcelShop").append(",").
+                append("distributionType");
 
 
         return builder.toString();
@@ -64,7 +66,7 @@ public class Parcel {
                 append(weight_kg).append(",").
                 append(commodity).append(",");
 
-        if (this.getTransaction().equals(Transaction.BUSINESS_CUSTOMER) || this.getTransaction().equals(Transaction.PRIVATE_CUSTOMER)) {
+        if (this.getParcelTransaction().equals(ParcelTransaction.BUSINESS_CUSTOMER) || this.getParcelTransaction().equals(ParcelTransaction.PRIVATE_CUSTOMER)) {
             builder.append(originCoord.getX()).append(",").
                     append(originCoord.getY()).append(",").
                     append(destCoord.getX()).append(",").
@@ -82,9 +84,10 @@ public class Parcel {
 
 
         builder.append(distributionCenter.getId()).append(",").
-                append(transaction.toString()).append(",").
+                append(parcelTransaction.toString()).append(",").
                 append(microDepot).append(",").
-                append(parcelShop);
+                append(parcelShop).append(",").
+                append(parcelDistributionType);
 
         return builder.toString();
 
@@ -94,12 +97,12 @@ public class Parcel {
         return id;
     }
 
-    public Transaction getTransaction() {
-        return transaction;
+    public ParcelTransaction getParcelTransaction() {
+        return parcelTransaction;
     }
 
-    public void setTransaction(Transaction transaction) {
-        this.transaction = transaction;
+    public void setParcelTransaction(ParcelTransaction parcelTransaction) {
+        this.parcelTransaction = parcelTransaction;
     }
 
     public boolean isToDestination() {

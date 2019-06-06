@@ -2,14 +2,17 @@ package de.tum.bgu.msm.freight;
 
 
 import de.tum.bgu.msm.freight.data.DataSet;
-import de.tum.bgu.msm.freight.data.freight.*;
+import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
+import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
+import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
+import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
 import de.tum.bgu.msm.freight.io.input.InputManager;
 import de.tum.bgu.msm.freight.io.output.OutputWriter;
-import de.tum.bgu.msm.freight.modules.distributionFromCenters.FirstLastMileVehicleDistribution;
-import de.tum.bgu.msm.freight.modules.distributionFromCenters.ParcelGenerator;
-import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.FlowsToVehicles;
-import de.tum.bgu.msm.freight.modules.runMATSim.MATSimAssignment;
-import de.tum.bgu.msm.freight.modules.longDistanceTruckAssignment.OriginDestinationAllocation;
+import de.tum.bgu.msm.freight.modules.urbanLogistics.SDTruckGenerator;
+import de.tum.bgu.msm.freight.modules.urbanLogistics.ParcelGenerator;
+import de.tum.bgu.msm.freight.modules.longDistance.FlowsToLDTruckConverter;
+import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
+import de.tum.bgu.msm.freight.modules.longDistance.LDTruckODAllocator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import java.util.ArrayList;
@@ -56,29 +59,29 @@ public class FreightFlows {
 
         DataSet dataSet = io.getDataSet();
 
-        FlowsToVehicles flowsToVehicles = new FlowsToVehicles();
-        OriginDestinationAllocation originDestinationAllocation = new OriginDestinationAllocation();
-        FirstLastMileVehicleDistribution firstLastMileVehicleDistribution = new FirstLastMileVehicleDistribution();
+        FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
+        LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
+        SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
 
-        flowsToVehicles.setup(dataSet, properties);
-        originDestinationAllocation.setup(dataSet, properties);
-        firstLastMileVehicleDistribution.setup(dataSet, properties);
+        flowsToLDTruckConverter.setup(dataSet, properties);
+        LDTruckODAllocator.setup(dataSet, properties);
+        SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
-        flowsToVehicles.run();
-        originDestinationAllocation.run();
-        firstLastMileVehicleDistribution.run();
+        flowsToLDTruckConverter.run();
+        LDTruckODAllocator.run();
+        SDTruckGenerator.run();
         parcelGenerator.run();
 
 
         String outputFolder = properties.getOutputFolder();
         OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), outputFolder + properties.getRunId() +  "/flowSegments.csv");
-        OutputWriter.printOutObjects(dataSet.getLongDistanceTruckTrips(), LongDistanceTruckTrip.getHeader(), outputFolder + properties.getRunId() +  "/ld_trucks.csv");
-        OutputWriter.printOutObjects(dataSet.getShortDistanceTruckTrips(), ShortDistanceTruckTrip.getHeader(), outputFolder + properties.getRunId() +  "/sd_trucks.csv");
+        OutputWriter.printOutObjects(dataSet.getLDTruckTrips(), LDTruckTrip.getHeader(), outputFolder + properties.getRunId() +  "/ld_trucks.csv");
+        OutputWriter.printOutObjects(dataSet.getSDTruckTrips(), SDTruckTrip.getHeader(), outputFolder + properties.getRunId() +  "/sd_trucks.csv");
         List<Parcel> parcelsList = new ArrayList<>();
         for (List<Parcel> listOfParcelsInDc : dataSet.getParcelsByDistributionCenter().values()){
             parcelsList.addAll(listOfParcelsInDc);

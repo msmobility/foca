@@ -1,4 +1,6 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.longDistance;
+
+import de.tum.bgu.msm.freight.data.freight.Commodity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,27 +16,27 @@ public class FlowSegment {
     private final int flowDestination;
     private int originTerminal = -1;
     private int destinationTerminal = -1;
-    private LongDistanceMode longDistanceMode;
+    private LDMode LDMode;
     private Commodity commodity;
     private double volume_tn;
     private SegmentType segmentType;
     private FlowType flowType;
-    private final List<LongDistanceTruckTrip> longDistanceTruckTrips;
+    private final List<LDTruckTrip> LDTruckTrips;
 
     //these attributes are optional only for the trips that are converted to trucks
     private double distance_km;
     private double tt_s;
 
 
-    public FlowSegment(int segmentOrigin, int segmentDestination, LongDistanceMode longDistanceMode, Commodity commodity, double volume_tn, SegmentType segmentType, FlowType flowType, int flowOrigin, int flowDestination) {
+    public FlowSegment(int segmentOrigin, int segmentDestination, LDMode LDMode, Commodity commodity, double volume_tn, SegmentType segmentType, FlowType flowType, int flowOrigin, int flowDestination) {
         this.segmentOrigin = segmentOrigin;
         this.segmentDestination = segmentDestination;
-        this.longDistanceMode = longDistanceMode;
+        this.LDMode = LDMode;
         this.commodity = commodity;
         this.volume_tn = volume_tn;
         this.segmentType = segmentType;
         this.flowType = flowType;
-        this.longDistanceTruckTrips = new ArrayList<>();
+        this.LDTruckTrips = new ArrayList<>();
         this.flowOrigin = flowOrigin;
         this.flowDestination = flowDestination;
     }
@@ -70,8 +72,8 @@ public class FlowSegment {
         builder.append(commodity.getCommodityGroup().getLongDistanceGoodDistribution()).append(",");
         builder.append(volume_tn).append(",");
         builder.append(segmentType).append(",");
-        builder.append(longDistanceMode).append(",");
-        builder.append(longDistanceTruckTrips.size());
+        builder.append(LDMode).append(",");
+        builder.append(LDTruckTrips.size());
 
 
         return builder.toString();
@@ -86,8 +88,8 @@ public class FlowSegment {
         return segmentDestination;
     }
 
-    public LongDistanceMode getLongDistanceMode() {
-        return longDistanceMode;
+    public LDMode getLDMode() {
+        return LDMode;
     }
 
     public Commodity getCommodity() {
@@ -122,8 +124,8 @@ public class FlowSegment {
         this.tt_s = tt_s;
     }
 
-    public List<LongDistanceTruckTrip> getTruckTrips() {
-        return longDistanceTruckTrips;
+    public List<LDTruckTrip> getTruckTrips() {
+        return LDTruckTrips;
     }
 
     public int getOriginTerminal() {

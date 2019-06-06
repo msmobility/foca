@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.data.freight;
+package de.tum.bgu.msm.freight.data.freight.urban;
 
 public enum ParcelDistributionType {
 

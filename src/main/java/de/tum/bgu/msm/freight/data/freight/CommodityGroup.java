@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.freight.data.freight;
 
+import de.tum.bgu.msm.freight.data.freight.longDistance.LDDistributionType;
+
 public enum CommodityGroup {
 
     AGRI (LDDistributionType.DOOR_TO_DOOR),

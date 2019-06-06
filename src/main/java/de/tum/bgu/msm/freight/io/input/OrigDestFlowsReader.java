@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight.io.input;
 
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.data.freight.*;
+import de.tum.bgu.msm.freight.data.freight.longDistance.*;
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -90,21 +91,21 @@ public class OrigDestFlowsReader extends CSVReader {
             int originTerminal = Integer.parseInt(record[originTerminalIndex]);
             int destinationTerminal = Integer.parseInt(record[destinationTerminalIndex]);
 
-            LongDistanceMode longDistanceModeHL = LongDistanceMode.valueOf(Integer.parseInt(record[modeHLIndex]));
+            LDMode LDModeHL = LDMode.valueOf(Integer.parseInt(record[modeHLIndex]));
             Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
             double tonsHL = Double.parseDouble(record[tonsHLIndex]);
             FlowType flowTypeHL = FlowType.getFromCode(Integer.parseInt(record[typeHLIndex]));
-            FlowSegment mainCourse = new FlowSegment(originHL, destinationHL, longDistanceModeHL, commodityHL, tonsHL, SegmentType.MAIN, flowTypeHL, origin, destination);
+            FlowSegment mainCourse = new FlowSegment(originHL, destinationHL, LDModeHL, commodityHL, tonsHL, SegmentType.MAIN, flowTypeHL, origin, destination);
             flowOriginToDestination.addFlow(mainCourse);
 
             int precarriageMode;
             if ((precarriageMode = Integer.parseInt(record[modeVLIndex])) != 0) {
                 //there is a VorLauf
-                LongDistanceMode longDistanceModeVL = LongDistanceMode.valueOf(precarriageMode);
+                LDMode LDModeVL = LDMode.valueOf(precarriageMode);
                 Commodity commodityVL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityVLIndex]));
                 double tonsVL = Double.parseDouble(record[tonsVLIndex]);
                 FlowType flowTypeVL = FlowType.getFromCode(Integer.parseInt(record[typeVLIndex]));
-                FlowSegment preCarriage = new FlowSegment(origin, originHL, longDistanceModeVL, commodityVL, tonsVL, SegmentType.PRE, flowTypeVL, origin, destination);
+                FlowSegment preCarriage = new FlowSegment(origin, originHL, LDModeVL, commodityVL, tonsVL, SegmentType.PRE, flowTypeVL, origin, destination);
                 preCarriage.setDestinationTerminal(originTerminal);
                 mainCourse.setOriginTerminal(originTerminal);
                 flowOriginToDestination.addFlow(preCarriage);
@@ -113,11 +114,11 @@ public class OrigDestFlowsReader extends CSVReader {
             int onCarriageMode;
             if ((onCarriageMode = Integer.parseInt(record[modeNLIndex])) != 0) {
                 //there is a NachLauf
-                LongDistanceMode longDistanceModeNL = LongDistanceMode.valueOf(onCarriageMode);
+                LDMode LDModeNL = LDMode.valueOf(onCarriageMode);
                 Commodity commodityNL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityNLIndex]));
                 double tonsNL = Double.parseDouble(record[tonsNLIndex]);
                 FlowType flowTypeNL = FlowType.getFromCode(Integer.parseInt(record[typeNLIndex]));
-                FlowSegment onCarriage = new FlowSegment(destinationHL, destination, longDistanceModeNL, commodityNL, tonsNL, SegmentType.POST, flowTypeNL, origin, destination);
+                FlowSegment onCarriage = new FlowSegment(destinationHL, destination, LDModeNL, commodityNL, tonsNL, SegmentType.POST, flowTypeNL, origin, destination);
                 onCarriage.setOriginTerminal(destinationTerminal);
                 mainCourse.setDestinationTerminal(destinationTerminal);
                 flowOriginToDestination.addFlow(onCarriage);

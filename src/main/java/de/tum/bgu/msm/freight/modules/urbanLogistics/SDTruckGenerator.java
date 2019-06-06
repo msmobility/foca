@@ -1,10 +1,10 @@
-package de.tum.bgu.msm.freight.modules.distributionFromCenters;
+package de.tum.bgu.msm.freight.modules.urbanLogistics;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.DistanceBin;
-import de.tum.bgu.msm.freight.data.freight.ShortDistanceTruckTrip;
-import de.tum.bgu.msm.freight.data.geo.Bound;
+import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
+import de.tum.bgu.msm.freight.data.freight.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.data.geo.Zone;
@@ -18,11 +18,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class FirstLastMileVehicleDistribution implements Module {
+public class SDTruckGenerator implements Module {
 
     private Properties properties;
     private DataSet dataSet;
-    private static final Logger logger = Logger.getLogger(FirstLastMileVehicleDistribution.class);
+    private static final Logger logger = Logger.getLogger(SDTruckGenerator.class);
     private AtomicInteger counter = new AtomicInteger(0);
 
 
@@ -67,7 +67,7 @@ public class FirstLastMileVehicleDistribution implements Module {
                 }
             }
         }
-        logger.info("Generated " + dataSet.getShortDistanceTruckTrips().size() + " short distance trips: " + totalVolume_tn + " tn");
+        logger.info("Generated " + dataSet.getSDTruckTrips().size() + " short distance trips: " + totalVolume_tn + " tn");
     }
 
 
@@ -85,22 +85,22 @@ public class FirstLastMileVehicleDistribution implements Module {
         load = volume / trucks_int;
 
         for (int t = 0; t < trucks_int; t++) {
-            ShortDistanceTruckTrip sdtt;
+            SDTruckTrip sdtt;
             Coord distributionCenterCoord = distributionCenter.getCoordinates();
             if (toDestination) {
                 int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
                 Coord customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
 
-                sdtt = new ShortDistanceTruckTrip(counter.getAndIncrement(), distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
+                sdtt = new SDTruckTrip(counter.getAndIncrement(), distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
 
             } else {
                 int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity,  distributionCenter.getZonesServedByThis(), dataSet.getMakeTable());
                 Coord customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
 
-                sdtt = new ShortDistanceTruckTrip(counter.getAndIncrement(), customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);
+                sdtt = new SDTruckTrip(counter.getAndIncrement(), customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);
             }
 
-            dataSet.getShortDistanceTruckTrips().add(sdtt);
+            dataSet.getSDTruckTrips().add(sdtt);
         }
     }
 }
