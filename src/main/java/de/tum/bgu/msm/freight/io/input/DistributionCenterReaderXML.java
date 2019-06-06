@@ -72,11 +72,11 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
 
     private void startMicroZone(Attributes atts) {
         InternalZone internalZone = (InternalZone) dataSet.getZones().get(currentDistributionCenter.getZoneId());
-        InternalMicroZone internalMicroZone = internalZone.getMicroZones().get(Integer.parseInt(atts.getValue("id")));
-        currentCatchmentArea.add(internalMicroZone);
-
-
-
+        int microZoneid = Integer.parseInt(atts.getValue("id"));
+        if (internalZone.getMicroZones().containsKey(microZoneid)){
+            InternalMicroZone internalMicroZone = internalZone.getMicroZones().get(microZoneid);
+            currentCatchmentArea.add(internalMicroZone);
+        }
     }
 
     private void startDistributionCenter(Attributes atts) {
