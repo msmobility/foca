@@ -2,9 +2,9 @@ package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.modules.Module;
-import de.tum.bgu.msm.freight.modules.longDistance.counts.CountEventHandler;
+import de.tum.bgu.msm.freight.io.output.counts.CountEventHandler;
 import de.tum.bgu.msm.freight.io.input.LinksFileReader;
-import de.tum.bgu.msm.freight.modules.longDistance.counts.MultiDayCounts;
+import de.tum.bgu.msm.freight.io.output.counts.MultiDayCounts;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
@@ -77,9 +77,9 @@ public class MATSimAssignment implements Module {
 
     private void generateCarriersPopulation(Carriers carriers, CarrierVehicleTypes carrierVehicleTypes){
         //create carriers
-        new CarriersGen(dataSet, network, properties).generateCarriers(carriers, carrierVehicleTypes);
+        new CarriersAndServicesGenerator(dataSet, network, properties).generateCarriers(carriers, carrierVehicleTypes);
         //assign plans to carriers
-        new CarriersPlanGen(scenario.getNetwork()).generateCarriersPlan(carriers);
+        new CarrierTourDesigner(scenario.getNetwork()).generateCarriersPlan(carriers);
 
     }
 

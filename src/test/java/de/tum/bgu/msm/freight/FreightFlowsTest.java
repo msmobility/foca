@@ -22,7 +22,7 @@ public class FreightFlowsTest {
         properties.setFlowsScaleFactor(0.05);
         properties.setTruckScaleFactor(1);
         properties.setSampleFactorForParcels(0.05);
-        properties.setIterations(1);
+        properties.setIterations(20);
 
         properties.logProperties();
 

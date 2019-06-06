@@ -23,11 +23,11 @@ import org.matsim.contrib.freight.jsprit.NetworkRouter;
 
 import java.util.Collection;
 
-public class CarriersPlanGen {
+public class CarrierTourDesigner {
 
     private Network network;
 
-    public CarriersPlanGen(Network network) {
+    public CarrierTourDesigner(Network network) {
         this.network = network;
     }
 

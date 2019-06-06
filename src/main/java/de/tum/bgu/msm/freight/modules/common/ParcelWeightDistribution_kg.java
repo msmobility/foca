@@ -8,14 +8,14 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import java.util.Map;
 import java.util.Random;
 
-public class ParcelEmpiricalWeightDistribution_kg implements WeightDistribution {
+public class ParcelWeightDistribution_kg implements WeightDistribution {
 
     private final DataSet dataSet;
     private final double weightDistributionInterval;
     private final Map<Double,Double> weightDistribution;
     private final Random random;
 
-    public ParcelEmpiricalWeightDistribution_kg(DataSet dataSet, Properties properties) {
+    public ParcelWeightDistribution_kg(DataSet dataSet, Properties properties) {
         this.dataSet = dataSet;
         this.weightDistributionInterval = dataSet.getWeightDistributionInterval();
         this.weightDistribution = dataSet.getParcelWeightDistribution();

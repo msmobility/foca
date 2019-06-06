@@ -12,7 +12,7 @@ import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.modules.Module;
-import de.tum.bgu.msm.freight.modules.common.ParcelEmpiricalWeightDistribution_kg;
+import de.tum.bgu.msm.freight.modules.common.ParcelWeightDistribution_kg;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.modules.common.WeightDistribution;
 import de.tum.bgu.msm.freight.properties.Properties;
@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class ParcelGenerator implements Module {
 
@@ -48,7 +47,7 @@ public class ParcelGenerator implements Module {
             parcelDeliveryTransactionProbabilties.put(parcelTransaction, parcelTransaction.getShareDeliveriesAtCustomer());
             parcelPickUpTransactionProbabilties.put(parcelTransaction, parcelTransaction.getSharePickupsAtCustomer());
         }
-        weightDistribution = new ParcelEmpiricalWeightDistribution_kg(dataSet, properties);
+        weightDistribution = new ParcelWeightDistribution_kg(dataSet, properties);
 
 
     }
