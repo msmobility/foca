@@ -149,7 +149,7 @@ public class CarriersAndServicesGenerator {
                     parcel.getDestCoord() != null) {
                 Coord parcelCoord;
                 TimeWindow timeWindow;
-                parcelCoord = new Coord(parcel.getMicroDepot().getCoord_gk4().x, parcel.getMicroDepot().getCoord_gk4().y);
+                parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
                 timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
                 double duration_s = 3 * 60;
                 Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();

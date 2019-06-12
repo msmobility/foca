@@ -117,7 +117,7 @@ public class MATSimConfigUtils {
         Set<String> modes = new HashSet<>();
         modes.addAll(config.qsim().getMainModes());
         modes.add(TransportMode.truck);
-        modes.add("cargoBike");
+//        modes.add("cargoBike");
         config.qsim().setMainModes(modes);
 
         config.plansCalcRoute().setNetworkModes(modes);
@@ -131,18 +131,18 @@ public class MATSimConfigUtils {
         truckParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
         config.planCalcScore().addModeParams(truckParams);
 
-        PlanCalcScoreConfigGroup.ModeParams cargoBikeParams = new PlanCalcScoreConfigGroup.ModeParams("cargoBike");
-        cargoBikeParams.setConstant(carParams.getConstant());
-        cargoBikeParams.setDailyMonetaryConstant(carParams.getDailyMonetaryConstant());
-        cargoBikeParams.setMarginalUtilityOfDistance(carParams.getMarginalUtilityOfDistance());
-        cargoBikeParams.setDailyUtilityConstant(carParams.getDailyUtilityConstant());
-        cargoBikeParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
-        config.planCalcScore().addModeParams(cargoBikeParams);
+//        PlanCalcScoreConfigGroup.ModeParams cargoBikeParams = new PlanCalcScoreConfigGroup.ModeParams("cargoBike");
+//        cargoBikeParams.setConstant(carParams.getConstant());
+//        cargoBikeParams.setDailyMonetaryConstant(carParams.getDailyMonetaryConstant());
+//        cargoBikeParams.setMarginalUtilityOfDistance(carParams.getMarginalUtilityOfDistance());
+//        cargoBikeParams.setDailyUtilityConstant(carParams.getDailyUtilityConstant());
+//        cargoBikeParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
+//        config.planCalcScore().addModeParams(cargoBikeParams);
 
         Set<String> analyzedModes = new HashSet<>();
         analyzedModes.add("truck");
         analyzedModes.add("car");
-        analyzedModes.add("cargoBike");
+//        analyzedModes.add("cargoBike");
 
         config.travelTimeCalculator().setAnalyzedModes(analyzedModes);
         config.travelTimeCalculator().setSeparateModes(false);
