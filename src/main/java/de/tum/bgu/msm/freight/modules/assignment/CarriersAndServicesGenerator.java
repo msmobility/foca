@@ -7,6 +7,7 @@ import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -43,9 +44,9 @@ public class CarriersAndServicesGenerator {
             Carrier carrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement(), Carrier.class));
             carriers.addCarrier(carrier);
 
-            Coord coordinates = distributionCenter.getCoordinates();
+            Coordinate coordinates = distributionCenter.getCoordinates();
 
-            Link link = NetworkUtils.getNearestLink(network, coordinates);
+            Link link = NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
             Id<Link> linkId = link.getId();
             //light
 //            carrier.getCarrierCapabilities().getCarrierVehicles().add(getLightVehicle(carrier.getId(), linkId, "a"));
@@ -76,9 +77,9 @@ public class CarriersAndServicesGenerator {
                 Carrier microDepotCarrier = CarrierImpl.newInstance(Id.create(microDepot.getId() + "_microDepot", Carrier.class));
                 carriers.addCarrier(microDepotCarrier);
 
-                Coord microDepotCoord = microDepot.getCoord_gk4();
+                Coordinate microDepotCoord = microDepot.getCoord_gk4();
 
-                Link microDepotLink = NetworkUtils.getNearestLink(network, microDepotCoord);
+                Link microDepotLink = NetworkUtils.getNearestLink(network, new Coord(microDepotCoord.x, microDepotCoord.y));
                 Id<Link> microDepotLinkId = microDepotLink.getId();
 
                 CarrierVehicleType cargoBikeType = types.getVehicleTypes().get(Id.create("cargoBike", VehicleType.class));
@@ -115,11 +116,11 @@ public class CarriersAndServicesGenerator {
                 TimeWindow timeWindow;
                 double duration_s;
                 if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
-                    parcelCoord = parcel.getDestCoord();
+                    parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
                     timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
                     duration_s = 3 * 60;
                 } else {
-                    parcelCoord = parcel.getMicroDepot().getCoord_gk4();
+                    parcelCoord = new Coord(parcel.getMicroDepot().getCoord_gk4().x, parcel.getMicroDepot().getCoord_gk4().y);
                     timeWindow = TimeWindow.newInstance(6 * 60 * 60, 8 * 60 * 60);
                     duration_s = 30;
 //                TODO merge deliveries from DC to MD in one single vehicle and not let the algorithm do that?
@@ -148,7 +149,7 @@ public class CarriersAndServicesGenerator {
                     parcel.getDestCoord() != null) {
                 Coord parcelCoord;
                 TimeWindow timeWindow;
-                parcelCoord = parcel.getDestCoord();
+                parcelCoord = new Coord(parcel.getMicroDepot().getCoord_gk4().x, parcel.getMicroDepot().getCoord_gk4().y);
                 timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
                 double duration_s = 3 * 60;
                 Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();

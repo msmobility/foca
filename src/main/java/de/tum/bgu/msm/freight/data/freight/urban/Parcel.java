@@ -4,6 +4,7 @@ import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.data.geo.ParcelShop;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 public class Parcel {
@@ -19,8 +20,8 @@ public class Parcel {
     private ParcelDistributionType parcelDistributionType;
     private MicroDepot microDepot = null;
     private ParcelShop parcelShop = null;
-    private Coord originCoord;
-    private Coord destCoord;
+    private Coordinate originCoord;
+    private Coordinate destCoord;
     private int origMicroZoneId;
     private int destMicroZoneId;
 
@@ -121,19 +122,19 @@ public class Parcel {
         return distributionCenter;
     }
 
-    public Coord getOriginCoord() {
+    public Coordinate getOriginCoord() {
         return originCoord;
     }
 
-    public void setOriginCoord(Coord originCoord) {
+    public void setOriginCoord(Coordinate originCoord) {
         this.originCoord = originCoord;
     }
 
-    public Coord getDestCoord() {
+    public Coordinate getDestCoord() {
         return destCoord;
     }
 
-    public void setDestCoord(Coord destCoord) {
+    public void setDestCoord(Coordinate destCoord) {
         this.destCoord = destCoord;
     }
 

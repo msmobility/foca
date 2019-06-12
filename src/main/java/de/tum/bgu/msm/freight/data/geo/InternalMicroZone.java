@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.freight.data.geo;
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
-import org.matsim.api.core.v01.Coord;
+import org.locationtech.jts.geom.Coordinate;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class InternalMicroZone implements Zone {
     }
 
     @Override
-    public Coord getCoordinates() {
+    public Coordinate getCoordinates() {
         return FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature);
     }
 

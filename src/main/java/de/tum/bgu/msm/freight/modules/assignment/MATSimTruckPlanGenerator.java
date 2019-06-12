@@ -7,9 +7,12 @@ import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
 import de.tum.bgu.msm.freight.modules.common.DepartureTimeDistribution;
 import de.tum.bgu.msm.freight.modules.common.NormalDepartureTimeDistribution;
 import de.tum.bgu.msm.freight.properties.Properties;
+import org.locationtech.jts.geom.Coordinate;
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.*;
+
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -57,13 +60,15 @@ public class MATSimTruckPlanGenerator {
                 person.addPlan(plan);
                 population.addPerson(person);
 
-                Activity originActivity = factory.createActivityFromCoord("start", LDTruckTrip.getOrigCoord());
+                Coordinate origCoord = LDTruckTrip.getOrigCoord();
+                Activity originActivity = factory.createActivityFromCoord("start", new Coord(origCoord.x, origCoord.y));
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
                 plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                Activity destinationActivity = factory.createActivityFromCoord("end", LDTruckTrip.getDestCoord());
+                Coordinate destCoord = LDTruckTrip.getDestCoord();
+                Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.x, destCoord.y));
                 plan.addActivity(destinationActivity);
                 counter.incrementAndGet();
             }
@@ -80,13 +85,15 @@ public class MATSimTruckPlanGenerator {
                 person.addPlan(plan);
                 population.addPerson(person);
 
-                Activity originActivity = factory.createActivityFromCoord("start",  SDTruckTrip.getOrigCoord());
+                Coordinate origCoord = SDTruckTrip.getOrigCoord();
+                Activity originActivity = factory.createActivityFromCoord("start",  new Coord(origCoord.y, origCoord.y));
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
                 plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                Activity destinationActivity = factory.createActivityFromCoord("end",  SDTruckTrip.getDestCoord());
+                Coordinate destCoord = SDTruckTrip.getDestCoord();
+                Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.y, destCoord.y));
                 plan.addActivity(destinationActivity);
 
             }

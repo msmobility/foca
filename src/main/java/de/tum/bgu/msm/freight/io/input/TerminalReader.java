@@ -9,6 +9,7 @@ import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
@@ -58,11 +59,11 @@ public class TerminalReader extends CSVReader {
         double y = Double.parseDouble(record[posY]);
         //CommodityGroup commodityGroup = CommodityGroup.valueOf(record[posCommodity].toUpperCase());
         int zoneId = Integer.parseInt(record[posZone]);
-        Coord coord;
+        Coordinate coord;
         if (x == -1 || y == -1) {
             coord = dataSet.getZones().get(zoneId).getCoordinates();
         } else {
-            coord = new Coord(x, y);
+            coord = new Coordinate(x, y);
             coord = FreightFlowUtils.convertWGS84toGK4(coord);
         }
 

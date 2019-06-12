@@ -9,6 +9,7 @@ import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.io.AbstractReader;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.io.MatsimXmlParser;
 import org.xml.sax.Attributes;
@@ -65,7 +66,7 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
         double x = Double.parseDouble(atts.getValue("x"));
         double y = Double.parseDouble(atts.getValue("y"));
         int microZoneId = Integer.parseInt(atts.getValue("microZone"));
-        Coord coord_gk4 = FreightFlowUtils.convertWGS84toGK4(new Coord(x,y));
+        Coordinate coord_gk4 = FreightFlowUtils.convertWGS84toGK4(new Coordinate(x,y));
         this.currentMicroDepot = new MicroDepot(id, name, coord_gk4, currentDistributionCenter.getCommodityGroup(),
                 currentDistributionCenter, currentDistributionCenter.getZoneId(), microZoneId);
     }
@@ -85,7 +86,7 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
         double x = Double.parseDouble(atts.getValue("x"));
         double y = Double.parseDouble(atts.getValue("y"));
         CommodityGroup commodityGroup = CommodityGroup.valueOf(atts.getValue("commodityGroup").toUpperCase());
-        Coord coord_gk4 = FreightFlowUtils.convertWGS84toGK4(new Coord(x,y));
+        Coordinate coord_gk4 = FreightFlowUtils.convertWGS84toGK4(new Coordinate(x,y));
         int zoneId = Integer.parseInt(atts.getValue("zone"));
         this.currentDistributionCenter = new DistributionCenter(id, name, coord_gk4, commodityGroup, zoneId);
         addDistributionCenter(currentDistributionCenter, zoneId, commodityGroup);

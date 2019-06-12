@@ -13,6 +13,7 @@ import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
@@ -67,7 +68,7 @@ public class LDTruckODAllocator implements Module {
         Zone originZone = dataSet.getZones().get(flowSegment.getSegmentOrigin());
         Zone destinationZone = dataSet.getZones().get(flowSegment.getSegmentDestination());
 
-        Coord origCoord;
+        Coordinate origCoord;
         Commodity commodity = flowSegment.getCommodity();
 
         Bound bound;
@@ -141,7 +142,7 @@ public class LDTruckODAllocator implements Module {
         Zone originZone = dataSet.getZones().get(flowSegment.getSegmentOrigin());
         Zone destinationZone = dataSet.getZones().get(flowSegment.getSegmentDestination());
 
-        Coord destCoord;
+        Coordinate destCoord;
         Commodity commodity = flowSegment.getCommodity();
 
         Bound bound;

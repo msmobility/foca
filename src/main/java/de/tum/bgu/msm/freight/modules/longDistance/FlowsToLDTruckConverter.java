@@ -10,6 +10,7 @@ import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.modules.common.UncongestedTravelTime;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -77,10 +78,10 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                 int tripDestination = flowSegment.getSegmentDestination();
                                 Zone originZone = dataSet.getZones().get(tripOrigin);
                                 Zone destinationZone = dataSet.getZones().get(tripDestination);
-                                Coord origCoord = originZone.getCoordinates();
-                                Coord destCoord = destinationZone.getCoordinates();
+                                Coordinate origCoord = originZone.getCoordinates();
+                                Coordinate destCoord = destinationZone.getCoordinates();
 
-                                double beelineDistance_km = NetworkUtils.getEuclideanDistance(origCoord, destCoord) / 1000;
+                                double beelineDistance_km = NetworkUtils.getEuclideanDistance(new Coord(origCoord.x, origCoord.y), new Coord(destCoord.x, destCoord.y)) / 1000;
                                 DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);
                                 double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
                                 double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);

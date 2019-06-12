@@ -12,6 +12,7 @@ import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.Map;
@@ -86,16 +87,16 @@ public class SDTruckGenerator implements Module {
 
         for (int t = 0; t < trucks_int; t++) {
             SDTruckTrip sdtt;
-            Coord distributionCenterCoord = distributionCenter.getCoordinates();
+            Coordinate distributionCenterCoord = distributionCenter.getCoordinates();
             if (toDestination) {
                 int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
-                Coord customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
+                Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
 
                 sdtt = new SDTruckTrip(counter.getAndIncrement(), distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
 
             } else {
                 int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity,  distributionCenter.getZonesServedByThis(), dataSet.getMakeTable());
-                Coord customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
+                Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
 
                 sdtt = new SDTruckTrip(counter.getAndIncrement(), customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);
             }

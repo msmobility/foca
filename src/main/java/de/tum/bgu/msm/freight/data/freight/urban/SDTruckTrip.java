@@ -3,6 +3,7 @@ package de.tum.bgu.msm.freight.data.freight.urban;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 public class SDTruckTrip implements TruckTrip {
@@ -10,12 +11,12 @@ public class SDTruckTrip implements TruckTrip {
     private final int id;
     private final DistributionCenter distributionCenter;
     private final Commodity commodity;
-    private Coord origCoord;
-    private Coord destCoord;
+    private Coordinate origCoord;
+    private Coordinate destCoord;
     private final boolean toCustomer;
     private final double weight_tn;
 
-    public SDTruckTrip(int id, Coord origCoord, Coord destCoord, Commodity commodity, DistributionCenter distributionCenter, boolean toCustomer, double weight_tn) {
+    public SDTruckTrip(int id, Coordinate origCoord, Coordinate destCoord, Commodity commodity, DistributionCenter distributionCenter, boolean toCustomer, double weight_tn) {
         this.id = id;
         this.origCoord = origCoord;
         this.destCoord = destCoord;
@@ -59,11 +60,11 @@ public class SDTruckTrip implements TruckTrip {
 
 
     }
-    public Coord getOrigCoord() {
+    public Coordinate getOrigCoord() {
         return origCoord;
     }
 
-    public Coord getDestCoord() {
+    public Coordinate getDestCoord() {
         return destCoord;
     }
 

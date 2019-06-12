@@ -8,7 +8,7 @@ import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class DistributionCenterReader extends CSVReader {
         CommodityGroup commodityGroup = CommodityGroup.valueOf(record[posCommodity].toUpperCase());
         int zoneId  = Integer.parseInt(record[posZone]);
 
-        DistributionCenter dc = new DistributionCenter(id, name, FreightFlowUtils.convertWGS84toGK4(new Coord(x,y)), commodityGroup, zoneId);
+        DistributionCenter dc = new DistributionCenter(id, name, FreightFlowUtils.convertWGS84toGK4(new Coordinate(x,y)), commodityGroup, zoneId);
 
         addDistributionCenter(dc, zoneId, commodityGroup);
 

@@ -2,12 +2,13 @@ package de.tum.bgu.msm.freight.data.freight.longDistance;
 
 import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 public class LDTruckTrip implements TruckTrip {
     private final int id;
-    private Coord origCoord;
-    private Coord destCoord;
+    private Coordinate origCoord;
+    private Coordinate destCoord;
     private FlowSegment flowSegment;
     private double load_tn;
 
@@ -80,20 +81,20 @@ public class LDTruckTrip implements TruckTrip {
     }
 
     @Override
-    public Coord getOrigCoord() {
+    public Coordinate getOrigCoord() {
         return origCoord;
     }
 
     @Override
-    public Coord getDestCoord() {
+    public Coordinate getDestCoord() {
         return destCoord;
     }
 
-    public void setOrigCoord(Coord origCoord) {
+    public void setOrigCoord(Coordinate origCoord) {
         this.origCoord = origCoord;
     }
 
-    public void setDestCoord(Coord destCoord) {
+    public void setDestCoord(Coordinate destCoord) {
         this.destCoord = destCoord;
     }
 

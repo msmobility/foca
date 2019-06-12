@@ -1,9 +1,9 @@
 package de.tum.bgu.msm.freight.data.freight;
 
-import org.matsim.api.core.v01.Coord;
+import org.locationtech.jts.geom.Coordinate;
 
 public interface TruckTrip {
-    Coord getOrigCoord();
+    Coordinate getOrigCoord();
 
-    Coord getDestCoord();
+    Coordinate getDestCoord();
 }

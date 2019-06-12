@@ -2,12 +2,12 @@ package de.tum.bgu.msm.freight;
 
 import de.tum.bgu.msm.freight.properties.Properties;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.shape.random.RandomPointsBuilder;
 import org.matsim.api.core.v01.Coord;
-import org.matsim.contrib.accessibility.utils.GeoJsonPolygonFeatureWriter;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
@@ -21,14 +21,14 @@ public class FreightFlowUtils {
     public static Random random;
     private final static CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
 
-    public static Coord getRandomCoordinatesFromFeature(SimpleFeature feature){
+    public static Coordinate getRandomCoordinatesFromFeature(SimpleFeature feature){
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) feature.getDefaultGeometry());
         Envelope envelope = randomPointsBuilder.getExtent();
         double x = envelope.getMinX() + envelope.getWidth() * random.nextDouble();
         double y = envelope.getMinY() + envelope.getHeight() * random.nextDouble();
-        return convertWGS84toGK4(new Coord(x, y));
+        return convertWGS84toGK4(new Coordinate(x, y));
     }
 
     public static void setRandomNumber(Properties properties){
@@ -59,8 +59,9 @@ public class FreightFlowUtils {
         return sm;
     }
 
-    public static Coord convertWGS84toGK4(Coord coord){
-        return ct.transform(coord);
+    public static Coordinate convertWGS84toGK4(Coordinate coord){
+        Coord newCoord = ct.transform(new Coord(coord.x, coord.y));
+        return new Coordinate(newCoord.getX(), newCoord.getY());
     }
 
 }

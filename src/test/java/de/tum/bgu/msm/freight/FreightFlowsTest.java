@@ -19,8 +19,8 @@ public class FreightFlowsTest {
         properties.setRunId("testReg");
         properties.setNetworkFile("./networks/matsim/regensburg_multimodal.xml.gz");
         properties.setSelectedZones(new int[]{9362});
-        properties.setFlowsScaleFactor(0.05);
-        properties.setTruckScaleFactor(1);
+        properties.setFlowsScaleFactor(1);
+        properties.setTruckScaleFactor(0.05);
         properties.setSampleFactorForParcels(0.05);
         properties.setIterations(10);
         properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");

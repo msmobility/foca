@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.freight.data.geo;
 
-import org.matsim.api.core.v01.Coord;
+import org.locationtech.jts.geom.Coordinate;
 
 public interface Zone {
 
@@ -8,7 +8,7 @@ public interface Zone {
      * get random coordinate whithin a zone.
      * @return
      */
-    Coord getCoordinates();
+    Coordinate getCoordinates();
 
     String getName();
 

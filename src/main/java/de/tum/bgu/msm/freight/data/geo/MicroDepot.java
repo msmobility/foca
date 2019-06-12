@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.freight.data.geo;
 
 import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ public class MicroDepot {
 
     private final int id;
     private final String name;
-    private final Coord coord_gk4;
+    private final Coordinate coord_gk4;
     private final CommodityGroup commodityGroup;
     private final DistributionCenter distributionCenter;
     private final int zoneId;
@@ -18,7 +19,7 @@ public class MicroDepot {
     private final List<InternalMicroZone> zonesServedByThis;
 
 
-    public MicroDepot(int id, String name, Coord coord_gk4, CommodityGroup commodityGroup,
+    public MicroDepot(int id, String name, Coordinate coord_gk4, CommodityGroup commodityGroup,
                       DistributionCenter distributionCenter, int zoneId, int microZoneId) {
         this.id = id;
         this.name = name;
@@ -38,7 +39,7 @@ public class MicroDepot {
         return name;
     }
 
-    public Coord getCoord_gk4() {
+    public Coordinate getCoord_gk4() {
         return coord_gk4;
     }
 

@@ -3,6 +3,7 @@ package de.tum.bgu.msm.freight.modules.common;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.geo.Zone;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -49,7 +50,7 @@ public class UncongestedTravelTime {
         LOGGER.info("Assigned travel times");
     }
 
-    public double getTravelTime(Coord fromCoord, Coord toCoord) {
+    public double getTravelTime(Coordinate fromCoord, Coordinate toCoord) {
 
         LeastCostPathTree leastCostPathTree =
                 new LeastCostPathTree(new MyTravelTime(linkOffPeakHourTimes), new MyTravelDisutility(linkOffPeakHourTimes, linkOffPeakHourTimes));
@@ -58,14 +59,14 @@ public class UncongestedTravelTime {
         if (euclideanDistance > 200e3) {
             return euclideanDistance / 80 * 3.6;
         } else {
-            Node originNode = NetworkUtils.getNearestLink(network, fromCoord).getToNode();
-            Node destinationNode = NetworkUtils.getNearestLink(network, toCoord).getToNode();
+            Node originNode = NetworkUtils.getNearestLink(network, new Coord(fromCoord.x, fromCoord.y)).getToNode();
+            Node destinationNode = NetworkUtils.getNearestLink(network, new Coord(toCoord.x, toCoord.y)).getToNode();
             leastCostPathTree.calculate(network, originNode, DEFAULT_PEAK_H_S);
             return leastCostPathTree.getTree().get(destinationNode.getId()).getTime();
         }
     }
 
-    private double getDistancePointToPoint(Coord fromCoord, Coord toCoord) {
+    private double getDistancePointToPoint(Coordinate fromCoord, Coordinate toCoord) {
         return Math.sqrt(Math.pow(fromCoord.getX() - toCoord.getX(), 2) + Math.pow(fromCoord.getY() - toCoord.getY(), 2));
     }
 
@@ -73,18 +74,18 @@ public class UncongestedTravelTime {
         LOGGER.info("Starting calculation of matrix for " + dataSet.getZones().size() + " zones.");
         AtomicInteger counter = new AtomicInteger(0);
         dataSet.getZones().values().forEach(origin -> {
-            Coord fromCoord = ct.transform(origin.getCoordinates());
-            Node originNode = NetworkUtils.getNearestLink(network, fromCoord).getToNode();
+            Coordinate fromCoord = origin.getCoordinates();
+            Node originNode = NetworkUtils.getNearestLink(network, new Coord(fromCoord.x, fromCoord.y)).getToNode();
             LeastCostPathTree leastCostPathTree =
                     new LeastCostPathTree(new MyTravelTime(linkOffPeakHourTimes), new MyTravelDisutility(linkOffPeakHourTimes, linkOffPeakHourTimes));
             leastCostPathTree.calculate(network, originNode, DEFAULT_PEAK_H_S);
             for (Zone destination : dataSet.getZones().values()) {
-                Coord toCoord = ct.transform(destination.getCoordinates());
+                Coordinate toCoord = destination.getCoordinates();
                 double euclideanDistance = getDistancePointToPoint(fromCoord, toCoord);
                 if (euclideanDistance > 200e3) {
                     dataSet.getUncongestedTravelTimeMatrix().put(origin.getId(), destination.getId(), euclideanDistance / 80 * 3.6);
                 } else {
-                    Node destinationNode = NetworkUtils.getNearestLink(network, toCoord).getToNode();
+                    Node destinationNode = NetworkUtils.getNearestLink(network, new Coord(toCoord.x, toCoord.y)).getToNode();
                     double time = leastCostPathTree.getTree().get(destinationNode.getId()).getTime() - DEFAULT_PEAK_H_S;
                     dataSet.getUncongestedTravelTimeMatrix().put(origin.getId(), destination.getId(), time);
                 }

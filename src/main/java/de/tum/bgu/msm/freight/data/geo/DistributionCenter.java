@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight.data.geo;
 
 import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 
 import java.util.ArrayList;
@@ -15,14 +16,14 @@ public class DistributionCenter {
 
     private final int id;
     private final String name;
-    private final Coord coord_gk4;
+    private final Coordinate coord_gk4;
     private final CommodityGroup commodityGroup;
     private final int zoneId;
     private final List<InternalMicroZone> zonesServedByThis;
     private final List<MicroDepot> microDeportsServedByThis;
     private final List<ParcelShop> parcelShopsServedByThis;
 
-    public DistributionCenter(int id, String name, Coord coord_gk4, CommodityGroup commodityGroup, int zoneId) {
+    public DistributionCenter(int id, String name, Coordinate coord_gk4, CommodityGroup commodityGroup, int zoneId) {
         this.coord_gk4 = coord_gk4;
         this.id = id;
         this.name = name;
@@ -33,7 +34,7 @@ public class DistributionCenter {
         parcelShopsServedByThis = new ArrayList<>();
     }
 
-    public Coord getCoordinates() {
+    public Coordinate getCoordinates() {
         return Objects.requireNonNull(coord_gk4);
     }
 
