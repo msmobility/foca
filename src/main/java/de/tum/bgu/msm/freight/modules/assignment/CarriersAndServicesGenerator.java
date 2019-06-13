@@ -17,7 +17,9 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.vehicles.Vehicle;
 import org.matsim.vehicles.VehicleType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -48,18 +50,6 @@ public class CarriersAndServicesGenerator {
 
             Link link = NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
             Id<Link> linkId = link.getId();
-            //light
-//            carrier.getCarrierCapabilities().getCarrierVehicles().add(getLightVehicle(carrier.getId(), linkId, "a"));
-//            heavy
-//            carrier.getCarrierCapabilities().getCarrierVehicles().add(getHeavyVehicle(carrier.getId(), linkId, "a"));
-
-//            Link oppositeLink = NetworkUtils.findLinkInOppositeDirection(link);
-//            if (oppositeLink != null){
-//                Id<Link> oppositeLinkId = oppositeLink.getId();
-//                carrier.getCarrierCapabilities().getCarrierVehicles().add(getLightVehicle(carrier.getId(), oppositeLinkId, "b"));
-//                carrier.getCarrierCapabilities().getCarrierVehicles().add(getHeavyVehicle(carrier.getId(), oppositeLinkId, "b"));
-//            }
-
 
             CarrierVehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
             carrier.getCarrierCapabilities().getVehicleTypes().add(type);
@@ -108,33 +98,55 @@ public class CarriersAndServicesGenerator {
     private void createDeliveriesByMotorizedModes(List<Parcel> parcelsInThisDistributionCenter, Carrier carrier) {
 
         int parcelIndex = 0;
+        Map<MicroDepot, Integer> parcelsToMicroDepots = new HashMap<>();
+
         for (Parcel parcel : parcelsInThisDistributionCenter) {
             if (parcel.isToDestination() &&
                     properties.getRand().nextDouble() < properties.getSampleFactorForParcels() &&
                     parcel.getDestCoord() != null) {
-                Coord parcelCoord;
-                TimeWindow timeWindow;
-                double duration_s;
+
                 if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
-                    parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
-                    timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
-                    duration_s = 3 * 60;
+                    Coord parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
+                    TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 17 * 60 * 60);
+                    double duration_s = 3 * 60;
+                    Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
+                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcelIndex, CarrierService.class), linkParcelDelivery);
+                    serviceBuilder.setCapacityDemand(1);
+                    serviceBuilder.setServiceDuration(duration_s);
+                    serviceBuilder.setServiceStartTimeWindow(timeWindow);
+                    carrier.getServices().add(serviceBuilder.build());
+                    parcelIndex++;
                 } else {
-                    parcelCoord = new Coord(parcel.getMicroDepot().getCoord_gk4().x, parcel.getMicroDepot().getCoord_gk4().y);
-                    timeWindow = TimeWindow.newInstance(6 * 60 * 60, 8 * 60 * 60);
-                    duration_s = 30;
-//                TODO merge deliveries from DC to MD in one single vehicle and not let the algorithm do that?
+                    MicroDepot microDepot = parcel.getMicroDepot();
+                    if (parcelsToMicroDepots.keySet().contains(microDepot)){
+                        parcelsToMicroDepots.put(microDepot, parcelsToMicroDepots.get(microDepot) + 1);
+                    } else {
+                        parcelsToMicroDepots.put(microDepot, 1);
+                    }
                 }
-                Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
-                CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcelIndex, CarrierService.class), linkParcelDelivery);
-                serviceBuilder.setCapacityDemand(1);
-                serviceBuilder.setServiceDuration(duration_s);
-                serviceBuilder.setServiceStartTimeWindow(timeWindow);
-                carrier.getServices().add(serviceBuilder.build());
-                parcelIndex++;
+
+
+
             }
         }
+        int parcelsToMicroDepotIndex = 0;
+        for (MicroDepot microDepot : parcelsToMicroDepots.keySet()){
+            Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
+            TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 8 * 60 * 60);
+            int demandedCapacity = parcelsToMicroDepots.get(microDepot);
+            double duration_s = 5 * demandedCapacity;
+            Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
+            CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcelIndex, CarrierService.class), linkParcelDelivery);
+            serviceBuilder.setCapacityDemand(demandedCapacity);
+            serviceBuilder.setServiceDuration(duration_s);
+            serviceBuilder.setServiceStartTimeWindow(timeWindow);
+            carrier.getServices().add(serviceBuilder.build());
+            parcelsToMicroDepotIndex++;
+            parcelIndex++;
+
+        }
         logger.info("Assigned " + parcelIndex + " parcels at this carrier");
+        logger.info("Assigned " + parcelsToMicroDepotIndex + " parcels at this carrier via microDepot");
 
 
     }
