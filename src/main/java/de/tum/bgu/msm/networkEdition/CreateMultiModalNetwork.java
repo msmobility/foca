@@ -14,9 +14,9 @@ import java.util.Set;
 
 public class CreateMultiModalNetwork {
 
-    static String inputFile = "./networks/matsim/final_v2.xml.gz";;
+    static String inputFile = "./networks/matsim/final_v4.xml.gz";;
 
-    static String outputFile = "./networks/matsim/final_v3.xml.gz";;
+    static String outputFile = "./networks/matsim/final_v5.xml.gz";;
 
     static Set<String> modes = new HashSet<>();
 

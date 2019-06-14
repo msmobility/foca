@@ -17,8 +17,8 @@ public class AssignHbefaRoadTypes {
 
     private static final Logger logger = Logger.getLogger(AssignHbefaRoadTypes.class);
 
-    static String inputFile = "./networks/matsim/regensburg_multimodal.xml";
-    static String outputFile = "./networks/matsim/regensburg_multimodal_compatible_emissions.xml";
+    static String inputFile = "./networks/matsim/final_V5.xml.gz";
+    static String outputFile = "./networks/matsim/final_V5_emmissions.xml.gz";
 
 /**
     * handled OSM road types:

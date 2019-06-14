@@ -19,8 +19,8 @@ public class Properties extends PropertiesGroup {
     private String distributionCentersFile = "input/distributionCenters/distributionCenters.xml";
     private String terminalsFileName = "input/distributionCenters/intermodal_terminals.csv";
 
-    private String networkFile = "./networks/matsim/final_v3.xml.gz";
-    private String simpleNetworkFile = "./networks/matsim/europe.xml.gz";
+    private String networkFile = "./networks/matsim/final_v5.xml.gz";
+    private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
     private int iterations = 1;
     private double flowsScaleFactor = 1.;
     private double truckScaleFactor = 1.;

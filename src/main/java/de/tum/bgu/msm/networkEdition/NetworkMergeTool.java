@@ -15,7 +15,7 @@ public class NetworkMergeTool {
 
     public static void main (String[] args){
 
-        String file1 = "networks/matsim/europe_v3.xml.gz";
+        String file1 = "networks/matsim/europe_v2.xml.gz";
         String file2 = "networks/matsim/germany.xml.gz";
         String file3 = "networks/matsim/munich.xml.gz";
         String file4 = "networks/matsim/regensburg.xml.gz";
@@ -26,7 +26,7 @@ public class NetworkMergeTool {
         inputFiles.add(file3);
         inputFiles.add(file4);
 
-        String outputFile = "networks/matsim/final_v2.xml.gz";
+        String outputFile = "networks/matsim/final_v4.xml.gz";
 
         NetworkMergeTool networkMergeTool = new NetworkMergeTool();
         networkMergeTool.mergeNetworks(inputFiles, outputFile);
@@ -101,6 +101,11 @@ public class NetworkMergeTool {
                 baseNetwork.addLink(link2);
                 counter++;
             }
+            for (String key : link.getAttributes().getAsMap().keySet()){
+                link2.getAttributes().putAttribute(key, link.getAttributes().getAsMap().get(key));
+            }
+
+
         }
         System.out.println("ADDED " + counter + " LINKS using the suffix " + suffix);
 
