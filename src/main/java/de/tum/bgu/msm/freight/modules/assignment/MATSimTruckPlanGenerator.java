@@ -86,14 +86,14 @@ public class MATSimTruckPlanGenerator {
                 population.addPerson(person);
 
                 Coordinate origCoord = SDTruckTrip.getOrigCoord();
-                Activity originActivity = factory.createActivityFromCoord("start",  new Coord(origCoord.y, origCoord.y));
+                Activity originActivity = factory.createActivityFromCoord("start",  new Coord(origCoord.x, origCoord.y));
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
                 plan.addLeg(factory.createLeg(TransportMode.truck));
 
                 Coordinate destCoord = SDTruckTrip.getDestCoord();
-                Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.y, destCoord.y));
+                Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.x, destCoord.y));
                 plan.addActivity(destinationActivity);
 
             }
