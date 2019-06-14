@@ -79,7 +79,8 @@ public class CarriersAndServicesGenerator {
                         add(getVehicle(cargoBikeType, microDepotCarrier.getId(), microDepotLinkId, 8 * 60 * 60, 17 * 60 * 60));
 
 
-                microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
+                microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE)
+                ;
                 List<Parcel> parcelsInThisMicroDepot =
                         parcelsInThisDistributionCenter.stream().
                                 filter(x -> x.getParcelDistributionType().equals(ParcelDistributionType.CARGO_BIKE)).
@@ -110,7 +111,7 @@ public class CarriersAndServicesGenerator {
                     TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 17 * 60 * 60);
                     double duration_s = 3 * 60;
                     Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
-                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcelIndex, CarrierService.class), linkParcelDelivery);
+                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
                     serviceBuilder.setCapacityDemand(1);
                     serviceBuilder.setServiceDuration(duration_s);
                     serviceBuilder.setServiceStartTimeWindow(timeWindow);
@@ -165,7 +166,7 @@ public class CarriersAndServicesGenerator {
                 timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
                 double duration_s = 3 * 60;
                 Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
-                CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcelIndex, CarrierService.class), linkParcelDelivery);
+                CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
                 serviceBuilder.setCapacityDemand(1);
                 serviceBuilder.setServiceDuration(duration_s);
                 serviceBuilder.setServiceStartTimeWindow(timeWindow);
