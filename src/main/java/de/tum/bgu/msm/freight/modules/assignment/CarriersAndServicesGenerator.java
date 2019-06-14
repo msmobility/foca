@@ -54,7 +54,7 @@ public class CarriersAndServicesGenerator {
             CarrierVehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
             carrier.getCarrierCapabilities().getVehicleTypes().add(type);
             //initialize one vehicle of the type and add it
-            carrier.getCarrierCapabilities().getCarrierVehicles().add(getVehicle(type, carrier.getId(), linkId, 6 * 60 * 60, 17 * 60 * 60));
+            carrier.getCarrierCapabilities().getCarrierVehicles().add(getVehicle(type, carrier.getId(), linkId, 7 * 60 * 60, 17 * 60 * 60));
 
 
             carrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
