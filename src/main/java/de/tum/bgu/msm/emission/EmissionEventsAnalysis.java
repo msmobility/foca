@@ -24,31 +24,56 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Map;
 
-public class EmissionAnalysis {
+public class EmissionEventsAnalysis {
 
     public static Config config;
-    private final static String baseDirectory = "c:/models/freightFlows/";
-    private final static String outDirectory = "./output/testReg/matsim/";
-    private static final String configFile = baseDirectory + "input/emissions/config_average.xml";
-
-    private static final String eventsFile = baseDirectory + "./output/testReg/matsim/testReg.output_events.xml.gz";
-    // (remove dependency of one test/execution path from other. kai/ihab, nov'18)
-
-    private static final String emissionEventOutputFile = baseDirectory + "./output/testReg/matsim/testReg.output_events_emissions.xml.gz";
-    private static final String vehicleFile = baseDirectory + "./output/testReg/matsim/vehicleList.xml";
-    private static final String populationFile = baseDirectory + "./output/testReg/matsim/testReg.output_plans.xml.gz";
-
-    private static final String networkFile = baseDirectory + "/networks/matsim/regensburg_multimodal_compatible_emissions.xml";
-
-    private static final String linkWarmEmissionFile = baseDirectory + "/output/testReg/linkWarmEmissions.csv";
-    private static final String vehicleWarmEmissionFile = baseDirectory + "/output/testReg/vehicleWarmEmissions.csv";
 
 
     public static void main(String[] args) throws FileNotFoundException {
 
+        String baseDirectory = "c:/models/freightFlows/";
+        String outDirectory = baseDirectory + "./output/testReg/matsim/";
+        String configFile = baseDirectory + "config_average.xml";
+
+        String eventsFile = baseDirectory + "./output/testReg/matsim/testReg.output_events.xml.gz";
+
+
+        String emissionEventOutputFile = baseDirectory + "./output/testReg/matsim/testReg.output_events_emissions.xml.gz";
+        String vehicleFile = baseDirectory + "./output/testReg/matsim/vehicleList.xml";
+        String populationFile = baseDirectory + "./output/testReg/matsim/testReg.output_plans.xml.gz";
+
+        String networkFile = baseDirectory + "/networks/matsim/regensburg_multimodal_compatible_emissions.xml";
+
+        String linkWarmEmissionFile = baseDirectory + "/output/testReg/linkWarmEmissions.csv";
+        String vehicleWarmEmissionFile = baseDirectory + "/output/testReg/vehicleWarmEmissions.csv";
+
+
+        EmissionEventsAnalysis emissionEventsAnalysis = new EmissionEventsAnalysis();
+        emissionEventsAnalysis.run(configFile,
+                outDirectory,
+                emissionEventOutputFile,
+                vehicleFile,
+                populationFile,
+                networkFile,
+                linkWarmEmissionFile,
+                vehicleWarmEmissionFile);
+
+
+    }
+
+
+    public void run(String configFile,
+                    String outDirectory,
+                    String eventsFileWithEmission,
+                    String individualVehicleFile,
+                    String populationFile,
+                    String networkFile,
+                    String linkWarmEmissionFile,
+                    String vehicleWarmEmissionFile) throws FileNotFoundException {
         if (config == null) {
-            prepareConfig();
+            this.prepareConfig(configFile, outDirectory, individualVehicleFile, networkFile, populationFile) ;
         }
+
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
@@ -70,18 +95,20 @@ public class EmissionAnalysis {
 
 
         LinkEmissionHandler linkEmissionHandler = new LinkEmissionHandler(scenario.getNetwork());
-        emissionModule.getEmissionEventsManager().addHandler(linkEmissionHandler);
+        emissionModule.getEmissionEventsManager().
+
+                addHandler(linkEmissionHandler);
 
         MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
-        matsimEventsReader.readFile(args[0]);
+        matsimEventsReader.readFile(eventsFileWithEmission);
 
         Map<Id<Link>, AnalyzedLink> analyzedLinks = linkEmissionHandler.getEmmisionsByLink();
         Map<Id<Vehicle>, AnalyzedVehicle> analyzedVehicles = linkEmissionHandler.getEmmisionsByVehicle();
 
 
         printOutLinkWarmEmissions(linkWarmEmissionFile, analyzedLinks, true);
-        printOutVehicleWarmEmissions(vehicleWarmEmissionFile, analyzedVehicles, true);
 
+        printOutVehicleWarmEmissions(vehicleWarmEmissionFile, analyzedVehicles, true);
 
     }
 
@@ -138,7 +165,7 @@ public class EmissionAnalysis {
             sb.append(link.getMatsimLink().getLength());
 
             for (Pollutant pollutant : Pollutant.values()) {
-                if (warm){
+                if (warm) {
                     sb.append(",").append(link.getWarmEmissions().get(pollutant.toString()));
                 } else {
                     sb.append(",").append(link.getColdEmissions().get(pollutant.toString()));
@@ -153,9 +180,9 @@ public class EmissionAnalysis {
     }
 
 
-    public static Config prepareConfig() {
+    public Config prepareConfig(String configFile, String outDirectory, String vehicleFile, String networkFile, String populationFile ) {
         config = ConfigUtils.loadConfig(configFile, new EmissionsConfigGroup());
-        config.controler().setOutputDirectory(baseDirectory + outDirectory);
+        config.controler().setOutputDirectory(outDirectory);
         config.vehicles().setVehiclesFile(vehicleFile);
         config.network().setInputFile(networkFile);
         config.plans().setInputFile(populationFile);

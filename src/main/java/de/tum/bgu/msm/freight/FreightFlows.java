@@ -33,7 +33,7 @@ public class FreightFlows {
 
         //properties.setFlowsScaleFactor();
         properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setRunId("test");
+        properties.setRunId("testEmissions");
 
         properties.setSelectedZones(new int[]{9162, 9362});
         properties.setTruckScaleFactor(0.05);

@@ -31,9 +31,14 @@ public class CreateVehicles {
 
         public static void main(String[] args) {
             CreateVehicles createVehicles = new CreateVehicles();
-            createVehicles.runVehicleType();
-            createVehicles.runVehicle(args[0], args[1]);
+            createVehicles.run(args[0], args[1]);
 
+
+        }
+
+        public void run(String eventFileWithoutEmissions, String individualVehicleFile){
+            runVehicleType();
+            runVehicle(eventFileWithoutEmissions, individualVehicleFile);
         }
 
         private void runVehicleType() {
