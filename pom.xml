@@ -69,13 +69,13 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.matsim.contrib</groupId>
-            <artifactId>networkEditor</artifactId>
-            <version>${matsimVersion}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.matsim.contrib</groupId>-->
+            <!--<artifactId>networkEditor</artifactId>-->
+            <!--<version>${matsimVersion}</version>-->
+            <!--<type>jar</type>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
@@ -114,6 +114,12 @@
             <!-- 		The jitpack version refers to the github branch.  Since you only have a master branch for mito, you can only use master-SNAPSHOT.  If
                     you want to have this dependency stay with an older version of mito, you will have to put that older version on a branch and leave it there.
                     I just introduced a 0.2.x branch. But it does not work with that either. kai, jun'17	 -->
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.msmobility</groupId>
+            <artifactId>silo</artifactId>
+            <version>master-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->

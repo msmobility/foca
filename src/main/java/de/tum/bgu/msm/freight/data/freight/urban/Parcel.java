@@ -192,6 +192,7 @@ public class Parcel {
         this.parcelShop = parcelShop;
     }
 
-    public void setAssigned() {
+    public void setAssigned(boolean assigned) {
+        this.assigned = assigned;
     }
 }

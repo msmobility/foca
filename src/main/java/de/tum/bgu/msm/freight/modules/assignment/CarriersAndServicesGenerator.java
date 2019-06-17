@@ -104,7 +104,7 @@ public class CarriersAndServicesGenerator {
 
         for (Parcel parcel : parcelsInThisDistributionCenter) {
             if (properties.getRand().nextDouble() < properties.getSampleFactorForParcels()) {
-                parcel.setAssigned();
+                parcel.setAssigned(true);
                 if (parcel.isToDestination() && parcel.getDestCoord() != null) {
 
                     if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
