@@ -34,65 +34,65 @@ public class MATSimTruckPlanGenerator {
         PopulationFactory factory = population.getFactory();
         AtomicInteger counter = new AtomicInteger(0);
 
-        for (LDTruckTrip LDTruckTrip : dataSet.getLDTruckTrips()) {
+        for (LDTruckTrip lDTruckTrip : dataSet.getLDTruckTrips()) {
 
             if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
-                FlowSegment flowSegment = LDTruckTrip.getFlowSegment();
+                FlowSegment flowSegment = lDTruckTrip.getFlowSegment();
 
-                boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
+//                boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
+//
+//                String idOfVehicle = "lDTruck-" + flowSegment.getCommodity().getCommodityGroup() + "-" +
+//                        flowSegment.getTruckTrips().indexOf(lDTruckTrip) + "-" +
+//                        flowSegment.getCommodity().getCommodityGroup().getLongDistanceGoodDistribution() + "-" +
+//                        flowSegment.getSegmentType() + "-" +
+//                        lDTruckTrip.getId();
+//
+//                if (intrazonal) {
+//                    idOfVehicle += "-INTRA";
+//                }
+//
+//                if (lDTruckTrip.getLoad_tn() == 0.) {
+//                    idOfVehicle += "-EMPTY";
+//                }
 
-                String idOfVehicle = "lDTruck" + flowSegment.getCommodity().getCommodityGroup() + "-" +
-                        flowSegment.getTruckTrips().indexOf(LDTruckTrip) + "-" +
-                        flowSegment.getCommodity().getCommodityGroup().getLongDistanceGoodDistribution() + "-" +
-                        flowSegment.getSegmentType() + "-" +
-                        counter;
-
-                if (intrazonal) {
-                    idOfVehicle += "-INTRA";
-                }
-
-                if (LDTruckTrip.getLoad_tn() == 0.) {
-                    idOfVehicle += "-EMPTY";
-                }
-
-                Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
+                Person person = factory.createPerson(Id.createPersonId(lDTruckTrip.getId()));
                 Plan plan = factory.createPlan();
                 person.addPlan(plan);
                 population.addPerson(person);
 
-                Coordinate origCoord = LDTruckTrip.getOrigCoord();
+                Coordinate origCoord = lDTruckTrip.getOrigCoord();
                 Activity originActivity = factory.createActivityFromCoord("start", new Coord(origCoord.x, origCoord.y));
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
                 plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                Coordinate destCoord = LDTruckTrip.getDestCoord();
+                Coordinate destCoord = lDTruckTrip.getDestCoord();
                 Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.x, destCoord.y));
                 plan.addActivity(destinationActivity);
                 counter.incrementAndGet();
             }
         }
 
-        for (SDTruckTrip SDTruckTrip : dataSet.getSDTruckTrips()){
+        for (SDTruckTrip sDTruckTrip : dataSet.getSDTruckTrips()){
             if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
-                String idOfVehicle = "sDTruck_";
-                idOfVehicle+= SDTruckTrip.getCommodity().getCommodityGroup().toString() + "_";
-                idOfVehicle+= SDTruckTrip.getId();
+//                String idOfVehicle = "sDTruck_";
+//                idOfVehicle+= sDTruckTrip.getCommodity().getCommodityGroup().toString() + "_";
+//                idOfVehicle+= sDTruckTrip.getId();
 
-                Person person = factory.createPerson(Id.createPersonId(idOfVehicle));
+                Person person = factory.createPerson(Id.createPersonId(sDTruckTrip.getId()));
                 Plan plan = factory.createPlan();
                 person.addPlan(plan);
                 population.addPerson(person);
 
-                Coordinate origCoord = SDTruckTrip.getOrigCoord();
+                Coordinate origCoord = sDTruckTrip.getOrigCoord();
                 Activity originActivity = factory.createActivityFromCoord("start",  new Coord(origCoord.x, origCoord.y));
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
                 plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                Coordinate destCoord = SDTruckTrip.getDestCoord();
+                Coordinate destCoord = sDTruckTrip.getDestCoord();
                 Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.x, destCoord.y));
                 plan.addActivity(destinationActivity);
 

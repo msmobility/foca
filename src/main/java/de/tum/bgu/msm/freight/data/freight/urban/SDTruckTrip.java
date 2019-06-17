@@ -5,10 +5,11 @@ import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
 
 public class SDTruckTrip implements TruckTrip {
 
-    private final int id;
+    private final Id<TruckTrip> id;
     private final DistributionCenter distributionCenter;
     private final Commodity commodity;
     private Coordinate origCoord;
@@ -16,7 +17,7 @@ public class SDTruckTrip implements TruckTrip {
     private final boolean toCustomer;
     private final double weight_tn;
 
-    public SDTruckTrip(int id, Coordinate origCoord, Coordinate destCoord, Commodity commodity, DistributionCenter distributionCenter, boolean toCustomer, double weight_tn) {
+    public SDTruckTrip(Id<TruckTrip> id, Coordinate origCoord, Coordinate destCoord, Commodity commodity, DistributionCenter distributionCenter, boolean toCustomer, double weight_tn) {
         this.id = id;
         this.origCoord = origCoord;
         this.destCoord = destCoord;
@@ -76,7 +77,8 @@ public class SDTruckTrip implements TruckTrip {
         return commodity;
     }
 
-    public int getId() {
+    @Override
+    public Id<TruckTrip> getId() {
         return id;
     }
 }

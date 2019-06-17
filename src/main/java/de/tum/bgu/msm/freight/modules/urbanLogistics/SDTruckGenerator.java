@@ -3,6 +3,7 @@ package de.tum.bgu.msm.freight.modules.urbanLogistics;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.DistanceBin;
+import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
 import de.tum.bgu.msm.freight.data.freight.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
@@ -14,6 +15,7 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -91,14 +93,14 @@ public class SDTruckGenerator implements Module {
             if (toDestination) {
                 int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
                 Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
-
-                sdtt = new SDTruckTrip(counter.getAndIncrement(), distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
+                Id<TruckTrip> truckTripId = Id.create("SD_" + counter.getAndIncrement(), TruckTrip.class);
+                sdtt = new SDTruckTrip(truckTripId, distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
 
             } else {
                 int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity,  distributionCenter.getZonesServedByThis(), dataSet.getMakeTable());
                 Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
-
-                sdtt = new SDTruckTrip(counter.getAndIncrement(), customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);
+                Id<TruckTrip> truckTripId = Id.create("SD_" + counter.getAndIncrement(), TruckTrip.class);
+                sdtt = new SDTruckTrip(truckTripId, customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);
             }
 
             dataSet.getSDTruckTrips().add(sdtt);

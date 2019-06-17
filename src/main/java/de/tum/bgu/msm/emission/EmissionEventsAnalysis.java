@@ -119,7 +119,7 @@ public class EmissionEventsAnalysis {
         PrintWriter pw = new PrintWriter(new File(fileName));
 
         StringBuilder header = new StringBuilder();
-        header.append("link,distance");
+        header.append("id,distance");
         for (Pollutant pollutant : Pollutant.values()) {
             header.append(",").append(pollutant.toString());
         }

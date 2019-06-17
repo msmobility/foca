@@ -12,6 +12,7 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
@@ -101,13 +102,16 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                 }
                                 //set new trip details
                                 for (int truck = 0; truck < loadedTrucks_int; truck++) {
+                                    Id<TruckTrip> truckTripId = Id.create("LD_" + counter.getAndIncrement(), TruckTrip.class);
                                     flowSegment.getTruckTrips().add(
-                                            new LDTruckTrip(counter.getAndIncrement(), flowSegment, truckLoad));
+
+                                            new LDTruckTrip(truckTripId, flowSegment, truckLoad));
                                 }
 
                                 for (int truck = 0; truck < emptyTrucks_int; truck++) {
+                                    Id<TruckTrip> truckTripId = Id.create("LD_" + counter.getAndIncrement(), TruckTrip.class);
                                     flowSegment.getTruckTrips().add(
-                                            new LDTruckTrip(counter.getAndIncrement(), flowSegment, 0.));
+                                            new LDTruckTrip(truckTripId, flowSegment, 0.));
                                 }
 
                                 flowSegment.setDistance_km(beelineDistance_km);

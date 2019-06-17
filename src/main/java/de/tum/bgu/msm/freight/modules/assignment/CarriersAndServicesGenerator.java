@@ -99,6 +99,7 @@ public class CarriersAndServicesGenerator {
     private void createDeliveriesByMotorizedModes(List<Parcel> parcelsInThisDistributionCenter, Carrier carrier) {
 
         int parcelIndex = 0;
+        int parcelsToMicroDepotIndex = 0;
         Map<MicroDepot, Integer> parcelsToMicroDepots = new HashMap<>();
 
         for (Parcel parcel : parcelsInThisDistributionCenter) {
@@ -124,27 +125,24 @@ public class CarriersAndServicesGenerator {
                     } else {
                         parcelsToMicroDepots.put(microDepot, 1);
                     }
+                    parcelsToMicroDepotIndex++;
                 }
 
 
 
             }
         }
-        int parcelsToMicroDepotIndex = 0;
         for (MicroDepot microDepot : parcelsToMicroDepots.keySet()){
             Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
             TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 8 * 60 * 60);
             int demandedCapacity = parcelsToMicroDepots.get(microDepot);
             double duration_s = 5 * demandedCapacity;
             Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
-            CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcelIndex, CarrierService.class), linkParcelDelivery);
+            CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId(), CarrierService.class), linkParcelDelivery);
             serviceBuilder.setCapacityDemand(demandedCapacity);
             serviceBuilder.setServiceDuration(duration_s);
             serviceBuilder.setServiceStartTimeWindow(timeWindow);
             carrier.getServices().add(serviceBuilder.build());
-            parcelsToMicroDepotIndex++;
-            parcelIndex++;
-
         }
         logger.info("Assigned " + parcelIndex + " parcels at this carrier");
         logger.info("Assigned " + parcelsToMicroDepotIndex + " parcels at this carrier via microDepot");

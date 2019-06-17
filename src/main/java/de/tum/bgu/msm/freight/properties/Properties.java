@@ -3,6 +3,9 @@ package de.tum.bgu.msm.freight.properties;
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Random;
 
 
@@ -65,12 +68,18 @@ public class Properties extends PropertiesGroup {
 
     }
 
-    public void logProperties(){
-        this.logUsedProperties();
-        zoneSystemProperties.logUsedProperties();
-        flowsProperties.logUsedProperties();
-        lDProperties.logUsedProperties();
-        sDProperties.logUsedProperties();
+    public void logProperties(String outPropFile) throws FileNotFoundException {
+        File propFile = new File(outPropFile);
+        if (!propFile.getParentFile().exists()){
+            propFile.getParentFile().mkdirs();
+        }
+        PrintWriter pw = new PrintWriter(propFile);
+        this.logUsedProperties(pw);
+        zoneSystemProperties.logUsedProperties(pw);
+        flowsProperties.logUsedProperties(pw);
+        lDProperties.logUsedProperties(pw);
+        sDProperties.logUsedProperties(pw);
+        pw.close();
     }
 
 

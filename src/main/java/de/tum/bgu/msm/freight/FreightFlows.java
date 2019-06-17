@@ -15,6 +15,8 @@ import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistance.LDTruckODAllocator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,11 @@ public class FreightFlows {
 
         //properties.setStoreExpectedTimes(true);
 
-        properties.logProperties();
+        try {
+            properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         FreightFlows freightFlows = new FreightFlows();
         freightFlows.run(properties);

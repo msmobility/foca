@@ -4,9 +4,10 @@ import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
 
 public class LDTruckTrip implements TruckTrip {
-    private final int id;
+    private final Id<TruckTrip> id;
     private Coordinate origCoord;
     private Coordinate destCoord;
     private FlowSegment flowSegment;
@@ -15,7 +16,7 @@ public class LDTruckTrip implements TruckTrip {
     private DistributionCenter originDistributionCenter = null;
     private DistributionCenter destinationDistributionCenter = null;
 
-    public LDTruckTrip(int id, FlowSegment FlowSegment, double load_tn) {
+    public LDTruckTrip(Id<TruckTrip> id, FlowSegment FlowSegment, double load_tn) {
         this.id = id;
         this.flowSegment = FlowSegment;
         this.load_tn = load_tn;
@@ -112,5 +113,10 @@ public class LDTruckTrip implements TruckTrip {
 
     public void setDestinationDistributionCenter(DistributionCenter destinationDistributionCenter) {
         this.destinationDistributionCenter = destinationDistributionCenter;
+    }
+
+    @Override
+    public Id<TruckTrip> getId(){
+        return id;
     }
 }
