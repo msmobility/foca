@@ -79,10 +79,10 @@ public class CreateVehicles {
                 Id<Vehicle> vehId = Id.createVehicleId(id);
                 Vehicle vehicle;
 
-                if(id.contains("lDTruck")){
+                if(id.contains("LD")){
                     vehicle = VehicleUtils.getFactory().createVehicle(vehId, vehicles.getVehicleTypes().get(Id.create("HGV", VehicleType.class)));
                     vehicles.addVehicle(vehicle);
-                } else if (id.contains("sDTruck")){
+                } else if (id.contains("SD")){
                     vehicle = VehicleUtils.getFactory().createVehicle(vehId, vehicles.getVehicleTypes().get(Id.create("HGV", VehicleType.class)));
                     vehicles.addVehicle(vehicle);
                 } else if (id.contains("van")){

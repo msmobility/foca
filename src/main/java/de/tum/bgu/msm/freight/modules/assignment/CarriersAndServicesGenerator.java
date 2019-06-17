@@ -17,6 +17,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.vehicles.Vehicle;
 import org.matsim.vehicles.VehicleType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,11 @@ public class CarriersAndServicesGenerator {
     private Network network;
     private Properties properties;
     private static final Logger logger = Logger.getLogger(CarriersAndServicesGenerator.class);
+    /**
+     * this maps keeps the parcels in microdepots to assign first the trips to microdepot
+     * with motorized vehicles and later the cargo bike trips from the depot
+     */
+    private Map<MicroDepot, List<Parcel>> parcelsByMicrodepot = new HashMap<>();
 
     public CarriersAndServicesGenerator(DataSet dataSet, Network network, Properties properties) {
         this.dataSet = dataSet;
@@ -41,7 +47,6 @@ public class CarriersAndServicesGenerator {
         AtomicInteger carrierCounter = new AtomicInteger(0);
 
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
-
 
             Carrier carrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement(), Carrier.class));
             carriers.addCarrier(carrier);
@@ -56,39 +61,34 @@ public class CarriersAndServicesGenerator {
             //initialize one vehicle of the type and add it
             carrier.getCarrierCapabilities().getCarrierVehicles().add(getVehicle(type, carrier.getId(), linkId, 7 * 60 * 60, 17 * 60 * 60));
 
-
             carrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
             List<Parcel> parcelsInThisDistributionCenter = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
+
+            for(MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
+                //initialize
+                parcelsByMicrodepot.put(microDepot, new ArrayList<>());
+            }
+
             createDeliveriesByMotorizedModes(parcelsInThisDistributionCenter, carrier);
 
-
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
+
                 //create a microdepot Carrier (sub-carrier) with only bicycles
                 Carrier microDepotCarrier = CarrierImpl.newInstance(Id.create(microDepot.getId() + "_microDepot", Carrier.class));
                 carriers.addCarrier(microDepotCarrier);
-
                 Coordinate microDepotCoord = microDepot.getCoord_gk4();
-
                 Link microDepotLink = NetworkUtils.getNearestLink(network, new Coord(microDepotCoord.x, microDepotCoord.y));
                 Id<Link> microDepotLinkId = microDepotLink.getId();
-
                 CarrierVehicleType cargoBikeType = types.getVehicleTypes().get(Id.create("cargoBike", VehicleType.class));
                 microDepotCarrier.getCarrierCapabilities().getVehicleTypes().add(cargoBikeType);
                 //initialize one vehicle of the type and add it
                 microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().
                         add(getVehicle(cargoBikeType, microDepotCarrier.getId(), microDepotLinkId, 8 * 60 * 60, 17 * 60 * 60));
 
-
-                microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE)
-                ;
-                List<Parcel> parcelsInThisMicroDepot =
-                        parcelsInThisDistributionCenter.stream().
-                                filter(x -> x.getParcelDistributionType().equals(ParcelDistributionType.CARGO_BIKE)).
-                                filter(x -> x.getMicroDepot().equals(microDepot)).
-                                collect(Collectors.toList());
+                microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
 
                 //deliver the parcels later with cargo bikes
-                createDeliveriesByCargoBikes(parcelsInThisMicroDepot, microDepotCarrier);
+                createDeliveriesByCargoBikes(parcelsByMicrodepot.get(microDepot), microDepotCarrier);
             }
 
 
@@ -100,42 +100,44 @@ public class CarriersAndServicesGenerator {
 
         int parcelIndex = 0;
         int parcelsToMicroDepotIndex = 0;
-        Map<MicroDepot, Integer> parcelsToMicroDepots = new HashMap<>();
+        //Map<MicroDepot, Integer> parcelsToMicroDepots = new HashMap<>();
 
         for (Parcel parcel : parcelsInThisDistributionCenter) {
-            if (parcel.isToDestination() &&
-                    properties.getRand().nextDouble() < properties.getSampleFactorForParcels() &&
-                    parcel.getDestCoord() != null) {
+            if (properties.getRand().nextDouble() < properties.getSampleFactorForParcels()) {
+                parcel.setAssigned();
+                if (parcel.isToDestination() && parcel.getDestCoord() != null) {
 
-                if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
-                    Coord parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
-                    TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 17 * 60 * 60);
-                    double duration_s = 3 * 60;
-                    Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
-                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
-                    serviceBuilder.setCapacityDemand(1);
-                    serviceBuilder.setServiceDuration(duration_s);
-                    serviceBuilder.setServiceStartTimeWindow(timeWindow);
-                    carrier.getServices().add(serviceBuilder.build());
-                    parcelIndex++;
-                } else {
-                    MicroDepot microDepot = parcel.getMicroDepot();
-                    if (parcelsToMicroDepots.keySet().contains(microDepot)){
-                        parcelsToMicroDepots.put(microDepot, parcelsToMicroDepots.get(microDepot) + 1);
+                    if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
+                        Coord parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
+                        TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 17 * 60 * 60);
+                        double duration_s = 3 * 60;
+                        Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
+                        CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(),
+                                CarrierService.class), linkParcelDelivery);
+                        serviceBuilder.setCapacityDemand(1);
+                        serviceBuilder.setServiceDuration(duration_s);
+                        serviceBuilder.setServiceStartTimeWindow(timeWindow);
+                        carrier.getServices().add(serviceBuilder.build());
+                        parcelIndex++;
                     } else {
-                        parcelsToMicroDepots.put(microDepot, 1);
+                        MicroDepot microDepot = parcel.getMicroDepot();
+//                        if (parcelsToMicroDepots.keySet().contains(microDepot)) {
+//                            parcelsToMicroDepots.put(microDepot, parcelsToMicroDepots.get(microDepot) + 1);
+//                        } else {
+//                            parcelsToMicroDepots.put(microDepot, 1);
+//                        }
+                        parcelsByMicrodepot.get(microDepot).add(parcel);
+                        parcelsToMicroDepotIndex++;
                     }
-                    parcelsToMicroDepotIndex++;
+
+
                 }
-
-
-
             }
         }
-        for (MicroDepot microDepot : parcelsToMicroDepots.keySet()){
+        for (MicroDepot microDepot : parcelsByMicrodepot.keySet()){
             Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
             TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 8 * 60 * 60);
-            int demandedCapacity = parcelsToMicroDepots.get(microDepot);
+            int demandedCapacity = parcelsByMicrodepot.get(microDepot).size();
             double duration_s = 5 * demandedCapacity;
             Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
             CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId(), CarrierService.class), linkParcelDelivery);
@@ -155,22 +157,22 @@ public class CarriersAndServicesGenerator {
 
         int parcelIndex = 0;
         for (Parcel parcel : parcelsInThisMicroDepot) {
-            if (parcel.isToDestination() &&
-                    properties.getRand().nextDouble() < properties.getSampleFactorForParcels() &&
-                    parcel.getDestCoord() != null) {
-                Coord parcelCoord;
-                TimeWindow timeWindow;
-                parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
-                timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
-                double duration_s = 3 * 60;
-                Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
-                CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
-                serviceBuilder.setCapacityDemand(1);
-                serviceBuilder.setServiceDuration(duration_s);
-                serviceBuilder.setServiceStartTimeWindow(timeWindow);
-                carrier.getServices().add(serviceBuilder.build());
-                parcelIndex++;
-            }
+           //no need to scale again
+           if (parcel.isToDestination() && parcel.getDestCoord() != null) {
+                    Coord parcelCoord;
+                    TimeWindow timeWindow;
+                    parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
+                    timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
+                    double duration_s = 3 * 60;
+                    Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
+                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
+                    serviceBuilder.setCapacityDemand(1);
+                    serviceBuilder.setServiceDuration(duration_s);
+                    serviceBuilder.setServiceStartTimeWindow(timeWindow);
+                    carrier.getServices().add(serviceBuilder.build());
+                    parcelIndex++;
+                }
+
         }
         logger.info("Assigned " + parcelIndex + " parcels at this micro-depot carrier");
 

@@ -82,7 +82,7 @@ public class FreightFlows {
         LDTruckODAllocator.run();
         SDTruckGenerator.run();
         parcelGenerator.run();
-
+        matSimAssignment.run();
 
         String outputFolder = properties.getOutputFolder();
         OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), outputFolder + properties.getRunId() +  "/flowSegments.csv");
@@ -93,8 +93,5 @@ public class FreightFlows {
             parcelsList.addAll(listOfParcelsInDc);
         }
         OutputWriter.printOutObjects(parcelsList, Parcel.getHeader(), outputFolder + properties.getRunId() +  "/parcels.csv");
-
-
-        matSimAssignment.run();
     }
 }

@@ -10,4 +10,6 @@ public interface TruckTrip {
     Coordinate getOrigCoord();
 
     Coordinate getDestCoord();
+
+    void setAssigned(boolean assigned);
 }

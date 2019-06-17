@@ -17,6 +17,8 @@ public class SDTruckTrip implements TruckTrip {
     private final boolean toCustomer;
     private final double weight_tn;
 
+    private boolean assigned = false;
+
     public SDTruckTrip(Id<TruckTrip> id, Coordinate origCoord, Coordinate destCoord, Commodity commodity, DistributionCenter distributionCenter, boolean toCustomer, double weight_tn) {
         this.id = id;
         this.origCoord = origCoord;
@@ -38,7 +40,8 @@ public class SDTruckTrip implements TruckTrip {
                 append("originY").append(",").
                 append("destX").append(",").
                 append("destY").append(",").
-                append("distributionCenter");
+                append("distributionCenter").append(",").
+                append("assigned");
 
         return builder.toString();
     }
@@ -55,7 +58,8 @@ public class SDTruckTrip implements TruckTrip {
                 append(origCoord.getY()).append(",").
                 append(destCoord.getX()).append(",").
                 append(destCoord.getY()).append(",").
-                append(distributionCenter.getId());
+                append(distributionCenter.getId()).append(",").
+                append(assigned);
 
         return builder.toString();
 
@@ -69,6 +73,8 @@ public class SDTruckTrip implements TruckTrip {
         return destCoord;
     }
 
+
+
     public DistributionCenter getDistributionCenter() {
         return distributionCenter;
     }
@@ -80,5 +86,10 @@ public class SDTruckTrip implements TruckTrip {
     @Override
     public Id<TruckTrip> getId() {
         return id;
+    }
+
+    @Override
+    public void setAssigned(boolean assigned){
+        this.assigned = assigned;
     }
 }

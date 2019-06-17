@@ -25,6 +25,8 @@ public class Parcel {
     private int origMicroZoneId;
     private int destMicroZoneId;
 
+    private boolean assigned = false;
+
     public Parcel(int id, boolean toDestination, double volume_m3, double weight_kg,
                   DistributionCenter distributionCenter, Commodity commodity) {
         this.id = id;
@@ -53,7 +55,8 @@ public class Parcel {
                 append("transaction").append(",").
                 append("microDepot").append(",").
                 append("parcelShop").append(",").
-                append("distributionType");
+                append("distributionType").append(",").
+                append("assigned");
 
 
         return builder.toString();
@@ -85,10 +88,17 @@ public class Parcel {
 
 
         builder.append(distributionCenter.getId()).append(",").
-                append(parcelTransaction.toString()).append(",").
-                append(microDepot).append(",").
-                append(parcelShop).append(",").
-                append(parcelDistributionType);
+                append(parcelTransaction.toString()).append(",");
+
+        if (microDepot != null){
+            builder.append(microDepot.getId()).append(",");
+        } else {
+            builder.append("null").append(",");
+        }
+
+                builder.append(parcelShop).append(",").
+                append(parcelDistributionType).append(",").
+                append(assigned);
 
         return builder.toString();
 
@@ -180,5 +190,8 @@ public class Parcel {
 
     public void setParcelShop(ParcelShop parcelShop) {
         this.parcelShop = parcelShop;
+    }
+
+    public void setAssigned() {
     }
 }

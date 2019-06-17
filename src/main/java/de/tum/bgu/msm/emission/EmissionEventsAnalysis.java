@@ -127,7 +127,7 @@ public class EmissionEventsAnalysis {
 
         for (AnalyzedVehicle vehicle : analyzedVehicles.values()) {
             StringBuilder sb = new StringBuilder();
-            sb.append(vehicle.getId().toString()).append(",");
+            sb.append(vehicle.getId().toString().replace("_truck", "")).append(",");
             sb.append(vehicle.getDistanceTravelled());
 
             for (Pollutant pollutant : Pollutant.values()) {

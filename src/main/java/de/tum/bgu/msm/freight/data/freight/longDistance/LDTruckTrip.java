@@ -16,6 +16,8 @@ public class LDTruckTrip implements TruckTrip {
     private DistributionCenter originDistributionCenter = null;
     private DistributionCenter destinationDistributionCenter = null;
 
+    private boolean assigned = false;
+
     public LDTruckTrip(Id<TruckTrip> id, FlowSegment FlowSegment, double load_tn) {
         this.id = id;
         this.flowSegment = FlowSegment;
@@ -40,7 +42,7 @@ public class LDTruckTrip implements TruckTrip {
                 append("destinationDistributionCenter").append(",").
                 append("segment").append(",").
                 append("segmentOrigin").append(",").
-                append("segmentDestination");
+                append("segmentDestination").append(",").append("assigned");
 
         return builder.toString();
     }
@@ -74,7 +76,8 @@ public class LDTruckTrip implements TruckTrip {
 
         builder.append(flowSegment.getSegmentType()).append(",").
                 append(flowSegment.getSegmentOrigin()).append(",").
-                append(flowSegment.getSegmentDestination());
+                append(flowSegment.getSegmentDestination()).append(",").
+                append(assigned);
 
         return builder.toString();
 
@@ -118,5 +121,10 @@ public class LDTruckTrip implements TruckTrip {
     @Override
     public Id<TruckTrip> getId(){
         return id;
+    }
+
+    @Override
+    public void setAssigned(boolean assigned){
+        this.assigned = assigned;
     }
 }
