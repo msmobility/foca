@@ -47,7 +47,7 @@ public class CreateVehicles {
             //LCV is not in vehicle types average
             //createVehicleType("LCV",mode,6.2,1.0,1.0,1.0,"BEGIN_EMISSIONSPASSENGER_CAR;petrol (4S);&gt;=2L;PC-P-Euro-1END_EMISSIONS");
             createVehicleType("pass. car",mode,5.2,1.0,1.0,1.0, "BEGIN_EMISSIONSPASSENGER_CAR;average;average;averageEND_EMISSIONS");
-            //createVehicleType("ZERO_EMISSION", mode, 2, 1, 1, 1, "BEGIN_EMISSIONSZERO_EMISSION;average;average;averageEND_EMISSIONS");
+            createVehicleType("ZERO_EMISSION_VEHICLE", mode, 2, 1, 1, 1, "BEGIN_EMISSIONSZERO_EMISSION_VEHICLE;average;average;averageEND_EMISSIONS");
         }
 
         private void createVehicleType(String name, VehicleType.DoorOperationMode mode, double length, double width, double accessTime, double egressTime, String description) {
@@ -89,8 +89,8 @@ public class CreateVehicles {
                     vehicle = VehicleUtils.getFactory().createVehicle(vehId, vehicles.getVehicleTypes().get(Id.create("HGV", VehicleType.class)));
                     vehicles.addVehicle(vehicle);
                 } else if (id.contains("cargoBike")){
-                    //vehicle = VehicleUtils.getFactory().createVehicle(vehId, vehicles.getVehicleTypes().get(Id.create("ZERO_EMISSION", VehicleType.class)));
-                    //vehicles.addVehicle(vehicle);
+                    vehicle = VehicleUtils.getFactory().createVehicle(vehId, vehicles.getVehicleTypes().get(Id.create("ZERO_EMISSION_VEHICLE", VehicleType.class)));
+                    vehicles.addVehicle(vehicle);
                 } else {
                     vehicle = VehicleUtils.getFactory().createVehicle(vehId, vehicles.getVehicleTypes().get(Id.create("pass. car", VehicleType.class)));
                     vehicles.addVehicle(vehicle);

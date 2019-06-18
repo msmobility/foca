@@ -7,12 +7,14 @@ import java.io.FileNotFoundException;
 
 public class EmissionMainTest {
 
+    private CreateVehicles createVehicles;
+
     @Test
     public void testRegensburgEmissions(){
         Properties properties = new Properties();
         properties.setRunId("testReg");
         String configFile = "config_average.xml";
-        properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
+        //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
 
         String outDirectory = "./output/" + properties.getRunId() + "/matsim/";
         String eventFileWithoutEmissions = outDirectory + properties.getRunId() + ".output_events.xml.gz";

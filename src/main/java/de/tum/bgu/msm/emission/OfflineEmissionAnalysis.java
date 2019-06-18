@@ -48,7 +48,8 @@ public class OfflineEmissionAnalysis {
     }
 
 
-    public void run(String configFile, String outDirectory, String eventsFileWithoutEmissions, String eventsFileWithEmission, String individualVehicleFile, String populationFile, String networkFile) {
+    public void run(String configFile, String outDirectory, String eventsFileWithoutEmissions, String eventsFileWithEmission,
+                    String individualVehicleFile, String populationFile, String networkFile) {
         if ( config==null ) {
             this.prepareConfig(configFile, outDirectory, individualVehicleFile, networkFile, populationFile) ;
         }

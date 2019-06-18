@@ -17,8 +17,8 @@ public class FreightFlowsTest {
         Properties properties = new Properties();
 
         properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setRunId("testReg");
-        properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
+        properties.setRunId("testRegNoCargoBikes");
+        //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
         properties.setSelectedZones(new int[]{9362});
         properties.setFlowsScaleFactor(1.);
         properties.setTruckScaleFactor(0.1);
@@ -26,7 +26,8 @@ public class FreightFlowsTest {
         properties.setIterations(10);
         properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
 
-        //properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot();
+        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
+
         try {
             properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
         } catch (FileNotFoundException e) {
