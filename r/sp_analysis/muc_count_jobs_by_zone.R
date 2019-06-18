@@ -12,6 +12,8 @@ jobs_by_zone = jj %>%
   spread(type, count, fill = 0)
 
 
+write.table(jobs_by_zone, "clipboard-1000", sep = "\t", row.names = F)
+
 unique(jj$type)
 
 

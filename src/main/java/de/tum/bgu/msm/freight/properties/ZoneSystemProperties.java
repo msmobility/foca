@@ -5,7 +5,7 @@ public class ZoneSystemProperties extends PropertiesGroup {
     private String zoneInputFile = "./input/zones_edit.csv";
     private String zoneShapeFile = "./input/shp/de_lkr_4326.shp";
     private String munichMicroZonesShapeFile = "input/shp/zones_4326_jobs.shp";
-    private String regensburgMicroZonesShapeFile = "input/shp/zones_regensburg_4326.shp";
+    private String regensburgMicroZonesShapeFile = "input/shp/zones_regensburg_4326_jobs.shp";
     private String idFieldInZonesShp = "RS";
     private String idFieldInMicroZonesShp = "id";
 
