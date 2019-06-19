@@ -47,6 +47,8 @@ public class CarriersAndServicesGenerator {
 
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
 
+            List<Parcel> parcelsInThisDistributionCenter = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
+
             Carrier carrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement(), Carrier.class));
             carriers.addCarrier(carrier);
 
@@ -57,11 +59,20 @@ public class CarriersAndServicesGenerator {
 
             CarrierVehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
             carrier.getCarrierCapabilities().getVehicleTypes().add(type);
-            //initialize one vehicle of the type and add it
-            carrier.getCarrierCapabilities().getCarrierVehicles().add(getVehicle(type, carrier.getId(), linkId, 7 * 60 * 60, 17 * 60 * 60));
 
-            carrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
-            List<Parcel> parcelsInThisDistributionCenter = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
+            carrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.FINITE);
+
+            //guess vehicle number and add vehicles
+            int numberOfToursPerDay = 2;
+            int numberOfVehicles = (int) (parcelsInThisDistributionCenter.size() / type.getCarrierVehicleCapacity()/numberOfToursPerDay);
+            for (int i = 0; i < numberOfVehicles; i++) {
+                CarrierVehicle vehicle = getSpecificVehicle(type, carrier.getId(), i, linkId,  7 * 60 * 60, 17 * 60 * 60);
+                carrier.getCarrierCapabilities().getCarrierVehicles().
+                        add(vehicle);
+
+            }
+
+
 
             for(MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
                 //initialize
@@ -80,14 +91,20 @@ public class CarriersAndServicesGenerator {
                 Id<Link> microDepotLinkId = microDepotLink.getId();
                 CarrierVehicleType cargoBikeType = types.getVehicleTypes().get(Id.create("cargoBike", VehicleType.class));
                 microDepotCarrier.getCarrierCapabilities().getVehicleTypes().add(cargoBikeType);
-                //initialize one vehicle of the type and add it
-                microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().
-                        add(getVehicle(cargoBikeType, microDepotCarrier.getId(), microDepotLinkId, 8 * 60 * 60, 17 * 60 * 60));
 
-                microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
+                List<Parcel> parcelsInThisMicroDepot = parcelsByMicrodepot.get(microDepot);
+                int numberOfBikeToursPerDay = 5;
+                int numberOfCargoBikes = (int) (parcelsInThisMicroDepot.size() / cargoBikeType.getCarrierVehicleCapacity()/numberOfBikeToursPerDay);
+                for (int i = 0; i < numberOfCargoBikes; i++){
+                    CarrierVehicle vehicle = getSpecificVehicle(cargoBikeType, microDepotCarrier.getId(), i, microDepotLinkId,  8 * 60 * 60, 17 * 60 * 60);
+                    microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().
+                            add(vehicle);
+                }
+                microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.FINITE);
 
                 //deliver the parcels later with cargo bikes
-                createDeliveriesByCargoBikes(parcelsByMicrodepot.get(microDepot), microDepotCarrier);
+
+                createDeliveriesByCargoBikes(parcelsInThisMicroDepot, microDepotCarrier);
             }
 
 
@@ -108,8 +125,8 @@ public class CarriersAndServicesGenerator {
 
                     if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
                         Coord parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
-                        TimeWindow timeWindow = generateRandomTimeSubWindow(7, 17, 5);
-                        double duration_s = 3 * 60;
+                        TimeWindow timeWindow = generateRandomTimeSubWindow(7, 17, 1);
+                        double duration_s = 2 * 60;
                         Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
                         CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(),
                                 CarrierService.class), linkParcelDelivery);
@@ -137,7 +154,7 @@ public class CarriersAndServicesGenerator {
             Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
             TimeWindow timeWindow = generateRandomTimeSubWindow(7, 8, 1);
             int demandedCapacity = parcelsByMicrodepot.get(microDepot).size();
-            double duration_s = 5 * demandedCapacity;
+            double duration_s = Math.min(5 * demandedCapacity, 15*60*60);
             Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
             CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId(), CarrierService.class), linkParcelDelivery);
             serviceBuilder.setCapacityDemand(demandedCapacity);
@@ -161,8 +178,8 @@ public class CarriersAndServicesGenerator {
                     Coord parcelCoord;
                     TimeWindow timeWindow;
                     parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
-                    timeWindow = generateRandomTimeSubWindow(8, 17, 5);
-                    double duration_s = 3 * 60;
+                    timeWindow = generateRandomTimeSubWindow(8, 17, 1);
+                    double duration_s = 2 * 60;
                     Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
                     CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
                     serviceBuilder.setCapacityDemand(1);
@@ -179,10 +196,20 @@ public class CarriersAndServicesGenerator {
     }
 
 
-    private static CarrierVehicle getVehicle(CarrierVehicleType type, Id<?> carrierId, Id<Link> homeId, double start_s, double end_s) {
+    private static CarrierVehicle getGenericVehicle(CarrierVehicleType type, Id<?> carrierId, Id<Link> homeId, double start_s, double end_s) {
         CarrierVehicle.Builder vBuilder = CarrierVehicle.Builder.newInstance(Id.create(("carrier_" +
                 carrierId.toString() +
                 "_" + type.getId().toString()), Vehicle.class), homeId);
+        vBuilder.setEarliestStart(start_s);
+        vBuilder.setLatestEnd(end_s);
+        vBuilder.setType(type);
+        return vBuilder.build();
+    }
+
+    private static CarrierVehicle getSpecificVehicle(CarrierVehicleType type, Id<?> carrierId, int index, Id<Link> homeId, double start_s, double end_s) {
+        CarrierVehicle.Builder vBuilder = CarrierVehicle.Builder.newInstance(Id.create(("carrier_" +
+                carrierId.toString() +
+                "_" + type.getId().toString() + "_" + index), Vehicle.class), homeId);
         vBuilder.setEarliestStart(start_s);
         vBuilder.setLatestEnd(end_s);
         vBuilder.setType(type);

@@ -26,7 +26,7 @@ public class FreightFlowsTest {
         properties.setIterations(5);
         properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
 
-       // properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
+        //properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
 
         try {
             properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
