@@ -35,7 +35,6 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
     private CoordinateTransformation ct;
 
     private boolean doAllZones;
-    private final AtomicInteger flowCounter = new AtomicInteger(0);
 
 
     @Override
@@ -67,7 +66,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
     }
 
     private void generateNumberOfTrucks() {
-
+        AtomicInteger flowCounter = new AtomicInteger(0);
         AtomicInteger counter = new AtomicInteger(0);
 
         for (int origin : dataSet.getFlowMatrix().rowKeySet()) {
@@ -123,10 +122,9 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                 if (originZone.isInStudyArea() || destinationZone.isInStudyArea() || doAllZones) {
                                     dataSet.getAssignedFlowSegments().add(flowSegment);
                                 }
-                                if (LongMath.isPowerOfTwo(flowCounter.get())){
-                                    logger.info(flowCounter.incrementAndGet() + "LD trucks assigned");
+                                if (LongMath.isPowerOfTwo(flowCounter.getAndIncrement())){
+                                    logger.info(flowCounter.get() + "LD trucks assigned");
                                 }
-
                             }
                         }
                     }
