@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OrigDestFlowsReader extends CSVReader {
 
     private static Logger logger = Logger.getLogger(OrigDestFlowsReader.class);
+    private final double flowScaleFactor;
 
     private int year;
     private int originIndex;
@@ -43,6 +44,7 @@ public class OrigDestFlowsReader extends CSVReader {
     protected OrigDestFlowsReader(DataSet dataSet, Properties properties) {
         super(dataSet);
         this.properties = properties;
+        this.flowScaleFactor = properties.getFlowsScaleFactor();
     }
 
     protected void processHeader(String[] header) {
@@ -68,7 +70,7 @@ public class OrigDestFlowsReader extends CSVReader {
     }
 
     protected void processRecord(String[] record) {
-        if(properties.getRand().nextDouble() < properties.getFlowsScaleFactor()) {
+        //if(properties.getRand().nextDouble() < properties.getFlowsScaleFactor()) {
 
             int origin = Integer.parseInt(record[originIndex]);
             int destination = Integer.parseInt(record[destinationIndex]);
@@ -93,7 +95,7 @@ public class OrigDestFlowsReader extends CSVReader {
 
             LDMode LDModeHL = LDMode.valueOf(Integer.parseInt(record[modeHLIndex]));
             Commodity commodityHL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityHLIndex]));
-            double tonsHL = Double.parseDouble(record[tonsHLIndex]);
+            double tonsHL = Double.parseDouble(record[tonsHLIndex]) * flowScaleFactor;
             FlowType flowTypeHL = FlowType.getFromCode(Integer.parseInt(record[typeHLIndex]));
             FlowSegment mainCourse = new FlowSegment(originHL, destinationHL, LDModeHL, commodityHL, tonsHL, SegmentType.MAIN, flowTypeHL, origin, destination);
             flowOriginToDestination.addFlow(mainCourse);
@@ -103,7 +105,7 @@ public class OrigDestFlowsReader extends CSVReader {
                 //there is a VorLauf
                 LDMode LDModeVL = LDMode.valueOf(precarriageMode);
                 Commodity commodityVL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityVLIndex]));
-                double tonsVL = Double.parseDouble(record[tonsVLIndex]);
+                double tonsVL = Double.parseDouble(record[tonsVLIndex]) * flowScaleFactor;
                 FlowType flowTypeVL = FlowType.getFromCode(Integer.parseInt(record[typeVLIndex]));
                 FlowSegment preCarriage = new FlowSegment(origin, originHL, LDModeVL, commodityVL, tonsVL, SegmentType.PRE, flowTypeVL, origin, destination);
                 preCarriage.setDestinationTerminal(originTerminal);
@@ -116,7 +118,7 @@ public class OrigDestFlowsReader extends CSVReader {
                 //there is a NachLauf
                 LDMode LDModeNL = LDMode.valueOf(onCarriageMode);
                 Commodity commodityNL = Commodity.getMapOfValues().get(Integer.parseInt(record[commodityNLIndex]));
-                double tonsNL = Double.parseDouble(record[tonsNLIndex]);
+                double tonsNL = Double.parseDouble(record[tonsNLIndex]) * flowScaleFactor;
                 FlowType flowTypeNL = FlowType.getFromCode(Integer.parseInt(record[typeNLIndex]));
                 FlowSegment onCarriage = new FlowSegment(destinationHL, destination, LDModeNL, commodityNL, tonsNL, SegmentType.POST, flowTypeNL, origin, destination);
                 onCarriage.setOriginTerminal(destinationTerminal);
@@ -124,7 +126,7 @@ public class OrigDestFlowsReader extends CSVReader {
                 flowOriginToDestination.addFlow(onCarriage);
             }
 
-        }
+//        }
     }
 
     public void read() {
