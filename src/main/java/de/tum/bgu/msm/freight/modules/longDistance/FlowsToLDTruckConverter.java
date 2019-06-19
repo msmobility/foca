@@ -124,7 +124,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                     dataSet.getAssignedFlowSegments().add(flowSegment);
                                 }
                                 if (LongMath.isPowerOfTwo(flowCounter.get())){
-                                    logger.info(flowCounter.get() + "LD trucks assigned");
+                                    logger.info(flowCounter.incrementAndGet() + "LD trucks assigned");
                                 }
 
                             }
