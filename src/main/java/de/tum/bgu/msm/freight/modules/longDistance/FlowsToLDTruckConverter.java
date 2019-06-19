@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.freight.modules.longDistance;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.math.LongMath;
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.data.freight.*;
 import de.tum.bgu.msm.freight.data.freight.longDistance.FlowOriginToDestination;
@@ -33,6 +35,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
     private CoordinateTransformation ct;
 
     private boolean doAllZones;
+    private final AtomicInteger flowCounter = new AtomicInteger(0);
 
 
     @Override
@@ -120,6 +123,10 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                 if (originZone.isInStudyArea() || destinationZone.isInStudyArea() || doAllZones) {
                                     dataSet.getAssignedFlowSegments().add(flowSegment);
                                 }
+                                if (LongMath.isPowerOfTwo(flowCounter.get())){
+                                    logger.info(flowCounter.get() + "LD trucks assigned");
+                                }
+
                             }
                         }
                     }

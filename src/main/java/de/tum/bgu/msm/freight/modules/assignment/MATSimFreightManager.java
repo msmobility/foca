@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.properties.Properties;
+import junitx.tool.TestClassValidator;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.freight.Freight;
 import org.matsim.contrib.freight.carrier.*;
@@ -28,6 +30,7 @@ public class MATSimFreightManager {
 
     private final Carriers carriers;
     private final CarrierVehicleTypes carrierVehicleTypes;
+    private final Logger logger = Logger.getLogger(MATSimFreightManager.class);
 
     public Carriers getCarriers() {
         return carriers;
@@ -51,6 +54,7 @@ public class MATSimFreightManager {
 
         new CarrierVehicleTypeReader(carrierVehicleTypes).readFile(properties.getVehicleFileForParcelDelivery());
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
+        logger.info("Vehicle types loaded");
 
         //modify vehicle types?
 
@@ -65,6 +69,8 @@ public class MATSimFreightManager {
                 bind(CarrierScoringFunctionFactory.class).toInstance(new FreightFlowUtils.MyCarrierScoringFunctionFactory());
             }
         });
+
+        logger.info("Added freight module");
 
         controler.addOverridingModule(new AbstractModule() {
 
@@ -103,6 +109,8 @@ public class MATSimFreightManager {
                 });
             }
         });
+
+        logger.info("Added freight output plots module");
     }
 
 }

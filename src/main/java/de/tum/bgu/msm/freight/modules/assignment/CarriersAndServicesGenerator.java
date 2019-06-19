@@ -154,13 +154,15 @@ public class CarriersAndServicesGenerator {
             Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
             TimeWindow timeWindow = generateRandomTimeSubWindow(7, 8, 1);
             int demandedCapacity = parcelsByMicrodepot.get(microDepot).size();
-            double duration_s = Math.min(5 * demandedCapacity, 15*60*60);
-            Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
-            CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId(), CarrierService.class), linkParcelDelivery);
-            serviceBuilder.setCapacityDemand(demandedCapacity);
-            serviceBuilder.setServiceDuration(duration_s);
-            serviceBuilder.setServiceStartTimeWindow(timeWindow);
-            carrier.getServices().add(serviceBuilder.build());
+            if (demandedCapacity > 0){
+                double duration_s = Math.min(5 * demandedCapacity, 15*60);
+                Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
+                CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId(), CarrierService.class), linkParcelDelivery);
+                serviceBuilder.setCapacityDemand(demandedCapacity);
+                serviceBuilder.setServiceDuration(duration_s);
+                serviceBuilder.setServiceStartTimeWindow(timeWindow);
+                carrier.getServices().add(serviceBuilder.build());
+            }
         }
         logger.info("Assigned " + parcelIndex + " parcels at this carrier");
         logger.info("Assigned " + parcelsToMicroDepotIndex + " parcels at this carrier via microDepot");
