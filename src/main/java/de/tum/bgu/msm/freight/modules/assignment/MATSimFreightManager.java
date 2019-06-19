@@ -52,6 +52,8 @@ public class MATSimFreightManager {
         new CarrierVehicleTypeReader(carrierVehicleTypes).readFile(properties.getVehicleFileForParcelDelivery());
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
 
+        //modify vehicle types?
+
         controler.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {

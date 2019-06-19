@@ -97,7 +97,7 @@ public class CarrierTourDesigner {
 
         Boolean addDefaultCostCalculators = true;
 
-        VehicleRoutingAlgorithm vra = VehicleRoutingAlgorithms.readAndCreateAlgorithm(vrp, algorithmConfig, 0, null, stateManager, constraintManager, addDefaultCostCalculators);
+        VehicleRoutingAlgorithm vra = VehicleRoutingAlgorithms.readAndCreateAlgorithm(vrp, algorithmConfig, 16, null, stateManager, constraintManager, addDefaultCostCalculators);
 
         //get configures algorithm
 //        				VehicleRoutingAlgorithm vra = VehicleRoutingAlgorithms.readAndCreateAlgorithm(vrp, vrpAlgorithmConfig);

@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class CarriersAndServicesGenerator {
 
@@ -109,7 +108,7 @@ public class CarriersAndServicesGenerator {
 
                     if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
                         Coord parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
-                        TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 17 * 60 * 60);
+                        TimeWindow timeWindow = generateRandomTimeSubWindow(7, 17, 5);
                         double duration_s = 3 * 60;
                         Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
                         CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(),
@@ -136,7 +135,7 @@ public class CarriersAndServicesGenerator {
         }
         for (MicroDepot microDepot : parcelsByMicrodepot.keySet()){
             Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
-            TimeWindow timeWindow = TimeWindow.newInstance(7 * 60 * 60, 8 * 60 * 60);
+            TimeWindow timeWindow = generateRandomTimeSubWindow(7, 8, 1);
             int demandedCapacity = parcelsByMicrodepot.get(microDepot).size();
             double duration_s = 5 * demandedCapacity;
             Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
@@ -162,7 +161,7 @@ public class CarriersAndServicesGenerator {
                     Coord parcelCoord;
                     TimeWindow timeWindow;
                     parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
-                    timeWindow = TimeWindow.newInstance(8 * 60 * 60, 17 * 60 * 60);
+                    timeWindow = generateRandomTimeSubWindow(8, 17, 5);
                     double duration_s = 3 * 60;
                     Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
                     CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
@@ -223,5 +222,15 @@ public class CarriersAndServicesGenerator {
 //        typeBuilder.setCostPerTimeUnit(0.008);
 //        return typeBuilder.build();
 //    }
+
+    public TimeWindow generateRandomTimeSubWindow(double minTime_h, double maxTime_h, int slices){
+        double interval_s = ( maxTime_h - minTime_h) * 3600 / slices;
+        int i = 0;
+        double randomNumber = properties.getRand().nextDouble();
+        while ( randomNumber*slices  >  i ) {
+            i++;
+        }
+        return TimeWindow.newInstance(3600 * minTime_h + (i - 1) * interval_s, 3600 * minTime_h + i* interval_s );
+    }
 
 }
