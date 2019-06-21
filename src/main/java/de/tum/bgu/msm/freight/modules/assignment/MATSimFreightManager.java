@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.properties.Properties;
-import junitx.tool.TestClassValidator;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.freight.Freight;
@@ -55,8 +54,6 @@ public class MATSimFreightManager {
         new CarrierVehicleTypeReader(carrierVehicleTypes).readFile(properties.getVehicleFileForParcelDelivery());
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
         logger.info("Vehicle types loaded");
-
-        //modify vehicle types?
 
         controler.addOverridingModule(new AbstractModule() {
             @Override
