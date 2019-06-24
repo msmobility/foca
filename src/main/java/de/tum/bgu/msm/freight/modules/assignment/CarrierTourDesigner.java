@@ -13,25 +13,35 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfig;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfigXmlReader;
 import com.graphhopper.jsprit.io.algorithm.VehicleRoutingAlgorithms;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.freight.carrier.Carrier;
 import org.matsim.contrib.freight.carrier.CarrierPlan;
+import org.matsim.contrib.freight.carrier.CarrierVehicleTypes;
 import org.matsim.contrib.freight.carrier.Carriers;
 import org.matsim.contrib.freight.jsprit.MatsimJspritFactory;
 import org.matsim.contrib.freight.jsprit.NetworkBasedTransportCosts;
 import org.matsim.contrib.freight.jsprit.NetworkRouter;
+import org.matsim.contrib.freight.usecases.chessboard.TravelDisutilities;
+import org.matsim.core.router.util.TravelDisutility;
+import org.matsim.vehicles.VehicleType;
 
-import java.util.Collection;
+import java.util.*;
 
 public class CarrierTourDesigner {
 
     private Network network;
+    private CarrierVehicleTypes carrierVehicleTypes;
 
     public CarrierTourDesigner(Network network) {
         this.network = network;
     }
 
     public void generateCarriersPlan(Carriers carriers){
+        carrierVehicleTypes = CarrierVehicleTypes.getVehicleTypes(carriers);
+
         for(Carrier carrier : carriers.getCarriers().values()){
             CarrierPlan plan = createPlan(carrier);
             carrier.setSelectedPlan(plan);
@@ -47,6 +57,12 @@ public class CarrierTourDesigner {
         //				tpcostsBuilder.setTimeSliceWidth(900);
         //				tpcostsBuilder.setFIFO(true);
         //assign netBasedCosts to RoutingProblem
+
+        MyNonCongestedTravelTime travelTime = new MyNonCongestedTravelTime();
+        tpcostsBuilder.setTravelTime(travelTime);
+        tpcostsBuilder.setBaseTravelTimeAndDisutility(travelTime,
+                TravelDisutilities.createBaseDisutility(carrierVehicleTypes, travelTime));
+
         NetworkBasedTransportCosts netbasedTransportcosts = tpcostsBuilder.build();
 
         //set transport-costs
@@ -116,6 +132,7 @@ public class CarrierTourDesigner {
         //create carrierPlan from solution
         CarrierPlan plan = MatsimJspritFactory.createPlan(carrier, solution);
         NetworkRouter.routePlan(plan, netbasedTransportcosts);
+
         return plan;
     }
 

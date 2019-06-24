@@ -1,0 +1,43 @@
+package de.tum.bgu.msm.freight.modules.assignment;
+
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.contrib.freight.carrier.Carrier;
+import org.matsim.contrib.freight.carrier.CarrierVehicleType;
+import org.matsim.core.router.util.TravelTime;
+import org.matsim.vehicles.Vehicle;
+import org.matsim.vehicles.VehicleType;
+
+import java.util.List;
+
+public class MyNonCongestedTravelTime implements TravelTime {
+
+    private VehicleType cargoBikeType = CarrierVehicleType.Builder.newInstance(Id.create("cargoBike", VehicleType.class)).build();
+
+    @Override
+    public double getLinkTravelTime(Link link, double time, Person person, Vehicle vehicle) {
+        double velocity;
+        VehicleType carrierVehicleType = vehicle.getType();
+        if (carrierVehicleType.getMaximumVelocity() < link.getFreespeed(time)) {
+            velocity = vehicle.getType().getMaximumVelocity();
+        } else {
+            velocity = link.getFreespeed(time);
+        }
+        //if the vehicle is not a cargo bike, and the link is only for cargoBikes, speed equal to infinity
+        // (this will not work with cars)
+        if (link.getAttributes().getAttribute("onlyCargoBike").equals(true) &&
+                !carrierVehicleType.getId().equals(cargoBikeType.getId())){
+            return Double.MAX_VALUE;
+        }
+
+        if (velocity <= 0.0D) {
+            throw new IllegalStateException("velocity must be bigger than zero");
+        } else {
+            return link.getLength() / velocity;
+        }
+    }
+
+
+
+}

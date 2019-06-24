@@ -7,8 +7,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import static org.junit.Assert.assertEquals;
-
 public class FreightFlowsTest {
 
     @Test
@@ -17,12 +15,12 @@ public class FreightFlowsTest {
         Properties properties = new Properties();
 
         properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setRunId("testReg");
+        properties.setRunId("testReg_v2");
         //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
         properties.setSelectedZones(new int[]{9362});
         properties.setFlowsScaleFactor(1.0);
         properties.setTruckScaleFactor(0.1);
-        properties.setSampleFactorForParcels(1.0);
+        properties.setSampleFactorForParcels(0.1);
         properties.setIterations(1);
         properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
 

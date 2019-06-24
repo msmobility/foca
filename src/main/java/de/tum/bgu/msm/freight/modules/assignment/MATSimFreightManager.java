@@ -54,9 +54,6 @@ public class MATSimFreightManager {
         new CarrierVehicleTypeReader(carrierVehicleTypes).readFile(properties.getVehicleFileForParcelDelivery());
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
 
-        for (CarrierVehicleType type : carrierVehicleTypes.getVehicleTypes().values()){
-            //
-        }
 
         logger.info("Vehicle types loaded");
 
@@ -67,8 +64,8 @@ public class MATSimFreightManager {
                 carrierModule.setPhysicallyEnforceTimeWindowBeginnings(true);
                 install(carrierModule);
 
-                bind(CarrierPlanStrategyManagerFactory.class).toInstance(new FreightFlowUtils.MyCarrierPlanStrategyManagerFactory(carrierVehicleTypes));
-                bind(CarrierScoringFunctionFactory.class).toInstance(new FreightFlowUtils.MyCarrierScoringFunctionFactory());
+                bind(CarrierPlanStrategyManagerFactory.class).toInstance(new MatsimFreightUtils.MyCarrierPlanStrategyManagerFactory(carrierVehicleTypes));
+                bind(CarrierScoringFunctionFactory.class).toInstance(new MatsimFreightUtils.MyCarrierScoringFunctionFactory());
             }
         });
 
