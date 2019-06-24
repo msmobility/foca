@@ -23,6 +23,7 @@ public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissi
     private Map<Id<Vehicle>, AnalyzedVehicle> emmisionsByVehicle;
     private Map<Id<Link>, AnalyzedLink> emmisionsByLink;
 
+
     public LinkEmissionHandler(Network network) {
         this.network = network;
         emmisionsByLink = new HashMap<>();
@@ -48,6 +49,16 @@ public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissi
         Id<Vehicle> vehicleId = event.getVehicleId();
         emmisionsByVehicle.putIfAbsent(vehicleId, new AnalyzedVehicle(vehicleId));
         emmisionsByVehicle.get(vehicleId).addDistanceTravelled(matsimLink.getLength());
+        emmisionsByVehicle.get(vehicleId).registerPointOfTime(event.getTime());
+        //todo currently we get operating times based on free flow conditions
+        double speed_ms;
+        if (vehicleId.toString().contains("cargoBike")){
+            speed_ms = 5.6;
+        } else {
+            speed_ms = matsimLink.getFreespeed();
+        }
+        emmisionsByVehicle.get(vehicleId).addOperatingTime(matsimLink.getLength() / speed_ms);
+
 
 
         if (emmisionsByVehicle.get(vehicleId).getWarmEmissions().isEmpty()){
@@ -87,6 +98,7 @@ public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissi
 
         Id<Vehicle> vehicleId = event.getVehicleId();
         emmisionsByVehicle.putIfAbsent(vehicleId, new AnalyzedVehicle(vehicleId));
+        emmisionsByVehicle.get(vehicleId).registerPointOfTime(event.getTime());
 
         if (emmisionsByVehicle.get(vehicleId).getWarmEmissions().isEmpty()){
             emmisionsByVehicle.get(vehicleId).getWarmEmissions().putAll(event.getColdEmissions());

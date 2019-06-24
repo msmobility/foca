@@ -29,6 +29,7 @@ public class EmissionEventsAnalysis {
     public static Config config;
 
 
+
     public static void main(String[] args) throws FileNotFoundException {
 
         String baseDirectory = "c:/models/freightFlows/";
@@ -46,6 +47,7 @@ public class EmissionEventsAnalysis {
 
         String linkWarmEmissionFile = baseDirectory + "/output/testReg/linkWarmEmissions.csv";
         String vehicleWarmEmissionFile = baseDirectory + "/output/testReg/vehicleWarmEmissions.csv";
+        String vehicleColdEmissionFile = baseDirectory + "/output/testReg/vehicleColdEmissions.csv";;
 
 
         EmissionEventsAnalysis emissionEventsAnalysis = new EmissionEventsAnalysis();
@@ -56,7 +58,8 @@ public class EmissionEventsAnalysis {
                 populationFile,
                 networkFile,
                 linkWarmEmissionFile,
-                vehicleWarmEmissionFile);
+                vehicleWarmEmissionFile,
+                vehicleColdEmissionFile);
 
 
     }
@@ -69,7 +72,8 @@ public class EmissionEventsAnalysis {
                     String populationFile,
                     String networkFile,
                     String linkWarmEmissionFile,
-                    String vehicleWarmEmissionFile) throws FileNotFoundException {
+                    String vehicleWarmEmissionFile,
+                    String vehicleColdEmissionFile) throws FileNotFoundException {
         if (config == null) {
             this.prepareConfig(configFile, outDirectory, individualVehicleFile, networkFile, populationFile) ;
         }
@@ -109,6 +113,7 @@ public class EmissionEventsAnalysis {
         printOutLinkWarmEmissions(linkWarmEmissionFile, analyzedLinks, true);
 
         printOutVehicleWarmEmissions(vehicleWarmEmissionFile, analyzedVehicles, true);
+        printOutVehicleWarmEmissions(vehicleColdEmissionFile, analyzedVehicles, false);
 
     }
 
@@ -119,7 +124,7 @@ public class EmissionEventsAnalysis {
         PrintWriter pw = new PrintWriter(new File(fileName));
 
         StringBuilder header = new StringBuilder();
-        header.append("id,distance");
+        header.append("id,distance,startTime,endTime,operatingTime");
         for (Pollutant pollutant : Pollutant.values()) {
             header.append(",").append(pollutant.toString());
         }
@@ -127,8 +132,11 @@ public class EmissionEventsAnalysis {
 
         for (AnalyzedVehicle vehicle : analyzedVehicles.values()) {
             StringBuilder sb = new StringBuilder();
-            sb.append(vehicle.getId().toString().replace("_truck", "")).append(",");
-            sb.append(vehicle.getDistanceTravelled());
+            sb.append(vehicle.getId().toString().replace("_truck", ""));
+            sb.append(",").append(vehicle.getDistanceTravelled());
+            sb.append(",").append(vehicle.getStartingTime());
+            sb.append(",").append(vehicle.getEndTime());
+            sb.append(",").append(vehicle.getOperatingTime());
 
             for (Pollutant pollutant : Pollutant.values()) {
                 if (warm) {

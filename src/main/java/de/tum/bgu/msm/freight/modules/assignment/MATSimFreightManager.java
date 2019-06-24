@@ -53,6 +53,11 @@ public class MATSimFreightManager {
 
         new CarrierVehicleTypeReader(carrierVehicleTypes).readFile(properties.getVehicleFileForParcelDelivery());
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
+
+        for (CarrierVehicleType type : carrierVehicleTypes.getVehicleTypes().values()){
+            //
+        }
+
         logger.info("Vehicle types loaded");
 
         controler.addOverridingModule(new AbstractModule() {

@@ -23,7 +23,7 @@ public class FreightFlowsTest {
         properties.setFlowsScaleFactor(1.0);
         properties.setTruckScaleFactor(0.1);
         properties.setSampleFactorForParcels(1.0);
-        properties.setIterations(5);
+        properties.setIterations(1);
         properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
 
         //properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);

@@ -24,7 +24,7 @@ public class EmissionMain {
 
         String linkWarmEmissionFile = "./output/" + properties.getRunId() + "/linkWarmEmissionFile.csv";
         String vehicleWarmEmissionFile = "./output/" + properties.getRunId() + "/vehicleWarmEmissionFile.csv";
-
+        String vehicleColdEmissionFile = "./output/" + properties.getRunId() + "/vehicleColdEmissionFile.csv";
 
         CreateVehicles createVehicles = new CreateVehicles();
         createVehicles.run(eventFileWithoutEmissions, individualVehicleFile);
@@ -46,7 +46,8 @@ public class EmissionMain {
                 populationFile,
                 networkFile,
                 linkWarmEmissionFile,
-                vehicleWarmEmissionFile);
+                vehicleWarmEmissionFile,
+                vehicleColdEmissionFile);
 
     }
 }

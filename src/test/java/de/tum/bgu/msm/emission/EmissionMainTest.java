@@ -7,12 +7,11 @@ import java.io.FileNotFoundException;
 
 public class EmissionMainTest {
 
-    private CreateVehicles createVehicles;
 
     @Test
     public void testRegensburgEmissions(){
         Properties properties = new Properties();
-        properties.setRunId("testRegNoCargoBikes");
+        properties.setRunId("testReg");
         String configFile = "config_average.xml";
         //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
 
@@ -25,7 +24,7 @@ public class EmissionMainTest {
 
         String linkWarmEmissionFile = "./output/" + properties.getRunId() + "/linkWarmEmissionFile.csv";
         String vehicleWarmEmissionFile = "./output/" + properties.getRunId() + "/vehicleWarmEmissionFile.csv";
-
+        String vehicleColdEmissionFile = "./output/" + properties.getRunId() + "/vehicleColdEmissionFile.csv";
 
         CreateVehicles createVehicles = new CreateVehicles();
         createVehicles.run(eventFileWithoutEmissions, individualVehicleFile);
@@ -48,7 +47,8 @@ public class EmissionMainTest {
                     populationFile,
                     networkFile,
                     linkWarmEmissionFile,
-                    vehicleWarmEmissionFile);
+                    vehicleWarmEmissionFile,
+                    vehicleColdEmissionFile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
