@@ -296,4 +296,8 @@ public class Properties extends PropertiesGroup {
     public void setOutputFolder(String outputFolder) {
         this.outputFolder = outputFolder;
     }
+
+    public void setVehicleFileForParcelDelivery(String s) {
+        this.vehicleFileForParcelDelivery = s;
+    }
 }
