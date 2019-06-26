@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.util.HashSet;
@@ -17,8 +18,8 @@ public class AssignHbefaRoadTypes {
 
     private static final Logger logger = Logger.getLogger(AssignHbefaRoadTypes.class);
 
-    static String inputFile = "./networks/matsim/final_V7_emissions.xml.gz";
-    static String outputFile = "./networks/matsim/final_V7_emissions.xml.gz";
+    static String inputFile = "./networks/matsim/final_V8_emissions.xml.gz";
+    static String outputFile = "./networks/matsim/final_V8_emissions.xml.gz";
 
 /**
     * handled OSM road types:

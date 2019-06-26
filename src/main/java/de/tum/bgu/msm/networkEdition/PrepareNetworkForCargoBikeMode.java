@@ -13,6 +13,7 @@ import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.io.BufferedReader;
@@ -27,7 +28,7 @@ public class PrepareNetworkForCargoBikeMode {
     private static final Logger logger = Logger.getLogger(PrepareNetworkForCargoBikeMode.class);
 
     static String inputFile = "./networks/matsim/final_V5_emissions.xml.gz";
-    static String outputFile = "./networks/matsim/final_V7_emissions.xml.gz";
+    static String outputFile = "./networks/matsim/final_V8_emissions.xml.gz";
 
     static String newNodeFileName = "./networks/input/cargo_bike_new_network/new_nodes_cargo_bike_regensburg.csv";
     static String newLinkFileName = "./networks/input/cargo_bike_new_network/new_links_cargo_bike_regensburg.csv";
@@ -88,13 +89,14 @@ public class PrepareNetworkForCargoBikeMode {
 
         logger.info("Completed the reading of links");
 
+        new NetworkCleaner().run(network);
+
         new NetworkWriter(network).write(outputFile);
 
     }
 
     private static void createAndAddNode(Network network, String id, double x, double y){
         NetworkUtils.createAndAddNode(network, Id.createNodeId(id), new Coord(x,y));
-
     }
 
     private static void createAndAddLinkForCargoBikeOnly(Network network, String linkId, String fromNodeId, String toNodeId){

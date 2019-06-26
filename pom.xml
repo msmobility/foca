@@ -152,7 +152,7 @@
 
 
     <properties>
-        <matsimVersion>12.0-SNAPSHOT</matsimVersion>
+        <matsimVersion>11.0</matsimVersion>
     </properties>
 
 
