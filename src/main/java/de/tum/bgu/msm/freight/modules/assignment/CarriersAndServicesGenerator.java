@@ -65,7 +65,7 @@ public class CarriersAndServicesGenerator {
                 List<Parcel> parcelsInThisCarrier = parcelsInThisDistributionCenter.subList(firstParcel, lastParcel);
                 Carrier carrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement(), Carrier.class));
                 Coordinate coordinates = distributionCenter.getCoordinates();
-                Link link = NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
+                Link link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
                 Id<Link> linkId = link.getId();
                 CarrierVehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
                 carrier.getCarrierCapabilities().getVehicleTypes().add(type);
@@ -89,7 +89,7 @@ public class CarriersAndServicesGenerator {
             Carrier feederCarrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement() + "_feeder", Carrier.class));
             carriers.addCarrier(feederCarrier);
             Coordinate coordinates = distributionCenter.getCoordinates();
-            Link link = NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
+            Link link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
             Id<Link> linkId = link.getId();
             CarrierVehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
             feederCarrier.getCarrierCapabilities().getVehicleTypes().add(type);
@@ -117,7 +117,7 @@ public class CarriersAndServicesGenerator {
                     Carrier microDepotCarrier = CarrierImpl.newInstance(Id.create(microDepot.getId() + "_microDepot", Carrier.class));
                     carriers.addCarrier(microDepotCarrier);
                     Coordinate microDepotCoord = microDepot.getCoord_gk4();
-                    Link microDepotLink = NetworkUtils.getNearestLink(network, new Coord(microDepotCoord.x, microDepotCoord.y));
+                    Link microDepotLink = getNearestLinkByMode(microDepotCoord, ParcelDistributionType.MOTORIZED);
                     Id<Link> microDepotLinkId = microDepotLink.getId();
                     CarrierVehicleType cargoBikeType = types.getVehicleTypes().get(Id.create("cargoBike", VehicleType.class));
                     microDepotCarrier.getCarrierCapabilities().getVehicleTypes().add(cargoBikeType);
@@ -135,6 +135,37 @@ public class CarriersAndServicesGenerator {
 
     }
 
+    private Link getNearestLinkByMode(Coordinate coordinates, ParcelDistributionType mode) {
+        if (mode.equals(ParcelDistributionType.MOTORIZED)) {
+            Link thisLink = NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
+            Link nearestLink;
+            while  ((nearestLink = findUpstreamLinksForMotorizedVehicle(thisLink)) == null) {
+                thisLink = thisLink.getFromNode().getInLinks().values().iterator().next();
+            }
+            return nearestLink;
+
+        } else {
+            return NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
+        }
+
+    }
+
+    private Link findUpstreamLinksForMotorizedVehicle(Link thisLink) {
+        if (thisLink.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
+            Map<Id<Link>, Link> upstreamLinks = (Map<Id<Link>, Link>) thisLink.getFromNode().getInLinks();
+            for (Link upstreamLink : upstreamLinks.values()) {
+                if (upstreamLink.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
+                    return upstreamLink;
+                } else {
+                    return null;
+                }
+            }
+            return null;
+        } else {
+            return thisLink;
+        }
+    }
+
     private void createDeliveriesByMotorizedModes(List<Parcel> parcelsThisCarrier, Carrier carrier) {
         int parcelIndex = 0;
         int parcelsToMicroDepotIndex = 0;
@@ -145,8 +176,7 @@ public class CarriersAndServicesGenerator {
                     if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
                         Coord parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
                         TimeWindow timeWindow = generateRandomTimeSubWindow(7, 17, 1);
-
-                        Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
+                        Id<Link> linkParcelDelivery = getNearestLinkByMode(parcel.getDestCoord(), ParcelDistributionType.MOTORIZED).getId();
                         Node toNode = network.getLinks().get(linkParcelDelivery).getToNode();
                         double distance = NetworkUtils.getEuclideanDistance(toNode.getCoord(), parcelCoord);
                         double duration_s = fixDeliveryTime_s + distance / parcelAccessSpeed_ms;
@@ -182,7 +212,7 @@ public class CarriersAndServicesGenerator {
                 TimeWindow timeWindow;
                 parcelCoord = new Coord(parcel.getDestCoord().x, parcel.getDestCoord().y);
                 timeWindow = generateRandomTimeSubWindow(8, 17, 1);
-                Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, parcelCoord).getId();
+                Id<Link> linkParcelDelivery = getNearestLinkByMode(parcel.getDestCoord(), ParcelDistributionType.CARGO_BIKE).getId();
                 Node toNode = network.getLinks().get(linkParcelDelivery).getToNode();
                 double distance = NetworkUtils.getEuclideanDistance(toNode.getCoord(), parcelCoord);
                 double duration_s = fixDeliveryTime_s + distance / parcelAccessSpeed_ms;

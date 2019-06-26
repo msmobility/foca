@@ -28,7 +28,7 @@ public class MyNonCongestedTravelTime implements TravelTime {
         // (this will not work with cars)
         if (link.getAttributes().getAttribute("onlyCargoBike").equals(true) &&
                 !carrierVehicleType.getId().equals(cargoBikeType.getId())){
-            return Double.MAX_VALUE;
+            return link.getLength() / 0.001;
         }
 
         if (velocity <= 0.0D) {
