@@ -300,4 +300,8 @@ public class Properties extends PropertiesGroup {
     public void setVehicleFileForParcelDelivery(String s) {
         this.vehicleFileForParcelDelivery = s;
     }
+
+    public void setDistributionCentersFile(String distributionCentersFile) {
+        this.distributionCentersFile = distributionCentersFile;
+    }
 }

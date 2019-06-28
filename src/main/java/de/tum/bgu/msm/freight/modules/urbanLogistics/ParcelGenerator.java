@@ -71,6 +71,8 @@ public class ParcelGenerator implements Module {
             }
 
             for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
+                double randomValue = properties.getRand().nextDouble();
+                //random number to assign to microdepot or to motorized(here, to try to obtain deterministic results)
                 if (!parcel.isToDestination()) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
@@ -85,7 +87,7 @@ public class ParcelGenerator implements Module {
                     continue;
                 }
                 //may be distributed by cargo bikes, then depend on the share only
-                if (properties.getRand().nextDouble() <
+                if (randomValue <
                         properties.shortDistance().getShareOfCargoBikesAtZonesServedByMicroDepot()) {
                     here:
                     for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {

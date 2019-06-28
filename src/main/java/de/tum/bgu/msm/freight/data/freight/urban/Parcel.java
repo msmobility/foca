@@ -26,6 +26,7 @@ public class Parcel {
     private int destMicroZoneId;
 
     private boolean assigned = false;
+    private double accessDistance_m;
 
     public Parcel(int id, boolean toDestination, double volume_m3, double weight_kg,
                   DistributionCenter distributionCenter, Commodity commodity) {
@@ -56,7 +57,8 @@ public class Parcel {
                 append("microDepot").append(",").
                 append("parcelShop").append(",").
                 append("distributionType").append(",").
-                append("assigned");
+                append("assigned").append(",").
+                append("accessDistance");
 
 
         return builder.toString();
@@ -98,7 +100,8 @@ public class Parcel {
 
                 builder.append(parcelShop).append(",").
                 append(parcelDistributionType).append(",").
-                append(assigned);
+                append(assigned).append(",").
+                append(accessDistance_m);
 
         return builder.toString();
 
@@ -194,5 +197,13 @@ public class Parcel {
 
     public void setAssigned(boolean assigned) {
         this.assigned = assigned;
+    }
+
+    public double getAccessDistance_m() {
+        return accessDistance_m;
+    }
+
+    public void setAccessDistance_m(double accessDistance_m) {
+        this.accessDistance_m = accessDistance_m;
     }
 }

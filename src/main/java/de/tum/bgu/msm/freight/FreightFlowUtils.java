@@ -1,18 +1,29 @@
 package de.tum.bgu.msm.freight;
 
+import com.pb.common.datafile.ExcelFileReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.apache.log4j.Logger;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.projection.MapProjection;
+import org.geotools.referencing.operation.projection.ProjectionException;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.shape.random.RandomPointsBuilder;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.parameter.ParameterDescriptorGroup;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.MathTransform2D;
+import org.opengis.referencing.operation.TransformException;
 
+import java.awt.geom.Point2D;
 import java.util.*;
 
 
@@ -20,6 +31,8 @@ public class FreightFlowUtils {
 
     public static Random random;
     private final static CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
+    private final static Logger logger = Logger.getLogger(FreightFlowUtils.class);
+    private static int projectionErrorCounter = 0;
 
     public static Coordinate getRandomCoordinatesFromFeature(SimpleFeature feature){
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
@@ -60,8 +73,15 @@ public class FreightFlowUtils {
     }
 
     public static Coordinate convertWGS84toGK4(Coordinate coord){
-        Coord newCoord = ct.transform(new Coord(coord.x, coord.y));
-        return new Coordinate(newCoord.getX(), newCoord.getY());
+        Coord newCoord;
+        try{
+            newCoord = ct.transform(new Coord(coord.x, coord.y));
+            return new Coordinate(newCoord.getX(), newCoord.getY());
+        } catch (Exception e){
+            projectionErrorCounter++;
+            logger.warn("Converting false coordinates from " + coord.toString() + "Count " + projectionErrorCounter);
+            return new Coordinate(0, 0);
+        }
     }
 
 }

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class CarriersAndServicesGenerator {
 
@@ -47,7 +48,22 @@ public class CarriersAndServicesGenerator {
 
     public void generateCarriers(Carriers carriers, CarrierVehicleTypes types) {
         AtomicInteger carrierCounter = new AtomicInteger(0);
-        for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
+        List<DistributionCenter> selectedDistributionCenters = new ArrayList<>();
+        Map<Integer, DistributionCenter> allDistributionCenters = new HashMap<>();
+        dataSet.getParcelsByDistributionCenter().keySet().forEach(x-> allDistributionCenters.put(x.getId(), x));
+        if (properties.shortDistance().getSelectedDistributionCenters()[0] == -1){
+            //dist centers of interest are not defined
+            selectedDistributionCenters.addAll(allDistributionCenters.values());
+        } else {
+            //some dist centers are defined
+            for (int distCentId : properties.shortDistance().getSelectedDistributionCenters()){
+                selectedDistributionCenters.add(allDistributionCenters.get(distCentId));
+            }
+        }
+
+
+
+        for (DistributionCenter distributionCenter : selectedDistributionCenters) {
             List<Parcel> parcelsInThisDistributionCenter = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
                 //initialize
@@ -179,6 +195,7 @@ public class CarriersAndServicesGenerator {
                         Id<Link> linkParcelDelivery = getNearestLinkByMode(parcel.getDestCoord(), ParcelDistributionType.MOTORIZED).getId();
                         Node toNode = network.getLinks().get(linkParcelDelivery).getToNode();
                         double distance = NetworkUtils.getEuclideanDistance(toNode.getCoord(), parcelCoord);
+                        parcel.setAccessDistance_m(distance);
                         double duration_s = fixDeliveryTime_s + distance / parcelAccessSpeed_ms;
 
                         CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(),
@@ -215,6 +232,7 @@ public class CarriersAndServicesGenerator {
                 Id<Link> linkParcelDelivery = getNearestLinkByMode(parcel.getDestCoord(), ParcelDistributionType.CARGO_BIKE).getId();
                 Node toNode = network.getLinks().get(linkParcelDelivery).getToNode();
                 double distance = NetworkUtils.getEuclideanDistance(toNode.getCoord(), parcelCoord);
+                parcel.setAccessDistance_m(distance);
                 double duration_s = fixDeliveryTime_s + distance / parcelAccessSpeed_ms;
                 CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create(parcel.getId(), CarrierService.class), linkParcelDelivery);
                 serviceBuilder.setCapacityDemand(1);

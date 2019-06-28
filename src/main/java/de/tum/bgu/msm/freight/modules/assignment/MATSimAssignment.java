@@ -70,7 +70,9 @@ public class MATSimAssignment implements Module {
             scenario.setPopulation(PopulationUtils.createPopulation(config));
         }
         matSimTruckPlanGenerator.addTrucks(scenario.getPopulation());
-        generateCarriersPopulation(matSimFreightManager.getCarriers(), matSimFreightManager.getCarrierVehicleTypes());
+        if (properties.isRunParcelDelivery()) {
+            generateCarriersPopulation(matSimFreightManager.getCarriers(), matSimFreightManager.getCarrierVehicleTypes());
+        }
     }
 
 
@@ -84,9 +86,6 @@ public class MATSimAssignment implements Module {
 
 
     private void runMatsim() {
-
-
-
         CountEventHandler countEventHandler = new CountEventHandler(properties);
         if (properties.isReadEventsForCounts()) {
             LinksFileReader linksFileReader = new LinksFileReader(dataSet, properties.getCountStationLinkListFile());
@@ -97,9 +96,7 @@ public class MATSimAssignment implements Module {
             }
             controler.getEvents().addHandler(countEventHandler);
         }
-
         controler.run();
-
         if (properties.isReadEventsForCounts()) {
             try {
                 countEventHandler.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName());
@@ -108,6 +105,4 @@ public class MATSimAssignment implements Module {
             }
         }
     }
-
-
 }
