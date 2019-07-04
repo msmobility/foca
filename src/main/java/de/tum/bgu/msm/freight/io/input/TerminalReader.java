@@ -44,8 +44,8 @@ public class TerminalReader extends CSVReader {
     protected void processHeader(String[] header) {
         posId = MitoUtil.findPositionInArray("id", header);
         posName = MitoUtil.findPositionInArray("name", header);
-        posX = MitoUtil.findPositionInArray("x", header);
-        posY = MitoUtil.findPositionInArray("y", header);
+        posX = MitoUtil.findPositionInArray("xcoord", header);
+        posY = MitoUtil.findPositionInArray("ycoord", header);
         //posCommodity = MitoUtil.findPositionInArray("commodityGroup", header);
         posZone = MitoUtil.findPositionInArray("zone", header);
 
@@ -64,16 +64,12 @@ public class TerminalReader extends CSVReader {
             coord = dataSet.getZones().get(zoneId).getCoordinates();
         } else {
             coord = new Coordinate(x, y);
-            coord = FreightFlowUtils.convertWGS84toGK4(coord);
         }
 
         dataSet.getTerminals().put(id, new Terminal(id, name, coord, false));
 
         counter++;
-
-
     }
-
 
     @Override
     public void read() {

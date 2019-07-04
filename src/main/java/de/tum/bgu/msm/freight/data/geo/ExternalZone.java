@@ -9,11 +9,10 @@ public class ExternalZone implements Zone {
     private String name;
     private Coordinate coord_gk4;
 
-    public ExternalZone(int id, String name, double lat, double lon) {
+    public ExternalZone(int id, String name, double x, double y) {
         this.id = id;
         this.name = name;
-        Coordinate coord = new Coordinate(lon, lat);
-        this.coord_gk4 = FreightFlowUtils.convertWGS84toGK4(coord);
+        this.coord_gk4 =  new Coordinate(x, y);
     }
 
 

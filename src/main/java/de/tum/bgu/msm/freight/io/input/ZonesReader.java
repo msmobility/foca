@@ -22,8 +22,8 @@ public class ZonesReader extends CSVReader {
     private int idIndex;
     private int nameIndex;
     private int zoneTypeIndex;
-    private int lonIndex;
-    private int latIndex;
+    private int yIndex;
+    private int xIndex;
 
     private Properties properties;
 
@@ -37,8 +37,8 @@ public class ZonesReader extends CSVReader {
         idIndex = MitoUtil.findPositionInArray("id", header);
         nameIndex = MitoUtil.findPositionInArray("name", header);
         zoneTypeIndex = MitoUtil.findPositionInArray("type", header);
-        lonIndex = MitoUtil.findPositionInArray("lon", header);
-        latIndex = MitoUtil.findPositionInArray("lat", header);
+        yIndex = MitoUtil.findPositionInArray("xcoord", header);
+        xIndex = MitoUtil.findPositionInArray("ycoord", header);
 
     }
 
@@ -50,13 +50,13 @@ public class ZonesReader extends CSVReader {
             InternalZone zone = new InternalZone(id, name);
             dataSet.getZones().put(id, zone);
         } else if (type.equals("EXTERNAL")){
-            double lat = Double.parseDouble(record[latIndex]);
-            double lon = Double.parseDouble(record[lonIndex]);
-            ExternalZone zone = new ExternalZone(id, name, lat, lon);
+            double x = Double.parseDouble(record[xIndex]);
+            double y = Double.parseDouble(record[yIndex]);
+            ExternalZone zone = new ExternalZone(id, name, x, y);
             dataSet.getZones().put(id, zone);
         } else if (type.equals("SEEPORT")){
-            double lat = Double.parseDouble(record[latIndex]);
-            double lon = Double.parseDouble(record[lonIndex]);
+            double lat = Double.parseDouble(record[xIndex]);
+            double lon = Double.parseDouble(record[yIndex]);
             ExternalZone zone = new ExternalZone(id, name, lat, lon);
             dataSet.getZones().put(id, zone);
         }

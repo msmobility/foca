@@ -102,9 +102,7 @@ for (i in 1:3){
 
 #optional:
 
-summary = summary %>% filter(commodity == "POST_PACKET")
-
-
+#summary = summary %>% filter(commodity == "POST_PACKET")
 
 delivered_weight_cargo_bike$n
 

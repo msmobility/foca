@@ -52,7 +52,7 @@ public class FreightFlowsTest {
                 "./input/distributionCenters/distributionCenters.xml",1.,1., 50));
 
         for (Scenario scenario : scenarios) {
-            testRegensburg(scenario);
+            testRegensburg(scenario, false);
         }
 
     }
@@ -66,13 +66,13 @@ public class FreightFlowsTest {
                 "./input/distributionCenters/distributionCenters.xml", 0.05, 0.05, 1));
 
         for (Scenario scenario : scenarios) {
-            testRegensburg(scenario);
+            testRegensburg(scenario, true);
         }
 
     }
 
 
-    public void testRegensburg(Scenario scenario) {
+    public void testRegensburg(Scenario scenario, boolean check) {
 
         Properties properties = new Properties();
 
@@ -100,35 +100,38 @@ public class FreightFlowsTest {
         FreightFlows freightFlows = new FreightFlows();
         freightFlows.run(properties);
 
-        String originalFile;
-        String finalFile;
+        if(check) {
 
-        originalFile = properties.getOutputFolder() + properties.getRunId() + "/truckFlows.csv";
-        finalFile = "./reference/" + properties.getRunId() + "/truckFlows.csv";
+            String originalFile;
+            String finalFile;
 
-        FileAssert.assertEquals("Flows are different", new File(originalFile), new File(finalFile));
+            originalFile = properties.getOutputFolder() + properties.getRunId() + "/truckFlows.csv";
+            finalFile = "./reference/" + properties.getRunId() + "/truckFlows.csv";
 
-        originalFile = properties.getOutputFolder() + properties.getRunId() + "/ld_trucks.csv";
-        finalFile = "./reference/" + properties.getRunId() + "/ld_trucks.csv";
+            FileAssert.assertEquals("Flows are different", new File(originalFile), new File(finalFile));
 
-        FileAssert.assertEquals("LD trucks are different", new File(originalFile), new File(finalFile));
+            originalFile = properties.getOutputFolder() + properties.getRunId() + "/ld_trucks.csv";
+            finalFile = "./reference/" + properties.getRunId() + "/ld_trucks.csv";
 
-        originalFile = properties.getOutputFolder() + properties.getRunId() + "/sd_trucks.csv";
-        finalFile = "./reference/" + properties.getRunId() + "/sd_trucks.csv";
+            FileAssert.assertEquals("LD trucks are different", new File(originalFile), new File(finalFile));
 
-        FileAssert.assertEquals("SD trucks are different", new File(originalFile), new File(finalFile));
+            originalFile = properties.getOutputFolder() + properties.getRunId() + "/sd_trucks.csv";
+            finalFile = "./reference/" + properties.getRunId() + "/sd_trucks.csv";
 
-        originalFile = properties.getOutputFolder() + properties.getRunId() + "/parcels.csv";
-        finalFile = "./reference/" + properties.getRunId() + "/parcels.csv";
+            FileAssert.assertEquals("SD trucks are different", new File(originalFile), new File(finalFile));
 
-        FileAssert.assertEquals("Parcel files are different", new File(originalFile), new File(finalFile));
+            originalFile = properties.getOutputFolder() + properties.getRunId() + "/parcels.csv";
+            finalFile = "./reference/" + properties.getRunId() + "/parcels.csv";
+
+            FileAssert.assertEquals("Parcel files are different", new File(originalFile), new File(finalFile));
 
 
-        originalFile = properties.getOutputFolder() + properties.getRunId() + "/counts_multi_day.csv";
-        finalFile = "./reference/" + properties.getRunId() + "/counts_multi_day.csv";
+            originalFile = properties.getOutputFolder() + properties.getRunId() + "/counts_multi_day.csv";
+            finalFile = "./reference/" + properties.getRunId() + "/counts_multi_day.csv";
 
-        FileAssert.assertEquals("Counts are different", new File(originalFile), new File(finalFile));
+            FileAssert.assertEquals("Counts are different", new File(originalFile), new File(finalFile));
 
+        }
     }
 
 }

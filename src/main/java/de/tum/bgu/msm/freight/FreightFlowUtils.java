@@ -41,7 +41,7 @@ public class FreightFlowUtils {
         Envelope envelope = randomPointsBuilder.getExtent();
         double x = envelope.getMinX() + envelope.getWidth() * random.nextDouble();
         double y = envelope.getMinY() + envelope.getHeight() * random.nextDouble();
-        return convertWGS84toGK4(new Coordinate(x, y));
+        return new Coordinate(x, y);
     }
 
     public static void setRandomNumber(Properties properties){
@@ -72,6 +72,7 @@ public class FreightFlowUtils {
         return sm;
     }
 
+    @Deprecated
     public static Coordinate convertWGS84toGK4(Coordinate coord){
         Coord newCoord;
         try{

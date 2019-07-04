@@ -33,15 +33,16 @@ public class FreightFlows {
         Place to configure the properties according to users' prefrerences, otherwise the default values are chosen
          */
 
-        //properties.setFlowsScaleFactor();
+
         properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setRunId("testEmissions");
+        properties.setRunId("muc_dist_12");
 
         properties.setSelectedZones(new int[]{9162, 9362});
-        properties.setTruckScaleFactor(0.05);
-        properties.setSampleFactorForParcels(0.05);
-
+        properties.setTruckScaleFactor(1.00);
+        properties.setSampleFactorForParcels(1.00);
         properties.setIterations(1);
+
+        properties.shortDistance().setSelectedDistributionCenters(new int[]{12});
 
         //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
 

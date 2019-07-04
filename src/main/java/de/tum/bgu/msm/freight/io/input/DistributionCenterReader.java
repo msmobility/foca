@@ -55,7 +55,7 @@ public class DistributionCenterReader extends CSVReader {
         CommodityGroup commodityGroup = CommodityGroup.valueOf(record[posCommodity].toUpperCase());
         int zoneId  = Integer.parseInt(record[posZone]);
 
-        DistributionCenter dc = new DistributionCenter(id, name, FreightFlowUtils.convertWGS84toGK4(new Coordinate(x,y)), commodityGroup, zoneId);
+        DistributionCenter dc = new DistributionCenter(id, name, new Coordinate(x,y), commodityGroup, zoneId);
 
         addDistributionCenter(dc, zoneId, commodityGroup);
 

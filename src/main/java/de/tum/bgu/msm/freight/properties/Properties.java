@@ -20,7 +20,7 @@ public class Properties extends PropertiesGroup {
     private String matrixFileName = "./input/matrices/ketten-2010.csv";
     private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
     private String distributionCentersFile = "input/distributionCenters/distributionCenters.xml";
-    private String terminalsFileName = "input/distributionCenters/intermodal_terminals.csv";
+    private String terminalsFileName = "input/distributionCenters/intermodal_terminals_31468.csv";
 
     private String networkFile = "./networks/matsim/final_V8_emissions.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";

@@ -66,7 +66,7 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
         double x = Double.parseDouble(atts.getValue("x"));
         double y = Double.parseDouble(atts.getValue("y"));
         int microZoneId = Integer.parseInt(atts.getValue("microZone"));
-        Coordinate coord_gk4 = FreightFlowUtils.convertWGS84toGK4(new Coordinate(x,y));
+        Coordinate coord_gk4 = new Coordinate(x,y);
         this.currentMicroDepot = new MicroDepot(id, name, coord_gk4, currentDistributionCenter.getCommodityGroup(),
                 currentDistributionCenter, currentDistributionCenter.getZoneId(), microZoneId);
     }
@@ -86,7 +86,7 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
         double x = Double.parseDouble(atts.getValue("x"));
         double y = Double.parseDouble(atts.getValue("y"));
         CommodityGroup commodityGroup = CommodityGroup.valueOf(atts.getValue("commodityGroup").toUpperCase());
-        Coordinate coord_gk4 = FreightFlowUtils.convertWGS84toGK4(new Coordinate(x,y));
+        Coordinate coord_gk4 = new Coordinate(x,y);
         int zoneId = Integer.parseInt(atts.getValue("zone"));
         this.currentDistributionCenter = new DistributionCenter(id, name, coord_gk4, commodityGroup, zoneId);
         addDistributionCenter(currentDistributionCenter, zoneId, commodityGroup);
