@@ -35,14 +35,14 @@ public class FreightFlows {
 
 
         properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setRunId("muc_dist_12");
+        properties.setRunId("muc_dist_20_v2");
 
-        properties.setSelectedZones(new int[]{9162, 9362});
+        properties.setSelectedZones(new int[]{9162});
         properties.setTruckScaleFactor(1.00);
         properties.setSampleFactorForParcels(1.00);
         properties.setIterations(1);
 
-        properties.shortDistance().setSelectedDistributionCenters(new int[]{12});
+        properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
 
         //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
 

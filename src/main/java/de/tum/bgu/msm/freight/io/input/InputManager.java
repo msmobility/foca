@@ -51,7 +51,7 @@ public class InputManager {
     private void readDistributionCenters() {
 
         DistributionCenterReaderXML distributionCenterReaderXML = new DistributionCenterReaderXML(dataSet);
-        distributionCenterReaderXML.setValidating(true);
+        distributionCenterReaderXML.setValidating(false);
         distributionCenterReaderXML.read(properties.getDistributionCentersFile());
 
 

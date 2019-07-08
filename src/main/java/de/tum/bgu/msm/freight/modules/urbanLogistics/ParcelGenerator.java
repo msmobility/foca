@@ -135,7 +135,8 @@ public class ParcelGenerator implements Module {
 
     private void chooseTransactionType() {
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
-            for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
+            List<Parcel> parcels = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
+            for (Parcel parcel : parcels) {
                 if (parcel.isToDestination()) {
                     ParcelTransaction parcelTransaction =
                             FreightFlowUtils.select(parcelDeliveryTransactionProbabilties, FreightFlowUtils.getSum(parcelDeliveryTransactionProbabilties.values()));

@@ -23,20 +23,25 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.tum.bgu.msm.networkEdition.AssignHbefaRoadTypes.getHbefaType;
+
 public class PrepareNetworkForCargoBikeMode {
 
     private static final Logger logger = Logger.getLogger(PrepareNetworkForCargoBikeMode.class);
 
-    static String inputFile = "./networks/matsim/final_V5_emissions.xml.gz";
-    static String outputFile = "./networks/matsim/final_V8_emissions.xml.gz";
+    static String inputFile = "./networks/matsim/final_V8_emissions.xml.gz";
+    static String outputFile = "./networks/matsim/final_V9_emissions.xml.gz";
 
-    static String newNodeFileName = "./networks/input/cargo_bike_new_network/new_nodes_cargo_bike_regensburg.csv";
-    static String newLinkFileName = "./networks/input/cargo_bike_new_network/new_links_cargo_bike_regensburg.csv";
+    static String newNodeFileName = "./networks/input/cargo_bike_new_network/new_nodes_cargo_bike_muc.csv";
+    static String newLinkFileName = "./networks/input/cargo_bike_new_network/new_links_cargo_bike_muc.csv";
 
     static int counter = 0;
     static Set<String> modes = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
+
+
+        //todo careful with links id and nodes id if this process is done more than once.
 
         Config config = ConfigUtils.createConfig();
         config.network().setInputFile(inputFile);
@@ -44,7 +49,9 @@ public class PrepareNetworkForCargoBikeMode {
         Network network = scenario.getNetwork();
 
         for (Link link : network.getLinks().values()) {
-            link.getAttributes().putAttribute("onlyCargoBike", false );
+            if (link.getAttributes().getAttribute("onlyCargoBike").equals(null)) {
+                link.getAttributes().putAttribute("onlyCargoBike", false);
+            }
         }
 
         modes.add(TransportMode.car);
@@ -111,6 +118,7 @@ public class PrepareNetworkForCargoBikeMode {
         link.getAttributes().putAttribute("onlyCargoBike", true );
         link.getAttributes().putAttribute("type", "unclassified" );
         link.setAllowedModes(modes);
+        link.getAttributes().putAttribute("hbefa_road_type", getHbefaType(link));
 
         network.addLink(link);
 
@@ -121,6 +129,8 @@ public class PrepareNetworkForCargoBikeMode {
         link_2.getAttributes().putAttribute("onlyCargoBike", true );
         link_2.getAttributes().putAttribute("type", "unclassified" );
         link_2.setAllowedModes(modes);
+        link_2.getAttributes().putAttribute("hbefa_road_type", getHbefaType(link));
+
 
         network.addLink(link_2);
 

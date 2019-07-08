@@ -62,7 +62,7 @@ public class AssignHbefaRoadTypes {
 
     }
 
-    private static String getHbefaType(Link link) {
+    public static String getHbefaType(Link link) {
 
         double freeFlowSpeed_kmh = link.getFreespeed()*3.6;
         String osmType = link.getAttributes().getAttribute("type").toString().split("_")[0];

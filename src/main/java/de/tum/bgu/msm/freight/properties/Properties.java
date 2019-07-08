@@ -22,7 +22,7 @@ public class Properties extends PropertiesGroup {
     private String distributionCentersFile = "input/distributionCenters/distributionCenters.xml";
     private String terminalsFileName = "input/distributionCenters/intermodal_terminals_31468.csv";
 
-    private String networkFile = "./networks/matsim/final_V8_emissions.xml.gz";
+    private String networkFile = "./networks/matsim/final_V9_emissions.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
     private int iterations = 1;
     private double flowsScaleFactor = 1.;

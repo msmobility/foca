@@ -63,7 +63,7 @@ public class FreightFlowsTest {
         List<Scenario> scenarios = new ArrayList<>();
         scenarios.add(new Scenario("test_small",
                 1.0,
-                "./input/distributionCenters/distributionCenters.xml", 0.05, 0.05, 1));
+                "./input/distributionCenters/distributionCenters_test.xml", 0.05, 0.05, 1));
 
         for (Scenario scenario : scenarios) {
             testRegensburg(scenario, true);

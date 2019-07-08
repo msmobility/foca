@@ -1,12 +1,15 @@
 package de.tum.bgu.msm.freight.modules.longDistance;
 
+import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.*;
 import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
+import de.tum.bgu.msm.freight.data.freight.longDistance.LDDistributionType;
 import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
 import de.tum.bgu.msm.freight.data.freight.longDistance.SegmentType;
 import de.tum.bgu.msm.freight.data.freight.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
+import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.modules.Module;
@@ -14,7 +17,6 @@ import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
-import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,15 +26,40 @@ public class LDTruckODAllocator implements Module {
     private Properties properties;
     private DataSet dataSet;
     private double cumulatedV = 0; //debug-only variable
-
     private static final Logger logger = Logger.getLogger(LDTruckODAllocator.class);
+
+    private Map<Integer, Map<CommodityGroup, Map<DistributionCenter, Double>>> weightDistributionCenters;
 
 
     @Override
     public void setup(DataSet dataset, Properties properties) {
         this.dataSet = dataset;
         this.properties = properties;
+        initializeDistributionCenterWeight();
 
+    }
+
+    private void initializeDistributionCenterWeight() {
+        weightDistributionCenters = new HashMap<>();
+
+        for (int zoneId : dataSet.getZones().keySet()) {
+            if (dataSet.getZones().get(zoneId).isInStudyArea()) {
+                weightDistributionCenters.putIfAbsent(zoneId, new HashMap<>());
+                for (CommodityGroup commodityGroup : CommodityGroup.values()) {
+                    if (!commodityGroup.getLongDistanceGoodDistribution().equals(LDDistributionType.DOOR_TO_DOOR)) {
+                        weightDistributionCenters.get(zoneId).putIfAbsent(commodityGroup, new HashMap<>());
+                        for (DistributionCenter distributionCenter : dataSet.getDistributionCenters().get(zoneId).get(commodityGroup).values()) {
+                            double weight = 0;
+                            for (InternalMicroZone internalMicroZone : distributionCenter.getZonesServedByThis()) {
+                                weight ++;
+                            }
+                            weightDistributionCenters.get(zoneId).get(commodityGroup).put(distributionCenter, weight);
+                        }
+                    }
+                }
+            }
+        }
+        logger.info("Assigned weights to the distribution centers based on number of microZones");
     }
 
     @Override
@@ -52,7 +79,7 @@ public class LDTruckODAllocator implements Module {
                 setDestination(LDTruckTrip);
                 dataSet.getLDTruckTrips().add(LDTruckTrip);
 
-                if (counter.incrementAndGet() % 100000 == 0){
+                if (counter.incrementAndGet() % 100000 == 0) {
                     logger.info("Assigned o/d to " + counter.get() + " LD trucks");
                 }
             }
@@ -103,7 +130,7 @@ public class LDTruckODAllocator implements Module {
                     if (!originZone.isInStudyArea()) {
                         origCoord = originZone.getCoordinates();
                     } else {
-                        DistributionCenter originDistributionCenter = chooseDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
+                        DistributionCenter originDistributionCenter = chooseRandomDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
                         LDTruckTrip.setOriginDistributionCenter(originDistributionCenter);
                         origCoord = originDistributionCenter.getCoordinates();
                         addVolumeForSmallTruckDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
@@ -114,7 +141,7 @@ public class LDTruckODAllocator implements Module {
                         //if zone does not have microzone
                         origCoord = originZone.getCoordinates();
                     } else {
-                        DistributionCenter originDistributionCenter = chooseDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
+                        DistributionCenter originDistributionCenter = chooseRandomDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
                         origCoord = originDistributionCenter.getCoordinates();
                         LDTruckTrip.setOriginDistributionCenter(originDistributionCenter);
                         addVolumeForParcelDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
@@ -176,7 +203,7 @@ public class LDTruckODAllocator implements Module {
                     if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();
                     } else {
-                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
+                        DistributionCenter destinationDistributionCenter = chooseRandomDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
                         LDTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
                         addVolumeForSmallTruckDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
@@ -186,10 +213,11 @@ public class LDTruckODAllocator implements Module {
                     if (!destinationZone.isInStudyArea()) {
                         destCoord = destinationZone.getCoordinates();
                     } else {
-                        DistributionCenter destinationDistributionCenter = chooseDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
+                        DistributionCenter destinationDistributionCenter = chooseRandomDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
                         LDTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
-                        addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+
+                    addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
                     }
                     break;
                 default:
@@ -207,12 +235,24 @@ public class LDTruckODAllocator implements Module {
         }
     }
 
-    private DistributionCenter chooseDistributionCenter(int zoneId, CommodityGroup commodityGroup) {
-        //todo not random distribution center
+    @Deprecated
+    private DistributionCenter chooseRandomDistributionCenter(int zoneId, CommodityGroup commodityGroup) {
+        //todo probably not the best way to divide. Think on capacity
         ArrayList<DistributionCenter> distributionCenters = new ArrayList<>();
         distributionCenters.addAll(dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, commodityGroup).values());
         Collections.shuffle(distributionCenters, properties.getRand());
         return distributionCenters.get(0);
+    }
+
+    //todo not sure how this works!
+    private DistributionCenter chooseDistributionCenterByCatchmentAreaPopulation(int zoneId, CommodityGroup commodityGroup) {
+        DistributionCenter dc =  FreightFlowUtils.select(weightDistributionCenters.get(zoneId).get(commodityGroup),
+                FreightFlowUtils.getSum(weightDistributionCenters.get(zoneId).get(commodityGroup).values()));
+        int id = dc.getId();
+        if (id == 20){
+            logger.warn("Selected");
+        }
+        return dc;
     }
 
     private void addVolumeForSmallTruckDelivery(DistributionCenter distributionCenter, Commodity commodity, Bound bound, double load_tn) {
