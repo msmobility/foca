@@ -147,6 +147,8 @@ public class CarriersAndServicesGenerator {
                     createDeliveriesByCargoBikes(parcelsInThisMicroDepot, microDepotCarrier);
                 }
             }
+            logger.info("Completed distribution center: " + distributionCenter.getId() + ", " + distributionCenter.getName());
+
         }
 
     }

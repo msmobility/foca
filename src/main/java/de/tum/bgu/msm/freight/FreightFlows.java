@@ -43,23 +43,23 @@ public class FreightFlows {
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
 
         //test
-        properties.setRunId("test");
-        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_one_b.xml");
-        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
 
         //scenario zero
-//        properties.setRunId("muc_scenario_zero_b");
-//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_one_b.xml");
+//        properties.setRunId("muc_scenario_zero_c");
+//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_zero_c.xml");
 //        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
 
         //scenario one
-//        properties.setRunId("muc_scenario_one_b");
-//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_one_b.xml");
+        properties.setRunId("muc_scenario_1km");
+        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
 
         //scenario two
-        //properties.setRunId("muc_scenario_two_b");
-        //properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_two_b.xml");
+//        properties.setRunId("muc_scenario_paketbox");
+//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.xml");
 
+
+//        properties.setRunId("muc_scenario_3km");
+//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_3km.xml");
         //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
 
         //properties.setStoreExpectedTimes(true);
@@ -102,13 +102,13 @@ public class FreightFlows {
         matSimAssignment.run();
 
         String outputFolder = properties.getOutputFolder();
-        OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), outputFolder + properties.getRunId() +  "/flowSegments.csv");
-        OutputWriter.printOutObjects(dataSet.getLDTruckTrips(), LDTruckTrip.getHeader(), outputFolder + properties.getRunId() +  "/ld_trucks.csv");
-        OutputWriter.printOutObjects(dataSet.getSDTruckTrips(), SDTruckTrip.getHeader(), outputFolder + properties.getRunId() +  "/sd_trucks.csv");
+        OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), outputFolder + properties.getRunId() + "/flowSegments.csv");
+        OutputWriter.printOutObjects(dataSet.getLDTruckTrips(), LDTruckTrip.getHeader(), outputFolder + properties.getRunId() + "/ld_trucks.csv");
+        OutputWriter.printOutObjects(dataSet.getSDTruckTrips(), SDTruckTrip.getHeader(), outputFolder + properties.getRunId() + "/sd_trucks.csv");
         List<Parcel> parcelsList = new ArrayList<>();
-        for (List<Parcel> listOfParcelsInDc : dataSet.getParcelsByDistributionCenter().values()){
+        for (List<Parcel> listOfParcelsInDc : dataSet.getParcelsByDistributionCenter().values()) {
             parcelsList.addAll(listOfParcelsInDc);
         }
-        OutputWriter.printOutObjects(parcelsList, Parcel.getHeader(), outputFolder + properties.getRunId() +  "/parcels.csv");
+        OutputWriter.printOutObjects(parcelsList, Parcel.getHeader(), outputFolder + properties.getRunId() + "/parcels.csv");
     }
 }

@@ -94,12 +94,12 @@ public class FreightFlowUtils {
                 if (upstreamLink.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
                     return upstreamLink;
                 } else {
-                    return null;
+                    return findUpstreamLinksForMotorizedVehicle(upstreamLink);
                 }
             }
-            return null;
         } else {
             return thisLink;
         }
+        return null;
     }
 }
