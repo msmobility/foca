@@ -1,22 +1,25 @@
 pacman::p_load(data.table, dplyr, tidyr, sf, ggplot2, readr)
 
-folders = c("c:/models/freightFlows/output/testRegNoCargoBikes/",
-            "c:/models/freightFlows/output/testReg/",
-            "c:/models/freightFlows/output/testReg_2/")
+folders = c("c:/models/freightFlows/output/muc_scenario_zero_b/",
+            "c:/models/freightFlows/output/muc_scenario_one_b/",
+            "c:/models/freightFlows/output/muc_scenario_two_b/")
 
-scenarios = c("Base scenario", "Cargo-bike scenario", "Cargo-bike scenario 2")
+scenarios = c("Base scenario", "Cargo-bike scenario (10 micro depot)", "Cargo-bike scenario (1 per zone)")
+selected_DC = 20
 
 
-
-# folders = c("c:/models/freightFlows/output/testReg/",
-#             "c:/models/freightFlows/output/testReg2/")
-# 
-# scenarios = c("cargo-bike", "cargo-bike2")
+# folders = c("c:/models/freightFlows/output/testRegNoCargoBikes/", "c:/models/freightFlows/output/testReg/",
+#              "c:/models/freightFlows/output/testReg_2/")
+#  
+# scenarios = c("base", "cargo-bike", "cargo-bike2")
+# selected_DC = 10
 
 summary = data.frame()
 
 scaleFactorTrucks = 1.0
 scaleFactorParcels = 1.0
+
+randomness_test = list()
 
 for (i in 1:3){
   
@@ -25,6 +28,8 @@ for (i in 1:3){
   parcels = fread(paste(folder, "parcels.csv", sep = ""))
   
   ld_trucks = fread(paste(folder, "ld_trucks.csv", sep = ""))
+  
+  ld_trucks = ld_trucks %>% filter(destinationDistributionCenter == selected_DC)
   
   sd_trucks = fread(paste(folder, "sd_trucks.csv", sep = ""))
   
@@ -36,10 +41,12 @@ for (i in 1:3){
   vehicle_emissions$NOx = as.numeric( vehicle_emissions$NOx)
 
   vehicle_emissions = vehicle_emissions %>% filter(distance != 0)
-  
+
   ld_trucks_assigned = ld_trucks %>% filter(assigned == T)
   
-  trucks_with_emissions = right_join(ld_trucks_assigned, vehicle_emissions, by = "id")
+  trucks_with_emissions = left_join(ld_trucks_assigned, vehicle_emissions, by = "id")
+  
+  randomness_test[[i]] = trucks_with_emissions$distance
   
   length(unique(parcels %>% filter(distributionType == "CARGO_BIKE") %>% select(destMicroZone))$destMicroZone)
   length(unique(parcels$destMicroZone))
@@ -60,6 +67,8 @@ for (i in 1:3){
     summarize(n = n()/scaleFactorTrucks, weight_tn = sum(weight_tn)/scaleFactorTrucks,
               distance = sum(distance)/scaleFactorTrucks, CO2 = sum(CO2)/scaleFactorTrucks,
               NOx = sum(NOx)/scaleFactorTrucks, operatingTime = sum(operatingTime)/scaleFactorTrucks)
+  
+  print(sum(summary_ld_trucks$distance))
   
   summary_vans = vehicle_emissions %>%
     rowwise() %>%
@@ -100,9 +109,7 @@ for (i in 1:3){
   summary = rbind(summary, this_summary)
 }
 
-#optional:
-
-#summary = summary %>% filter(commodity == "POST_PACKET")
+summary = summary %>% filter(commodity == "POST_PACKET")
 
 delivered_weight_cargo_bike$n
 
@@ -122,7 +129,7 @@ ggplot(summary, aes(y=n, x=commodity, fill = area)) +
 ggplot(summary, aes(y=weight_tn, x=commodity, fill = area)) +
   scale_fill_manual(values = colors_three) + 
   geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("Sum of weight (tn)") +
+  ylab("Sum of weight (tn)")  + 
   xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
   facet_grid(.~scenario)
 

@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.freight.modules.assignment;
 
+import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
 import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
@@ -11,7 +12,11 @@ import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.*;
+import org.matsim.core.network.NetworkUtils;
 
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +35,7 @@ public class MATSimTruckPlanGenerator {
         departureTimeDistribution = new NormalDepartureTimeDistribution(properties);
     }
 
-    public void addTrucks(Population population) {
+    public void addTrucks(Population population, Network network) {
         PopulationFactory factory = population.getFactory();
         AtomicInteger counter = new AtomicInteger(0);
 
@@ -62,15 +67,20 @@ public class MATSimTruckPlanGenerator {
                 person.addPlan(plan);
                 population.addPerson(person);
 
-                Coordinate origCoord = lDTruckTrip.getOrigCoord();
-                Activity originActivity = factory.createActivityFromCoord("start", new Coord(origCoord.x, origCoord.y));
+                Coordinate origCoordinate = lDTruckTrip.getOrigCoord();
+                Coord origCoord = new Coord(origCoordinate.x, origCoordinate.y);
+                Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
+
+                Activity originActivity = factory.createActivityFromLinkId("start", origLink.getId());
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
                 plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                Coordinate destCoord = lDTruckTrip.getDestCoord();
-                Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.x, destCoord.y));
+                Coordinate destCoordinate = lDTruckTrip.getDestCoord();
+                Coord destCoord = new Coord(destCoordinate.x, destCoordinate.y);
+                Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
+                Activity destinationActivity = factory.createActivityFromLinkId("end", destLink.getId());
                 plan.addActivity(destinationActivity);
                 counter.incrementAndGet();
             }
@@ -88,15 +98,20 @@ public class MATSimTruckPlanGenerator {
                 person.addPlan(plan);
                 population.addPerson(person);
 
-                Coordinate origCoord = sDTruckTrip.getOrigCoord();
-                Activity originActivity = factory.createActivityFromCoord("start",  new Coord(origCoord.x, origCoord.y));
+                Coordinate origCoordinate = sDTruckTrip.getOrigCoord();
+                Coord origCoord = new Coord(origCoordinate.x, origCoordinate.y);
+                Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
+                Activity originActivity = factory.createActivityFromLinkId("start", origLink.getId());
+
                 originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
                 plan.addActivity(originActivity);
 
                 plan.addLeg(factory.createLeg(TransportMode.truck));
 
-                Coordinate destCoord = sDTruckTrip.getDestCoord();
-                Activity destinationActivity = factory.createActivityFromCoord("end", new Coord(destCoord.x, destCoord.y));
+                Coordinate destCoordinate = sDTruckTrip.getDestCoord();
+                Coord destCoord = new Coord(destCoordinate.x, destCoordinate.y);
+                Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
+                Activity destinationActivity = factory.createActivityFromLinkId("end", destLink.getId());
                 plan.addActivity(destinationActivity);
 
             }

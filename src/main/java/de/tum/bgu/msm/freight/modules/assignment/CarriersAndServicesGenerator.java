@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.freight.modules.assignment;
 
+import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
 import de.tum.bgu.msm.freight.data.freight.urban.ParcelDistributionType;
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class CarriersAndServicesGenerator {
 
@@ -155,7 +155,7 @@ public class CarriersAndServicesGenerator {
         if (mode.equals(ParcelDistributionType.MOTORIZED)) {
             Link thisLink = NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
             Link nearestLink;
-            while  ((nearestLink = findUpstreamLinksForMotorizedVehicle(thisLink)) == null) {
+            while  ((nearestLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(thisLink)) == null) {
                 thisLink = thisLink.getFromNode().getInLinks().values().iterator().next();
             }
             return nearestLink;
@@ -164,22 +164,6 @@ public class CarriersAndServicesGenerator {
             return NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
         }
 
-    }
-
-    private Link findUpstreamLinksForMotorizedVehicle(Link thisLink) {
-        if (thisLink.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
-            Map<Id<Link>, Link> upstreamLinks = (Map<Id<Link>, Link>) thisLink.getFromNode().getInLinks();
-            for (Link upstreamLink : upstreamLinks.values()) {
-                if (upstreamLink.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
-                    return upstreamLink;
-                } else {
-                    return null;
-                }
-            }
-            return null;
-        } else {
-            return thisLink;
-        }
     }
 
     private void createDeliveriesByMotorizedModes(List<Parcel> parcelsThisCarrier, Carrier carrier) {

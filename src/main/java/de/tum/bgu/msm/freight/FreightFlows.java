@@ -35,14 +35,30 @@ public class FreightFlows {
 
 
         properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setRunId("muc_dist_20_v2");
-
         properties.setSelectedZones(new int[]{9162});
         properties.setTruckScaleFactor(1.00);
         properties.setSampleFactorForParcels(1.00);
-        properties.setIterations(1);
+        properties.setIterations(50);
 
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
+
+        //test
+        properties.setRunId("test");
+        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_one_b.xml");
+        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
+
+        //scenario zero
+//        properties.setRunId("muc_scenario_zero_b");
+//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_one_b.xml");
+//        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
+
+        //scenario one
+//        properties.setRunId("muc_scenario_one_b");
+//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_one_b.xml");
+
+        //scenario two
+        //properties.setRunId("muc_scenario_two_b");
+        //properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_two_b.xml");
 
         //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
 

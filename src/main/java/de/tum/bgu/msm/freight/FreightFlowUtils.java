@@ -11,6 +11,8 @@ import org.geotools.referencing.operation.projection.ProjectionException;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.shape.random.RandomPointsBuilder;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.geotools.MGC;
@@ -85,4 +87,19 @@ public class FreightFlowUtils {
         }
     }
 
+    public static Link findUpstreamLinksForMotorizedVehicle(Link thisLink) {
+        if (thisLink.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
+            Map<Id<Link>, Link> upstreamLinks = (Map<Id<Link>, Link>) thisLink.getFromNode().getInLinks();
+            for (Link upstreamLink : upstreamLinks.values()) {
+                if (upstreamLink.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
+                    return upstreamLink;
+                } else {
+                    return null;
+                }
+            }
+            return null;
+        } else {
+            return thisLink;
+        }
+    }
 }

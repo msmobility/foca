@@ -69,7 +69,7 @@ public class MATSimAssignment implements Module {
         } else {
             scenario.setPopulation(PopulationUtils.createPopulation(config));
         }
-        matSimTruckPlanGenerator.addTrucks(scenario.getPopulation());
+        matSimTruckPlanGenerator.addTrucks(scenario.getPopulation(), scenario.getNetwork());
         if (properties.isRunParcelDelivery()) {
             generateCarriersPopulation(matSimFreightManager.getCarriers(), matSimFreightManager.getCarrierVehicleTypes());
         }

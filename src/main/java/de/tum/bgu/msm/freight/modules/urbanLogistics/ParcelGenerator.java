@@ -26,7 +26,7 @@ public class ParcelGenerator implements Module {
     private static final Logger logger = Logger.getLogger(ParcelGenerator.class);
     private Properties properties;
     private DataSet dataSet;
-    private double minimumWeight_kg = 0.5;
+    private double minimumWeight_kg = 0.25;
     private Map<ParcelTransaction, Double> parcelDeliveryTransactionProbabilties;
     private Map<ParcelTransaction, Double> parcelPickUpTransactionProbabilties;
 
@@ -131,6 +131,8 @@ public class ParcelGenerator implements Module {
             }
         }
         logger.info("Generated " + counter + " parcels to/from the study area.");
+
+
     }
 
     private void chooseTransactionType() {

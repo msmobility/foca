@@ -248,10 +248,6 @@ public class LDTruckODAllocator implements Module {
     private DistributionCenter chooseDistributionCenterByCatchmentAreaPopulation(int zoneId, CommodityGroup commodityGroup) {
         DistributionCenter dc =  FreightFlowUtils.select(weightDistributionCenters.get(zoneId).get(commodityGroup),
                 FreightFlowUtils.getSum(weightDistributionCenters.get(zoneId).get(commodityGroup).values()));
-        int id = dc.getId();
-        if (id == 20){
-            logger.warn("Selected");
-        }
         return dc;
     }
 
