@@ -27,51 +27,86 @@ public class FreightFlows {
 
     public static void main(String[] args) {
 
-        Properties properties = new Properties();
-
-        /*
-        Place to configure the properties according to users' prefrerences, otherwise the default values are chosen
-         */
-
-
-        properties.setMatrixFileName("./input/matrices/ketten-2010.csv");
-        properties.setSelectedZones(new int[]{9162});
-        properties.setTruckScaleFactor(1.00);
-        properties.setSampleFactorForParcels(1.00);
-        properties.setIterations(50);
-
-        properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-
-        //test
-
-        //scenario zero
-//        properties.setRunId("muc_scenario_zero_c");
-//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_zero_c.xml");
-//        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
-
-        //scenario one
-        properties.setRunId("muc_scenario_1km");
-        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
-
-        //scenario two
-//        properties.setRunId("muc_scenario_paketbox");
-//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.xml");
-
-
-//        properties.setRunId("muc_scenario_3km");
-//        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_3km.xml");
-        //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
-
-        //properties.setStoreExpectedTimes(true);
-
+        List<Properties> listOfSimulations = new ArrayList<>();
+//
+        Properties properties_zero = new Properties();
+        properties_zero.setMatrixFileName("./input/matrices/ketten-2010.csv");
+        properties_zero.setSelectedZones(new int[]{9162});
+        properties_zero.setTruckScaleFactor(1.00);
+        properties_zero.setSampleFactorForParcels(1.00);
+        properties_zero.setIterations(50);
+        properties_zero.shortDistance().setSelectedDistributionCenters(new int[]{20});
+        properties_zero.setRunId("muc_scenario_zero_c");
+        properties_zero.setDistributionCentersFile("./input/distributionCenters/distributionCenters_zero_c.xml");
+        properties_zero.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
         try {
-            properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
+            properties_zero.logProperties("./output/" + properties_zero.getRunId() + "/properties.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        listOfSimulations.add(properties_zero);
 
-        FreightFlows freightFlows = new FreightFlows();
-        freightFlows.run(properties);
+
+//        Properties properties_one = new Properties();
+//        properties_one.setMatrixFileName("./input/matrices/ketten-2010.csv");
+//        properties_one.setSelectedZones(new int[]{9162});
+//        properties_one.setTruckScaleFactor(1.00);
+//        properties_one.setSampleFactorForParcels(1.00);
+//        properties_one.setIterations(50);
+//        properties_one.shortDistance().setSelectedDistributionCenters(new int[]{20});
+//        properties_one.setRunId("muc_scenario_1km");
+//        properties_one.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+//        try {
+//            properties_one.logProperties("./output/" + properties_one.getRunId() + "/properties.txt");
+//        } catch (
+//                FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        listOfSimulations.add(properties_one);
+//
+//
+//        Properties properties_two = new Properties();
+//        properties_two.setMatrixFileName("./input/matrices/ketten-2010.csv");
+//        properties_two.setSelectedZones(new int[]{9162});
+//        properties_two.setTruckScaleFactor(1.00);
+//        properties_two.setSampleFactorForParcels(1.00);
+//        properties_two.setIterations(50);
+//        properties_two.shortDistance().setSelectedDistributionCenters(new int[]{20});
+//        properties_two.setRunId("muc_scenario_paketbox");
+//        properties_two.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.xml");
+//        try {
+//            properties_two.logProperties("./output/" + properties_two.getRunId() + "/properties.txt");
+//        } catch (
+//                FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        listOfSimulations.add(properties_two);
+//
+//
+//        Properties properties_three = new Properties();
+//        properties_three.setMatrixFileName("./input/matrices/ketten-2010.csv");
+//        properties_three.setSelectedZones(new int[]{9162});
+//        properties_three.setTruckScaleFactor(1.00);
+//        properties_three.setSampleFactorForParcels(1.00);
+//        properties_three.setIterations(50);
+//        properties_three.shortDistance().setSelectedDistributionCenters(new int[]{20});
+//        properties_three.setRunId("muc_scenario_3km");
+//        properties_three.setDistributionCentersFile("./input/distributionCenters/distributionCenters_3km.xml");
+//        try {
+//            properties_three.logProperties("./output/" + properties_three.getRunId() + "/properties.txt");
+//        } catch (
+//                FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        listOfSimulations.add(properties_three);
+
+        for (Properties properties : listOfSimulations) {
+            FreightFlows freightFlows = new FreightFlows();
+            logger.info("Start simulation " + properties.getRunId());
+            freightFlows.run(properties);
+            logger.info("End simulation " + properties.getRunId());
+        }
+
 
     }
 

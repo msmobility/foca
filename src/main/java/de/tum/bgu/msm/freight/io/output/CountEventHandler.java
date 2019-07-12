@@ -103,9 +103,9 @@ public class CountEventHandler implements LinkEnterEventHandler {
             return CountVehicleType.van;
         } else if (vehicleId.contains("cargoBike")){
             return CountVehicleType.cargoBike;
-        } else if(vehicleId.contains("lDTruck")){
+        } else if(vehicleId.contains("LD")){
             return CountVehicleType.lDTruck;
-        } else if (vehicleId.contains("sDTruck")){
+        } else if (vehicleId.contains("SD")){
             return CountVehicleType.sDTruck;
         } else {
             return CountVehicleType.car;

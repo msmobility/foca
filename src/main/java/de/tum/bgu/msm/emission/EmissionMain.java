@@ -11,7 +11,7 @@ public class EmissionMain {
     public static void main(String[] args) throws FileNotFoundException {
 
         Properties properties = new Properties();
-        properties.setRunId("muc_scenario_two_b");
+        properties.setRunId("muc_scenario_paketbox");
 
         String configFile = "config_average.xml";
 

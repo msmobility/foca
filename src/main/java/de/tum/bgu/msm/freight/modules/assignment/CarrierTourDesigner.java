@@ -13,6 +13,7 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfig;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfigXmlReader;
 import com.graphhopper.jsprit.io.algorithm.VehicleRoutingAlgorithms;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -31,6 +32,8 @@ import org.matsim.vehicles.VehicleType;
 import java.util.*;
 
 public class CarrierTourDesigner {
+
+    private static final Logger logger = Logger.getLogger(CarrierTourDesigner.class);
 
     private Network network;
     private CarrierVehicleTypes carrierVehicleTypes;
@@ -132,6 +135,8 @@ public class CarrierTourDesigner {
         //create carrierPlan from solution
         CarrierPlan plan = MatsimJspritFactory.createPlan(carrier, solution);
         NetworkRouter.routePlan(plan, netbasedTransportcosts);
+
+        logger.warn("Completed carrier " + carrier.getId().toString());
 
         return plan;
     }

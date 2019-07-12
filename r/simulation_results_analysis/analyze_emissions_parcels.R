@@ -1,10 +1,10 @@
 pacman::p_load(data.table, dplyr, tidyr, sf, ggplot2, readr)
 
-folders = c("c:/models/freightFlows/output/muc_scenario_zero_b/",
-            "c:/models/freightFlows/output/muc_scenario_one_b/",
-            "c:/models/freightFlows/output/muc_scenario_two_b/")
+folders = c("c:/models/freightFlows/output/muc_scenario_zero_c/",
+            "c:/models/freightFlows/output/muc_scenario_3km/",
+            "c:/models/freightFlows/output/muc_scenario_1km/")
 
-scenarios = c("Base scenario", "Cargo-bike scenario (10 micro depot)", "Cargo-bike scenario (1 per zone)")
+scenarios = c("Base scenario", "Cargo bike - low density", "Cargo bike - high denisty")
 selected_DC = 20
 
 
@@ -18,8 +18,6 @@ summary = data.frame()
 
 scaleFactorTrucks = 1.0
 scaleFactorParcels = 1.0
-
-randomness_test = list()
 
 for (i in 1:3){
   
@@ -46,8 +44,6 @@ for (i in 1:3){
   
   trucks_with_emissions = left_join(ld_trucks_assigned, vehicle_emissions, by = "id")
   
-  randomness_test[[i]] = trucks_with_emissions$distance
-  
   length(unique(parcels %>% filter(distributionType == "CARGO_BIKE") %>% select(destMicroZone))$destMicroZone)
   length(unique(parcels$destMicroZone))
   
@@ -67,8 +63,6 @@ for (i in 1:3){
     summarize(n = n()/scaleFactorTrucks, weight_tn = sum(weight_tn)/scaleFactorTrucks,
               distance = sum(distance)/scaleFactorTrucks, CO2 = sum(CO2)/scaleFactorTrucks,
               NOx = sum(NOx)/scaleFactorTrucks, operatingTime = sum(operatingTime)/scaleFactorTrucks)
-  
-  print(sum(summary_ld_trucks$distance))
   
   summary_vans = vehicle_emissions %>%
     rowwise() %>%
@@ -101,13 +95,18 @@ for (i in 1:3){
   
   summary_cargo_bike$area = "SD_Cargo_Bike"
   
-  this_summary = rbind(summary_vans, summary_ld_trucks)
-  this_summary = rbind(this_summary, summary_cargo_bike)
+  #this_summary = rbind(summary_vans, summary_ld_trucks)
+  
+  this_summary = rbind(summary_vans, summary_cargo_bike)
   
   this_summary$scenario = scenario
   
   summary = rbind(summary, this_summary)
 }
+
+summary_ld_trucks$scenario = "Long distance"
+
+summary = rbind(summary, summary_ld_trucks)
 
 summary = summary %>% filter(commodity == "POST_PACKET")
 
@@ -115,6 +114,8 @@ delivered_weight_cargo_bike$n
 
 
 summary$parcels = delivered_weight$n
+
+summary$scenario = factor(summary$scenario, levels = c("Long distance", "Base scenario", "Cargo bike - low density", "Cargo bike - high denisty"))
 
 
 colors_three = c("#d25252","#b06fd4","#1f9214")
@@ -149,14 +150,14 @@ ggplot(summary, aes(y=distance/weight_tn/1000, x=commodity, fill = area)) +
 
 ggplot(summary, aes(y=operatingTime/3600/n, x=commodity, fill = area)) +
   scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
+  geom_bar(stat = "identity", position = "stack") +
   ylab("Avg. operating time (h)") +
   xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
   facet_grid(.~scenario)
 
 ggplot(summary, aes(y=operatingTime/3600, x=commodity, fill = area)) +
   scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
+  geom_bar(stat = "identity", position = "stack") +
   ylab("Sum of operating time (h)") +
   xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
   facet_grid(.~scenario)
