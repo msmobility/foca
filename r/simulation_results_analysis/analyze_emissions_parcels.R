@@ -1,10 +1,11 @@
-pacman::p_load(data.table, dplyr, tidyr, sf, ggplot2, readr)
+pacman::p_load(data.table, dplyr, tidyr, sf, ggplot2, readr, extrafont)
 
 folders = c("c:/models/freightFlows/output/muc_scenario_zero_c/",
             "c:/models/freightFlows/output/muc_scenario_3km/",
-            "c:/models/freightFlows/output/muc_scenario_1km/")
+            "c:/models/freightFlows/output/muc_scenario_1km/",
+            "c:/models/freightFlows/output/muc_scenario_paketbox/")
 
-scenarios = c("Base scenario", "Cargo bike - low density", "Cargo bike - high denisty")
+scenarios = c("Base (urban)", "a (urban)", "b (urban)","c (urban)" )
 selected_DC = 20
 
 
@@ -19,7 +20,7 @@ summary = data.frame()
 scaleFactorTrucks = 1.0
 scaleFactorParcels = 1.0
 
-for (i in 1:3){
+for (i in 1:4){
   
   folder = folders[[i]]
   scenario = scenarios[[i]]
@@ -55,6 +56,18 @@ for (i in 1:3){
     filter(assigned, toDestination, transaction != "PARCEL_SHOP") %>% group_by(distributionType) %>%
     summarize(weight_kg = sum(weight_kg), n = n())
   
+  print(
+  parcels %>%
+    filter(assigned, toDestination, transaction != "PARCEL_SHOP") %>% group_by(distributionType) %>%
+    summarize(accessDistance = mean(accessDistance), n = n())
+  )
+  
+  print(
+    parcels %>%
+      filter(assigned, toDestination, transaction != "PARCEL_SHOP", destMicroZone ==3508) %>% group_by(distributionType) %>%
+      summarize(accessDistance = mean(accessDistance), n = n())
+  )
+  
   #write.table(x=trucks_with_emissions, file="clipboard-10000", sep ="\t", row.names = F)
   
   summary_ld_trucks = trucks_with_emissions %>%
@@ -75,8 +88,8 @@ for (i in 1:3){
   summary_vans$commodity = "POST_PACKET"
   summary_vans$weight_tn = delivered_weight$weight_kg[1] / 1000
   
-  summary_vans$area = "SD"
-  summary_ld_trucks$area = "LD"
+  summary_vans$vehicle = "Truck"
+  summary_ld_trucks$vehicle = "Truck"
   
   summary_cargo_bike = vehicle_emissions %>%
     rowwise() %>%
@@ -93,7 +106,7 @@ for (i in 1:3){
     summary_cargo_bike$weight_tn = delivered_weight_cargo_bike$weight_kg[1] / 1000
   }
   
-  summary_cargo_bike$area = "SD_Cargo_Bike"
+  summary_cargo_bike$vehicle = "Cargo bike"
   
   #this_summary = rbind(summary_vans, summary_ld_trucks)
   
@@ -104,7 +117,7 @@ for (i in 1:3){
   summary = rbind(summary, this_summary)
 }
 
-summary_ld_trucks$scenario = "Long distance"
+summary_ld_trucks$scenario = "All (inter-urban)"
 
 summary = rbind(summary, summary_ld_trucks)
 
@@ -115,87 +128,129 @@ delivered_weight_cargo_bike$n
 
 summary$parcels = delivered_weight$n
 
-summary$scenario = factor(summary$scenario, levels = c("Long distance", "Base scenario", "Cargo bike - low density", "Cargo bike - high denisty"))
+summary$scenario = factor(summary$scenario, levels = c("All (inter-urban)","Base (urban)", "a (urban)", "b (urban)", "c (urban)"))
+summary$vehicle = factor(summary$vehicle, levels = c("Truck", "Cargo bike"))
+colors_three = c("#407dd8","#36a332")
 
-
-colors_three = c("#d25252","#b06fd4","#1f9214")
-
-ggplot(summary, aes(y=n, x=commodity, fill = area)) +
+ggplot(summary, aes(y=n, x=scenario, fill = vehicle)) +
   scale_fill_manual(values = colors_three) + 
   geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
   ylab("Number of tours") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
+  xlab("Scenario (area)") +
+  theme_bw() + 
+  ylim(0,500) +
+  theme(text=element_text(size=14, family="Times New Roman")) + 
+  geom_text(aes(label = n),position = position_dodge2(width = 1), vjust = -0.5, family = "Times New Roman")
 
-ggplot(summary, aes(y=weight_tn, x=commodity, fill = area)) +
+
+ggplot(summary, aes(y=weight_tn, x=scenario, fill = vehicle)) +
   scale_fill_manual(values = colors_three) + 
   geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("Sum of weight (tn)")  + 
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
+  ylab("Sum of parcel weight (tn)")  + 
+  xlab("Scenario (area)") +
+  theme_bw() + 
+  ylim(0,80) + 
+  theme(text=element_text(size=14, family="Times New Roman")) + 
+  geom_text(aes(label = sprintf("%2.1f",weight_tn)),position = position_dodge2(width = 1), vjust = -0.5, family = "Times New Roman")
 
-ggplot(summary, aes(y=distance, x=commodity, fill = area)) +
-  scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("Sum of distance (km)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
 
-ggplot(summary, aes(y=distance/weight_tn/1000, x=commodity, fill = area)) +
-  scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("Distance by weight (km/tn)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
-
-ggplot(summary, aes(y=operatingTime/3600/n, x=commodity, fill = area)) +
+ggplot(summary, aes(y=distance/1000, x=scenario, fill = vehicle)) +
   scale_fill_manual(values = colors_three) + 
   geom_bar(stat = "identity", position = "stack") +
-  ylab("Avg. operating time (h)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
+  ylab("Sum of distance (km)") + 
+  xlab("Scenario (area)") +
+  ylim(0,6000) + 
+  theme_bw() + 
+  theme(text=element_text(size=14, family="Times New Roman")) + 
+  geom_text(aes(label = sprintf("%.0f",distance/1000)),position = "stack", vjust = -0.5, family = "Times New Roman")
 
-ggplot(summary, aes(y=operatingTime/3600, x=commodity, fill = area)) +
+
+ggplot(summary, aes(y=distance/weight_tn/1e3, x=scenario, fill = vehicle)) +
+  scale_fill_manual(values = colors_three) + 
+  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
+  ylab("Distance to deliver 1kg (m/kg)") + 
+  xlab("Scenario (area)") +
+  theme_bw() + 
+  ylim(0,120) + 
+  theme(text=element_text(size=14, family="Times New Roman")) + 
+  geom_text(aes(label = sprintf("%2.1f",distance/weight_tn/1e3)),position = position_dodge2(width = 1), vjust = -0.5, family = "Times New Roman")
+
+ggplot(summary, aes(y=operatingTime/3600, x=scenario, fill = vehicle)) +
   scale_fill_manual(values = colors_three) + 
   geom_bar(stat = "identity", position = "stack") +
-  ylab("Sum of operating time (h)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
+  ylab("Sum of operating time (h)") + 
+  xlab("Scenario (area)") +
+  theme_bw() + 
+  theme(text=element_text(size=14, family="Times New Roman")) + 
+  geom_text(aes(label = sprintf("%2.1f",operatingTime/3600)),position = "stack", vjust = -0.5, family = "Times New Roman")
 
 
-ggplot(summary, aes(y= distance/n/1000, x=commodity, fill = area)) +
+
+ggplot(summary, aes(y= distance/n/1000, x=commodity, fill = vehicle)) +
   scale_fill_manual(values = colors_three) + 
   geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
   ylab("Avg. distance by vehicle (km)") +
   xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
   facet_grid(.~scenario)
 
-ggplot(summary, aes(y= CO2, x=commodity, fill = area)) +
+ggplot(summary %>% filter(vehicle!="Cargo bike"), aes(y= CO2/weight_tn/1000, x=scenario, fill = vehicle)) +
   scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("CO2 emissions (kg)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
+  geom_bar(stat = "identity", position = "stack") +
+  ylab("CO2 emission by weight (kg/kg)") + 
+  xlab("Scenario (area)") +
+  theme_bw() + 
+  ylim(0,80) + 
+  theme(text=element_text(size=14, family="Times New Roman")) + 
+  geom_text(aes(label = sprintf("%.0f",CO2/weight_tn/1000)),position = "stack", vjust = -0.5, family = "Times New Roman")
 
-ggplot(summary, aes(y= CO2/distance, x=commodity, fill = area)) +
-  scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("CO2 emission by distance (kg/km)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
 
-ggplot(summary, aes(y= CO2/weight_tn/1000, x=commodity, fill = area)) +
+ggplot(summary, aes(y= NOx/weight_tn/1000, x=scenario, fill = vehicle)) +
   scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("CO2 emission by weight (kg/kg)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
+  geom_bar(stat = "identity", position = "stack") +
+  ylab("NOx emission by weight (kg/kg)") + 
+  xlab("Scenario (area)") +
+  theme_bw() + 
+  theme(text=element_text(size=14, family="Times New Roman"))
 
-ggplot(summary, aes(y= NOx/weight_tn/1000, x=commodity, fill = area)) +
+
+counts =data.frame()
+
+for (i in 1:4){
+  folder = folders[[i]]
+  scenario = scenarios[[i]]
+  
+  this_counts = read.csv(paste(folder, "matsim/counts.csv", sep =""))
+  this_counts$scenario = scenario
+  
+  counts = rbind(counts, this_counts)
+  
+}
+
+counts_summary = counts %>% group_by(scenario) %>%
+  summarize(van = sum(van), ld = sum(lDTruck), sd = sum(sDTruck), cargoBike = sum(cargoBike))
+
+counts_summary = melt(data = counts_summary, variable.name = "vehicle")
+
+
+counts_summary$scenario = factor(counts_summary$scenario, levels = c("Base (urban)", "a (urban)", "b (urban)", "c (urban)"))
+counts_summary$vehicle = factor(counts_summary$vehicle, levels = c("ld", "sd","van" ,"cargoBike" ), 
+                                 labels = c("Truck_LD", "Truck_SD", "Truck", "Cargo bike"))
+
+
+
+
+
+ggplot(counts_summary %>% filter (vehicle != "Truck_LD", vehicle != "Truck_SD"), aes(y= value, x=scenario, fill = vehicle)) +
+  geom_bar(stat = "identity", position = "stack") +
   scale_fill_manual(values = colors_three) + 
-  geom_bar(stat = "identity", position = position_dodge2(preserve = "single")) +
-  ylab("NOx emission by weight (kg/kg)") +
-  xlab("Commodity") + theme(axis.text.x = element_text(angle = 90)) + 
-  facet_grid(.~scenario)
+  ylab("Sum of link volumes (veh/day)") + 
+  xlab("Scenario (area)") +
+  theme_bw() + 
+  ylim(0,70000) + 
+  theme(text=element_text(size=14, family="Times New Roman")) + 
+  geom_text(aes(label = value),position = "stack", vjust = -0.5, family = "Times New Roman")
+
+
+
 
 
