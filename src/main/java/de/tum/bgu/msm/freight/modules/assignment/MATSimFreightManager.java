@@ -20,6 +20,9 @@ import org.matsim.core.controler.listener.IterationEndsListener;
 
 import javax.inject.Inject;
 
+/**
+ * Class that contains the freight extension data containers - carriers, carrier vehicle types, etc.
+ */
 public class MATSimFreightManager {
 
     private final Config config;

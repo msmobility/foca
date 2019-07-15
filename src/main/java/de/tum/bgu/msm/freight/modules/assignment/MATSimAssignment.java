@@ -18,6 +18,9 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 import java.io.IOException;
 
+/**
+ * Configures MATSim, creates a population and runs MATSim.
+ */
 public class MATSimAssignment implements Module {
 
     private Config config;

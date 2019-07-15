@@ -4,6 +4,9 @@ import de.tum.bgu.msm.freight.data.freight.Commodity;
 
 import java.util.Random;
 
+/**
+ * Returns one weight for a freight unit
+ */
 public interface WeightDistribution {
 
 

@@ -8,11 +8,11 @@ import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
 import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
 import de.tum.bgu.msm.freight.io.input.InputManager;
 import de.tum.bgu.msm.freight.io.output.OutputWriter;
-import de.tum.bgu.msm.freight.modules.urbanLogistics.SDTruckGenerator;
-import de.tum.bgu.msm.freight.modules.urbanLogistics.ParcelGenerator;
-import de.tum.bgu.msm.freight.modules.longDistance.FlowsToLDTruckConverter;
+import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
+import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
+import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckConverter;
 import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
-import de.tum.bgu.msm.freight.modules.longDistance.LDTruckODAllocator;
+import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 

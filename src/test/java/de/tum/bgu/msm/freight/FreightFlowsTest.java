@@ -38,21 +38,57 @@ public class FreightFlowsTest {
     @Test
     public void runVariousScenarios() {
 
-        List<Scenario> scenarios = new ArrayList<>();
-        scenarios.add(new Scenario("testReg",
-                1.0,
-                "./input/distributionCenters/distributionCenters.xml", 1., 1., 50));
+        List<Properties> listOfProperties = new ArrayList<>();
 
-        scenarios.add(new Scenario("testReg_2",
-                1.0,
-                "./input/distributionCenters/distributionCenters_scenario2.xml", 1. ,1., 50));
+        {
+            Properties properties = new Properties();
+            properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
+            properties.setRunId("testReg");
+            //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
+            properties.setSelectedZones(new int[]{9362});
+            properties.setFlowsScaleFactor(1.0);
+            properties.setTruckScaleFactor(0.05);
+            properties.setSampleFactorForParcels(0.05);
+            properties.setIterations(50);
+            properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
+            properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.xml");
+            listOfProperties.add(properties);
+        }
+        {
+            Properties properties = new Properties();
+            properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
+            properties.setRunId("testReg_2");
+            //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
+            properties.setSelectedZones(new int[]{9362});
+            properties.setFlowsScaleFactor(1.0);
+            properties.setTruckScaleFactor(0.05);
+            properties.setSampleFactorForParcels(0.05);
+            properties.setIterations(50);
+            properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
+            properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_scenario2.xml");
+            listOfProperties.add(properties);
+        }
+        {
+            Properties properties = new Properties();
+            properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
+            properties.setRunId("testRegNoCargoBikes");
+            //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
+            properties.setSelectedZones(new int[]{9362});
+            properties.setFlowsScaleFactor(1.0);
+            properties.setTruckScaleFactor(0.05);
+            properties.setSampleFactorForParcels(0.05);
+            properties.setIterations(50);
+            properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
+            properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.xml");
+            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
+            listOfProperties.add(properties);
+        }
 
-        scenarios.add(new Scenario("testRegNoCargoBikes",
-                0.0,
-                "./input/distributionCenters/distributionCenters.xml",1.,1., 50));
-
-        for (Scenario scenario : scenarios) {
-            testRegensburg(scenario, false);
+        for (Properties properties : listOfProperties) {
+            testScenario(properties, false);
         }
 
     }
@@ -60,36 +96,26 @@ public class FreightFlowsTest {
     @Test
     public void runSmallScenario() {
 
-        List<Scenario> scenarios = new ArrayList<>();
-        scenarios.add(new Scenario("test_small",
-                1.0,
-                "./input/distributionCenters/distributionCenters_test.xml", 0.05, 0.05, 1));
 
-        for (Scenario scenario : scenarios) {
-            testRegensburg(scenario, true);
-        }
+        Properties properties = new Properties();
+        properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
+        properties.setRunId("test_small");
+        //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
+        properties.setSelectedZones(new int[]{9362});
+        properties.setFlowsScaleFactor(1.0);
+        properties.setTruckScaleFactor(0.05);
+        properties.setSampleFactorForParcels(0.05);
+        properties.setIterations(1);
+        properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
+        properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
+        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.xml");
+
+        testScenario(properties, true);
 
     }
 
 
-    public void testRegensburg(Scenario scenario, boolean check) {
-
-        Properties properties = new Properties();
-
-        properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
-        properties.setRunId(scenario.runId);
-        //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
-        properties.setSelectedZones(new int[]{9362});
-        properties.setFlowsScaleFactor(1.0);
-        properties.setTruckScaleFactor(scenario.scaleTrucks);
-        properties.setSampleFactorForParcels(scenario.scaleParcels);
-        properties.setIterations(scenario.iterations);
-        properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
-        properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
-
-        properties.setDistributionCentersFile(scenario.distributionCenterFile);
-
-        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(scenario.shareOfCargoBikes);
+    public void testScenario(Properties properties, boolean check) {
 
         try {
             properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");

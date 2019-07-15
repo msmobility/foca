@@ -14,10 +14,7 @@ import com.graphhopper.jsprit.io.algorithm.AlgorithmConfig;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfigXmlReader;
 import com.graphhopper.jsprit.io.algorithm.VehicleRoutingAlgorithms;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.freight.carrier.Carrier;
 import org.matsim.contrib.freight.carrier.CarrierPlan;
 import org.matsim.contrib.freight.carrier.CarrierVehicleTypes;
@@ -26,11 +23,12 @@ import org.matsim.contrib.freight.jsprit.MatsimJspritFactory;
 import org.matsim.contrib.freight.jsprit.NetworkBasedTransportCosts;
 import org.matsim.contrib.freight.jsprit.NetworkRouter;
 import org.matsim.contrib.freight.usecases.chessboard.TravelDisutilities;
-import org.matsim.core.router.util.TravelDisutility;
-import org.matsim.vehicles.VehicleType;
 
 import java.util.*;
 
+/**
+ * Calls algorithm to organize carrier tours
+ */
 public class CarrierTourDesigner {
 
     private static final Logger logger = Logger.getLogger(CarrierTourDesigner.class);

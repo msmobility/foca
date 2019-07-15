@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
+import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
 import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
 import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
@@ -21,6 +22,10 @@ import org.matsim.core.network.NetworkUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Generates MATSim population of trucks (not for parcel or freight-tour-based distribution), which is carried out using
+ * the freight extension
+ */
 public class MATSimTruckPlanGenerator {
 
     private DataSet dataSet;
@@ -44,45 +49,7 @@ public class MATSimTruckPlanGenerator {
             if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
                 lDTruckTrip.setAssigned(true);
 
-                FlowSegment flowSegment = lDTruckTrip.getFlowSegment();
-
-//                boolean intrazonal = flowSegment.getSegmentOrigin() == flowSegment.getSegmentDestination() ? true : false;
-//
-//                String idOfVehicle = "lDTruck-" + flowSegment.getCommodity().getCommodityGroup() + "-" +
-//                        flowSegment.getTruckTrips().indexOf(lDTruckTrip) + "-" +
-//                        flowSegment.getCommodity().getCommodityGroup().getLongDistanceGoodDistribution() + "-" +
-//                        flowSegment.getSegmentType() + "-" +
-//                        lDTruckTrip.getId();
-//
-//                if (intrazonal) {
-//                    idOfVehicle += "-INTRA";
-//                }
-//
-//                if (lDTruckTrip.getLoad_tn() == 0.) {
-//                    idOfVehicle += "-EMPTY";
-//                }
-
-                Person person = factory.createPerson(Id.createPersonId(lDTruckTrip.getId()));
-                Plan plan = factory.createPlan();
-                person.addPlan(plan);
-                population.addPerson(person);
-
-                Coordinate origCoordinate = lDTruckTrip.getOrigCoord();
-                Coord origCoord = new Coord(origCoordinate.x, origCoordinate.y);
-                //Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
-
-                Activity originActivity = factory.createActivityFromCoord("start", origCoord);
-                originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
-                plan.addActivity(originActivity);
-
-                plan.addLeg(factory.createLeg(TransportMode.truck));
-
-                Coordinate destCoordinate = lDTruckTrip.getDestCoord();
-                Coord destCoord = new Coord(destCoordinate.x, destCoordinate.y);
-                //Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
-                Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
-                plan.addActivity(destinationActivity);
-                counter.incrementAndGet();
+                generatePlanForThisTruck(population, factory, counter, lDTruckTrip);
             }
         }
 
@@ -93,31 +60,57 @@ public class MATSimTruckPlanGenerator {
 //                idOfVehicle+= sDTruckTrip.getCommodity().getCommodityGroup().toString() + "_";
 //                idOfVehicle+= sDTruckTrip.getId();
 
-                Person person = factory.createPerson(Id.createPersonId(sDTruckTrip.getId()));
-                Plan plan = factory.createPlan();
-                person.addPlan(plan);
-                population.addPerson(person);
 
-                Coordinate origCoordinate = sDTruckTrip.getOrigCoord();
-                Coord origCoord = new Coord(origCoordinate.x, origCoordinate.y);
-                //Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
-                Activity originActivity = factory.createActivityFromCoord("start", origCoord);
-
-                originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
-                plan.addActivity(originActivity);
-
-                plan.addLeg(factory.createLeg(TransportMode.truck));
-
-                Coordinate destCoordinate = sDTruckTrip.getDestCoord();
-                Coord destCoord = new Coord(destCoordinate.x, destCoordinate.y);
-                //Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
-                Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
-                plan.addActivity(destinationActivity);
+                generatePlanForThisTruck(population, factory, counter, sDTruckTrip);
+//                Person person = factory.createPerson(Id.createPersonId(sDTruckTrip.getId()));
+//                Plan plan = factory.createPlan();
+//                person.addPlan(plan);
+//                population.addPerson(person);
+//
+//                Coordinate origCoordinate = sDTruckTrip.getOrigCoord();
+//                Coord origCoord = new Coord(origCoordinate.x, origCoordinate.y);
+//                //Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
+//                Activity originActivity = factory.createActivityFromCoord("start", origCoord);
+//
+//                originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
+//                plan.addActivity(originActivity);
+//
+//                plan.addLeg(factory.createLeg(TransportMode.truck));
+//
+//                Coordinate destCoordinate = sDTruckTrip.getDestCoord();
+//                Coord destCoord = new Coord(destCoordinate.x, destCoordinate.y);
+//                //Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
+//                Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
+//                plan.addActivity(destinationActivity);
 
             }
         }
 
         //dataSet.setMatsimPopulation(population);
 
+    }
+
+    private void generatePlanForThisTruck(Population population, PopulationFactory factory, AtomicInteger counter, TruckTrip lDTruckTrip) {
+        Person person = factory.createPerson(Id.createPersonId(lDTruckTrip.getId()));
+        Plan plan = factory.createPlan();
+        person.addPlan(plan);
+        population.addPerson(person);
+
+        Coordinate origCoordinate = lDTruckTrip.getOrigCoord();
+        Coord origCoord = new Coord(origCoordinate.x, origCoordinate.y);
+        //Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
+
+        Activity originActivity = factory.createActivityFromCoord("start", origCoord);
+        originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
+        plan.addActivity(originActivity);
+
+        plan.addLeg(factory.createLeg(TransportMode.truck));
+
+        Coordinate destCoordinate = lDTruckTrip.getDestCoord();
+        Coord destCoord = new Coord(destCoordinate.x, destCoordinate.y);
+        //Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
+        Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
+        plan.addActivity(destinationActivity);
+        counter.incrementAndGet();
     }
 }

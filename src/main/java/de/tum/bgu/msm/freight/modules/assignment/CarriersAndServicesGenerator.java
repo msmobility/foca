@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Generates carriers and its services (equivalent to population and plans)
+ */
 public class CarriersAndServicesGenerator {
 
     private DataSet dataSet;

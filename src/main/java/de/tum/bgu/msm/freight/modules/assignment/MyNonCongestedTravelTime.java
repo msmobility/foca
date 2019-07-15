@@ -11,6 +11,11 @@ import org.matsim.vehicles.VehicleType;
 
 import java.util.List;
 
+/**
+ * Implementation of the TravelTIme interface to temporary avoid routing motor vehicles on cargo bike links. The problem was
+ * that Freight extension defines the mode for every freight vehicles in the class CarrierAgent and possible in many other places.
+ * This will not work well when there are cars on the road network. Ideally will soon use bike as mode for cargo bikes.
+ */
 public class MyNonCongestedTravelTime implements TravelTime {
 
     private VehicleType cargoBikeType = CarrierVehicleType.Builder.newInstance(Id.create("cargoBike", VehicleType.class)).build();

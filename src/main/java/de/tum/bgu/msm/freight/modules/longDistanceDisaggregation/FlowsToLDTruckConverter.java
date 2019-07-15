@@ -1,6 +1,5 @@
-package de.tum.bgu.msm.freight.modules.longDistance;
+package de.tum.bgu.msm.freight.modules.longDistanceDisaggregation;
 
-import com.google.common.collect.HashBasedTable;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.data.freight.*;
@@ -23,6 +22,9 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Disaggregates flows to trucks by year to day and tons to truck conversion. adds uniform share of empty trucks
+ */
 public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.Module {
 
     private static Logger logger = Logger.getLogger(FlowsToLDTruckConverter.class);

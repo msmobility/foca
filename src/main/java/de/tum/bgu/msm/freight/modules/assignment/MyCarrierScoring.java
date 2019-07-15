@@ -22,6 +22,9 @@ import java.io.FileWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Keeps the scoring function for the freight extension. Not sure how it works (Carlos)
+ */
 public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
 
     /**

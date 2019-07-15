@@ -27,6 +27,9 @@ import org.matsim.vehicles.VehicleType;
 import javax.inject.Inject;
 import java.util.Map;
 
+/**
+ * Hosts auxiliary methods and variables for the freight extension
+ */
 public class MatsimFreightUtils {
 
     public static class MyCarrierScoringFunctionFactory implements CarrierScoringFunctionFactory {

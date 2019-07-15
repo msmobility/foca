@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.urbanLogistics;
+package de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
@@ -14,13 +14,15 @@ import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+/**
+ * Disaggregates flows from distribution center to final destinations, for commodities that are delivered in small trucks and not
+ * in parcels or units.
+ */
 public class SDTruckGenerator implements Module {
 
     private Properties properties;

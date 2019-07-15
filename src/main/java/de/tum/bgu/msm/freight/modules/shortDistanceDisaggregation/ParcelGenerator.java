@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.urbanLogistics;
+package de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation;
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
@@ -21,6 +21,9 @@ import org.apache.log4j.Logger;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Generates parcels using a weight distribution and allocates the trip end that is not the distribution center
+ */
 public class ParcelGenerator implements Module {
 
     private static final Logger logger = Logger.getLogger(ParcelGenerator.class);

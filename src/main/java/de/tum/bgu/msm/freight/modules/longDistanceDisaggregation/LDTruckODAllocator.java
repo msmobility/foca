@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.longDistance;
+package de.tum.bgu.msm.freight.modules.longDistanceDisaggregation;
 
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
@@ -21,6 +21,10 @@ import org.locationtech.jts.geom.Coordinate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * For each long distance truck, allocates and origin and a destination, whihc can be a location (zone), a microLocation (company), a distribution center
+ * or an intermodal terminal. Moreover, aggregates flows by commodity and distribution center, if distribution centers are used.
+ */
 public class LDTruckODAllocator implements Module {
 
     private Properties properties;
