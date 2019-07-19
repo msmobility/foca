@@ -21,7 +21,6 @@ scaleFactorTrucks = 1.0
 scaleFactorParcels = 1.0
 
 for (i in 1:4){
-  
   folder = folders[[i]]
   scenario = scenarios[[i]]
   parcels = fread(paste(folder, "parcels.csv", sep = ""))
@@ -62,12 +61,6 @@ for (i in 1:4){
     summarize(accessDistance = mean(accessDistance), n = n())
   )
   
-  print(
-    parcels %>%
-      filter(assigned, toDestination, transaction != "PARCEL_SHOP", destMicroZone ==3508) %>% group_by(distributionType) %>%
-      summarize(accessDistance = mean(accessDistance), n = n())
-  )
-  
   #write.table(x=trucks_with_emissions, file="clipboard-10000", sep ="\t", row.names = F)
   
   summary_ld_trucks = trucks_with_emissions %>%
@@ -79,7 +72,7 @@ for (i in 1:4){
   
   summary_vans = vehicle_emissions %>%
     rowwise() %>%
-    filter(grepl("van", id)) %>%
+    filter(grepl("van", id) | grepl("feeder",id)) %>%
     mutate(id = "all") %>% 
     group_by() %>% summarize(n = n()/scaleFactorParcels, distance = sum(distance)/scaleFactorParcels,
                              CO2 = sum(CO2)/scaleFactorParcels, NOx = sum(NOx)/scaleFactorParcels,
@@ -138,7 +131,6 @@ ggplot(summary, aes(y=n, x=scenario, fill = vehicle)) +
   ylab("Number of tours") +
   xlab("Scenario (area)") +
   theme_bw() + 
-  ylim(0,500) +
   theme(text=element_text(size=14, family="Times New Roman")) + 
   geom_text(aes(label = n),position = position_dodge2(width = 1), vjust = -0.5, family = "Times New Roman")
 
@@ -159,7 +151,7 @@ ggplot(summary, aes(y=distance/1000, x=scenario, fill = vehicle)) +
   geom_bar(stat = "identity", position = "stack") +
   ylab("Sum of distance (km)") + 
   xlab("Scenario (area)") +
-  ylim(0,6000) + 
+  ylim(0,8000) + 
   theme_bw() + 
   theme(text=element_text(size=14, family="Times New Roman")) + 
   geom_text(aes(label = sprintf("%.0f",distance/1000)),position = "stack", vjust = -0.5, family = "Times New Roman")
@@ -171,7 +163,7 @@ ggplot(summary, aes(y=distance/weight_tn/1e3, x=scenario, fill = vehicle)) +
   ylab("Distance to deliver 1kg (m/kg)") + 
   xlab("Scenario (area)") +
   theme_bw() + 
-  ylim(0,120) + 
+  ylim(0,130) + 
   theme(text=element_text(size=14, family="Times New Roman")) + 
   geom_text(aes(label = sprintf("%2.1f",distance/weight_tn/1e3)),position = position_dodge2(width = 1), vjust = -0.5, family = "Times New Roman")
 

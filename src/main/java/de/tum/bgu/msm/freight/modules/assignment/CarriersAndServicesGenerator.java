@@ -123,14 +123,26 @@ public class CarriersAndServicesGenerator {
                 int demandedCapacity = parcelsByMicrodepot_scaled.get(microDepot).size();
 
                 if (demandedCapacity > 0) {
+                    int remainder = demandedCapacity;
+                    int feederCounter = 0;
                     //add feeder trips to the carrier
-                    double duration_s = Math.min(5 * demandedCapacity, 15 * 60);
-                    Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
-                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId(), CarrierService.class), linkParcelDelivery);
-                    serviceBuilder.setCapacityDemand(demandedCapacity);
-                    serviceBuilder.setServiceDuration(duration_s);
-                    serviceBuilder.setServiceStartTimeWindow(timeWindow);
-                    feederCarrier.getServices().add(serviceBuilder.build());
+                    while (remainder > 0){
+                        int current = Math.min(remainder, type.getCarrierVehicleCapacity());
+                        remainder = remainder - current;
+
+                        double duration_s = Math.min(5 * demandedCapacity, 15 * 60);
+                        Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
+                        CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId() + "_" + feederCounter, CarrierService.class), linkParcelDelivery);
+                        serviceBuilder.setCapacityDemand(current);
+                        serviceBuilder.setServiceDuration(duration_s);
+                        serviceBuilder.setServiceStartTimeWindow(timeWindow);
+                        feederCarrier.getServices().add(serviceBuilder.build());
+                        feederCounter++;
+                    }
+
+
+
+
 
                     //create a microdepot Carrier (sub-carrier) with only bicycles
                     Carrier microDepotCarrier = CarrierImpl.newInstance(Id.create(microDepot.getId() + "_microDepot", Carrier.class));

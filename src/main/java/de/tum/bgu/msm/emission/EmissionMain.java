@@ -10,44 +10,47 @@ public class EmissionMain {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        Properties properties = new Properties();
-        properties.setRunId("muc_scenario_paketbox");
+        for (String arg : args) {
 
-        String configFile = "config_average.xml";
+            Properties properties = new Properties();
+            properties.setRunId(arg);
 
-        String outDirectory = "./output/" + properties.getRunId() + "/matsim/";
-        String eventFileWithoutEmissions = outDirectory + properties.getRunId() + ".output_events.xml.gz";
-        String eventFileWithEmissions = outDirectory + properties.getRunId() + ".output_events_emissions.xml.gz";
-        String individualVehicleFile = outDirectory + "vehicleList.xml";
-        String populationFile = outDirectory + properties.getRunId() + ".output_plans.xml.gz";
-        String networkFile = properties.getNetworkFile();
+            String configFile = "config_average.xml";
 
-        String linkWarmEmissionFile = "./output/" + properties.getRunId() + "/linkWarmEmissionFile.csv";
-        String vehicleWarmEmissionFile = "./output/" + properties.getRunId() + "/vehicleWarmEmissionFile.csv";
-        String vehicleColdEmissionFile = "./output/" + properties.getRunId() + "/vehicleColdEmissionFile.csv";
+            String outDirectory = "./output/" + properties.getRunId() + "/matsim/";
+            String eventFileWithoutEmissions = outDirectory + properties.getRunId() + ".output_events.xml.gz";
+            String eventFileWithEmissions = outDirectory + properties.getRunId() + ".output_events_emissions.xml.gz";
+            String individualVehicleFile = outDirectory + "vehicleList.xml";
+            String populationFile = outDirectory + properties.getRunId() + ".output_plans.xml.gz";
+            String networkFile = properties.getNetworkFile();
 
-        CreateVehicles createVehicles = new CreateVehicles();
-        createVehicles.run(eventFileWithoutEmissions, individualVehicleFile);
+            String linkWarmEmissionFile = "./output/" + properties.getRunId() + "/linkWarmEmissionFile.csv";
+            String vehicleWarmEmissionFile = "./output/" + properties.getRunId() + "/vehicleWarmEmissionFile.csv";
+            String vehicleColdEmissionFile = "./output/" + properties.getRunId() + "/vehicleColdEmissionFile.csv";
 
-        OfflineEmissionAnalysis offlineEmissionAnalysis = new OfflineEmissionAnalysis();
-        offlineEmissionAnalysis.run(configFile,
-                outDirectory,
-                eventFileWithoutEmissions,
-                eventFileWithEmissions,
-                individualVehicleFile,
-                populationFile,
-                networkFile);
+            CreateVehicles createVehicles = new CreateVehicles();
+            createVehicles.run(eventFileWithoutEmissions, individualVehicleFile);
 
-        EmissionEventsAnalysis emissionEventsAnalysis = new EmissionEventsAnalysis();
-        emissionEventsAnalysis.run(configFile,
-                outDirectory,
-                eventFileWithEmissions,
-                individualVehicleFile,
-                populationFile,
-                networkFile,
-                linkWarmEmissionFile,
-                vehicleWarmEmissionFile,
-                vehicleColdEmissionFile);
+            OfflineEmissionAnalysis offlineEmissionAnalysis = new OfflineEmissionAnalysis();
+            offlineEmissionAnalysis.run(configFile,
+                    outDirectory,
+                    eventFileWithoutEmissions,
+                    eventFileWithEmissions,
+                    individualVehicleFile,
+                    populationFile,
+                    networkFile);
+
+            EmissionEventsAnalysis emissionEventsAnalysis = new EmissionEventsAnalysis();
+            emissionEventsAnalysis.run(configFile,
+                    outDirectory,
+                    eventFileWithEmissions,
+                    individualVehicleFile,
+                    populationFile,
+                    networkFile,
+                    linkWarmEmissionFile,
+                    vehicleWarmEmissionFile,
+                    vehicleColdEmissionFile);
+        }
 
     }
 }
