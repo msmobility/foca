@@ -17,18 +17,20 @@ public class InputManager {
         readZones();
         readCommodityAttributes();
         readDistributionCenters();
-//        readDistributionCenterCatchmentAreas();
+//      readDistributionCenterCatchmentAreas();
         readTerminals();
         readMakeUseTable();
         readWeightDistribution();
         readOrigDestFlows();
 
+        //todo this will add a silo data container for a certain study area (so far only covers the silo study area)
+        new SPReader(dataSet).readSyntheticPopulation("C:/models/silo/muc/siloMuc.properties");
 
     }
 
-//    private void readDistributionCenterCatchmentAreas() {
-//        new DistributionCenterCatchmentAreaReader(dataSet, properties).read();
-//    }
+    private void readDistributionCenterCatchmentAreas() {
+        new DistributionCenterCatchmentAreaReader(dataSet, properties).read();
+    }
 
     private void readWeightDistribution() {
         ParcelWeightDistributionReader parcelWeightDistributionReader = new ParcelWeightDistributionReader(dataSet, properties);
@@ -43,7 +45,6 @@ public class InputManager {
     private void readMakeUseTable() {
         MakeUseTablesReader makeUseTablesReader = new MakeUseTablesReader(dataSet, properties, true);
         makeUseTablesReader.read();
-
         makeUseTablesReader = new MakeUseTablesReader(dataSet, properties, false);
         makeUseTablesReader.read();
     }
@@ -53,8 +54,6 @@ public class InputManager {
         DistributionCenterReaderXML distributionCenterReaderXML = new DistributionCenterReaderXML(dataSet);
         distributionCenterReaderXML.setValidating(false);
         distributionCenterReaderXML.read(properties.getDistributionCentersFile());
-
-
 //        DistributionCenterReader distributionCenterReader = new DistributionCenterReader(dataSet, properties);
 //        distributionCenterReader.read();
     }

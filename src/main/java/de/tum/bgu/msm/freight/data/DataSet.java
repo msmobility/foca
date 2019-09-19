@@ -8,6 +8,7 @@ import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
 import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
 import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
 import de.tum.bgu.msm.freight.data.geo.*;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Population;
 
@@ -50,6 +51,8 @@ public class DataSet {
     private final List<LDTruckTrip> LDTruckTrips = new ArrayList<>();
 
     private final List<SDTruckTrip> SDTruckTrips = new ArrayList<>();
+
+    private DataContainerWithSchools siloDataContainer;
 
 
     //getters and setters
@@ -157,6 +160,8 @@ public class DataSet {
     public double getWeightDistributionInterval() {
         Set<Double> keys = this.parcelWeightDistribution.keySet();
        return (keys.stream().max(Double::compareTo).get() - keys.stream().min(Double::compareTo).get())/ (keys.size() - 1);
-
+    }
+    public void setSiloDataContainer(DataContainerWithSchools dataContainer) {
+        this.siloDataContainer = dataContainer;
     }
 }
