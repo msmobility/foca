@@ -51,7 +51,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
             uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet);
         }
 
-        for (int destId : properties.getSelectedZones()) {
+        for (int destId : properties.getAnalysisZones()) {
             if (destId == -1) {
                 doAllZones = true;
                 break;

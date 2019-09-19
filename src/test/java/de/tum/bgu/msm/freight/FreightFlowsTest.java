@@ -45,7 +45,7 @@ public class FreightFlowsTest {
             properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
             properties.setRunId("testReg");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
-            properties.setSelectedZones(new int[]{9362});
+            properties.setAnalysisZones(new int[]{9362});
             properties.setFlowsScaleFactor(1.0);
             properties.setTruckScaleFactor(0.05);
             properties.setSampleFactorForParcels(0.05);
@@ -60,7 +60,7 @@ public class FreightFlowsTest {
             properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
             properties.setRunId("testReg_2");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
-            properties.setSelectedZones(new int[]{9362});
+            properties.setAnalysisZones(new int[]{9362});
             properties.setFlowsScaleFactor(1.0);
             properties.setTruckScaleFactor(0.05);
             properties.setSampleFactorForParcels(0.05);
@@ -75,7 +75,7 @@ public class FreightFlowsTest {
             properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
             properties.setRunId("testRegNoCargoBikes");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
-            properties.setSelectedZones(new int[]{9362});
+            properties.setAnalysisZones(new int[]{9362});
             properties.setFlowsScaleFactor(1.0);
             properties.setTruckScaleFactor(0.05);
             properties.setSampleFactorForParcels(0.05);
@@ -101,7 +101,7 @@ public class FreightFlowsTest {
         properties.setMatrixFileName("./input/matrices/ketten-2010-filtered.csv");
         properties.setRunId("test_small");
         //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
-        properties.setSelectedZones(new int[]{9362});
+        properties.setAnalysisZones(new int[]{9362});
         properties.setFlowsScaleFactor(1.0);
         properties.setTruckScaleFactor(0.05);
         properties.setSampleFactorForParcels(0.05);

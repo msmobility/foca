@@ -30,7 +30,7 @@ public class Properties extends PropertiesGroup {
     private String runId = "assignmentFull";
     private int randomSeed = 1;
     private Random rand = new Random(randomSeed);
-    private int[] selectedZones = new int[]{-1};
+    private int[] analysisZones = new int[]{-1};
     private boolean storeExpectedTimes = false;
 
     private int daysPerYear = 365;
@@ -156,12 +156,12 @@ public class Properties extends PropertiesGroup {
         this.rand = rand;
     }
 
-    public int[] getSelectedZones() {
-        return selectedZones;
+    public int[] getAnalysisZones() {
+        return analysisZones;
     }
 
-    public void setSelectedZones(int[] selectedZones) {
-        this.selectedZones = selectedZones;
+    public void setAnalysisZones(int[] analysisZones) {
+        this.analysisZones = analysisZones;
     }
 
     public boolean isStoreExpectedTimes() {
