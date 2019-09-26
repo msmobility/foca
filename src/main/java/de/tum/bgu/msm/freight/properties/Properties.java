@@ -17,7 +17,9 @@ public class Properties extends PropertiesGroup {
     private SDProperties sDProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
-    private String matrixFileName = "./input/matrices/ketten-2010.csv";
+    private String matrixFolder = "./input/matrices/";
+    private String matrixFileNamePrefix = "ketten-uniform-";
+    private String matrixFileNameSuffix = ".csv";
     private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
     private String distributionCentersFile = "input/distributionCenters/distributionCenters.xml";
     private String terminalsFileName = "input/distributionCenters/intermodal_terminals_31468.csv";
@@ -30,7 +32,7 @@ public class Properties extends PropertiesGroup {
     private String runId = "assignmentFull";
     private int randomSeed = 1;
     private Random rand = new Random(randomSeed);
-    private int[] analysisZones = new int[]{-1};
+    private int[] analysisZones = new int[]{};
     private boolean storeExpectedTimes = false;
 
     private int daysPerYear = 365;
@@ -57,6 +59,10 @@ public class Properties extends PropertiesGroup {
     private String matsimBackgroundTrafficPlanFile = "";
 
     private String outputFolder = "output/";
+
+
+
+    private int year = 2010;
 
 
     public Properties() {
@@ -100,12 +106,12 @@ public class Properties extends PropertiesGroup {
         return sDProperties;
     }
 
-    public String getMatrixFileName() {
-        return matrixFileName;
+    public String getMatrixFolder() {
+        return matrixFolder;
     }
 
-    public void setMatrixFileName(String matrixFileName) {
-        this.matrixFileName = matrixFileName;
+    public void setMatrixFolder(String matrixFolder) {
+        this.matrixFolder = matrixFolder;
     }
 
     public String getNetworkFile() {
@@ -303,5 +309,21 @@ public class Properties extends PropertiesGroup {
 
     public void setDistributionCentersFile(String distributionCentersFile) {
         this.distributionCentersFile = distributionCentersFile;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public String getMatrixFileNamePrefix() {
+        return matrixFileNamePrefix;
+    }
+
+    public String getMatrixFileNameSuffix() {
+        return matrixFileNameSuffix;
     }
 }

@@ -8,10 +8,7 @@ import de.tum.bgu.msm.freight.data.freight.longDistance.LDDistributionType;
 import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
 import de.tum.bgu.msm.freight.data.freight.longDistance.SegmentType;
 import de.tum.bgu.msm.freight.data.freight.Bound;
-import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
-import de.tum.bgu.msm.freight.data.geo.InternalZone;
-import de.tum.bgu.msm.freight.data.geo.Zone;
+import de.tum.bgu.msm.freight.data.geo.*;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
@@ -55,7 +52,7 @@ public class LDTruckODAllocator implements Module {
                         for (DistributionCenter distributionCenter : dataSet.getDistributionCenters().get(zoneId).get(commodityGroup).values()) {
                             double weight = 0;
                             for (InternalMicroZone internalMicroZone : distributionCenter.getZonesServedByThis()) {
-                                weight ++;
+                                weight++;
                             }
                             weightDistributionCenters.get(zoneId).get(commodityGroup).put(distributionCenter, weight);
                         }
@@ -118,7 +115,13 @@ public class LDTruckODAllocator implements Module {
 
 
         if (flowSegment.getSegmentType().equals(SegmentType.POST)) {
-            origCoord = dataSet.getTerminals().get(flowSegment.getOriginTerminal()).getCoordinates();
+            try {
+                Terminal originTerminal = dataSet.getTerminals().get(flowSegment.getOriginTerminal());
+                origCoord = originTerminal.getCoordinates();
+            } catch (NullPointerException e) {
+                origCoord = null;
+            }
+
         } else {
             switch (commodity.getCommodityGroup().getLongDistanceGoodDistribution()) {
                 case DOOR_TO_DOOR:
@@ -191,7 +194,13 @@ public class LDTruckODAllocator implements Module {
         }
 
         if (flowSegment.getSegmentType().equals(SegmentType.PRE)) {
-            destCoord = dataSet.getTerminals().get(flowSegment.getDestinationTerminal()).getCoordinates();
+            try {
+                Terminal destinationTerminal = dataSet.getTerminals().get(flowSegment.getDestinationTerminal());
+                destCoord = destinationTerminal.getCoordinates();
+            } catch (NullPointerException e) {
+                destCoord = null;
+            }
+
         } else {
             switch (commodity.getCommodityGroup().getLongDistanceGoodDistribution()) {
                 case DOOR_TO_DOOR:
@@ -221,7 +230,7 @@ public class LDTruckODAllocator implements Module {
                         destCoord = destinationDistributionCenter.getCoordinates();
                         LDTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
 
-                    addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                        addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
                     }
                     break;
                 default:
@@ -250,7 +259,7 @@ public class LDTruckODAllocator implements Module {
 
     //todo not sure how this works!
     private DistributionCenter chooseDistributionCenterByCatchmentAreaPopulation(int zoneId, CommodityGroup commodityGroup) {
-        DistributionCenter dc =  FreightFlowUtils.select(weightDistributionCenters.get(zoneId).get(commodityGroup),
+        DistributionCenter dc = FreightFlowUtils.select(weightDistributionCenters.get(zoneId).get(commodityGroup),
                 FreightFlowUtils.getSum(weightDistributionCenters.get(zoneId).get(commodityGroup).values()));
         return dc;
     }

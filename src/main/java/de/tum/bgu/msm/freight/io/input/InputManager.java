@@ -24,7 +24,7 @@ public class InputManager {
         readOrigDestFlows();
 
         //todo this will add a silo data container for a certain study area (so far only covers the silo study area)
-        new SPReader(dataSet).readSyntheticPopulation("C:/models/silo/muc/siloMuc.properties");
+        //new SPReader(dataSet).readSyntheticPopulation("C:/models/silo/muc/siloMuc.properties");
 
     }
 

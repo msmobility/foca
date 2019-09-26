@@ -51,14 +51,12 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
             uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet);
         }
 
-        for (int destId : properties.getAnalysisZones()) {
-            if (destId == -1) {
-                doAllZones = true;
-                break;
-            } else {
-                doAllZones = false;
-            }
+        if (properties.getAnalysisZones().length == 0) {
+            doAllZones = true;
+        } else {
+            doAllZones = false;
         }
+
     }
 
     @Override
@@ -124,7 +122,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                 if (originZone.isInStudyArea() || destinationZone.isInStudyArea() || doAllZones) {
                                     dataSet.getAssignedFlowSegments().add(flowSegment);
                                 }
-                                if (LongMath.isPowerOfTwo(flowCounter.incrementAndGet())){
+                                if (LongMath.isPowerOfTwo(flowCounter.incrementAndGet())) {
                                     logger.info(flowCounter.get() + " LD trucks assigned");
                                 }
                             }

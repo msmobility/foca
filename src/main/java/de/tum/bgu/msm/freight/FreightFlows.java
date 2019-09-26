@@ -27,10 +27,12 @@ public class FreightFlows {
 
     public static void main(String[] args) {
 
+
+
         List<Properties> listOfSimulations = new ArrayList<>();
 
         Properties properties_zero = new Properties();
-        properties_zero.setMatrixFileName("./input/matrices/ketten-2010.csv");
+        properties_zero.setMatrixFolder("./input/matrices/ketten-2010.csv");
         properties_zero.setAnalysisZones(new int[]{9162});
         properties_zero.setTruckScaleFactor(1.00);
         properties_zero.setSampleFactorForParcels(1.00);
@@ -48,7 +50,7 @@ public class FreightFlows {
 
 
         Properties properties_one = new Properties();
-        properties_one.setMatrixFileName("./input/matrices/ketten-2010.csv");
+        properties_one.setMatrixFolder("./input/matrices/ketten-2010.csv");
         properties_one.setAnalysisZones(new int[]{9162});
         properties_one.setTruckScaleFactor(1.00);
         properties_one.setSampleFactorForParcels(1.00);
@@ -66,7 +68,7 @@ public class FreightFlows {
 
 
         Properties properties_two = new Properties();
-        properties_two.setMatrixFileName("./input/matrices/ketten-2010.csv");
+        properties_two.setMatrixFolder("./input/matrices/ketten-2010.csv");
         properties_two.setAnalysisZones(new int[]{9162});
         properties_two.setTruckScaleFactor(1.00);
         properties_two.setSampleFactorForParcels(1.00);
@@ -84,7 +86,7 @@ public class FreightFlows {
 //
 //
         Properties properties_three = new Properties();
-        properties_three.setMatrixFileName("./input/matrices/ketten-2010.csv");
+        properties_three.setMatrixFolder("./input/matrices/ketten-2010.csv");
         properties_three.setAnalysisZones(new int[]{9162});
         properties_three.setTruckScaleFactor(1.00);
         properties_three.setSampleFactorForParcels(1.00);
