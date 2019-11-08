@@ -15,6 +15,7 @@ import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+import org.matsim.core.population.io.PopulationWriter;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class FreightFlows {
         List<Properties> listOfSimulations = new ArrayList<>();
 
         Properties properties_zero = new Properties();
-        properties_zero.setMatrixFolder("./input/matrices/ketten-2010.csv");
+        properties_zero.setMatrixFolder("./input/matrices/");
         properties_zero.setAnalysisZones(new int[]{9162});
         properties_zero.setTruckScaleFactor(1.00);
         properties_zero.setSampleFactorForParcels(1.00);
@@ -50,13 +51,13 @@ public class FreightFlows {
 
 
         Properties properties_one = new Properties();
-        properties_one.setMatrixFolder("./input/matrices/ketten-2010.csv");
+        properties_one.setMatrixFolder("./input/matrices/");
         properties_one.setAnalysisZones(new int[]{9162});
         properties_one.setTruckScaleFactor(1.00);
         properties_one.setSampleFactorForParcels(1.00);
         properties_one.setIterations(50);
         properties_one.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_one.setRunId("muc_scenario_1km");
+        properties_one.setRunId("muc_scenario_1km_with_cars");
         properties_one.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
         try {
             properties_one.logProperties("./output/" + properties_one.getRunId() + "/properties.txt");
@@ -68,7 +69,7 @@ public class FreightFlows {
 
 
         Properties properties_two = new Properties();
-        properties_two.setMatrixFolder("./input/matrices/ketten-2010.csv");
+        properties_two.setMatrixFolder("./input/matrices/");
         properties_two.setAnalysisZones(new int[]{9162});
         properties_two.setTruckScaleFactor(1.00);
         properties_two.setSampleFactorForParcels(1.00);
@@ -103,6 +104,8 @@ public class FreightFlows {
         //listOfSimulations.add(properties_three);
 
         for (Properties properties : listOfSimulations) {
+            //adds a 5% pf cars as background traffic
+            properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
             FreightFlows freightFlows = new FreightFlows();
             logger.info("Start simulation " + properties.getRunId());
             freightFlows.run(properties);
@@ -137,6 +140,9 @@ public class FreightFlows {
         SDTruckGenerator.run();
         parcelGenerator.run();
         matSimAssignment.run();
+
+        PopulationWriter pw;
+
 
         String outputFolder = properties.getOutputFolder();
         OutputWriter.printOutObjects(dataSet.getAssignedFlowSegments(), FlowSegment.getHeader(), outputFolder + properties.getRunId() + "/flowSegments.csv");

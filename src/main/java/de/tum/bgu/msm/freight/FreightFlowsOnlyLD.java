@@ -15,7 +15,7 @@ public class FreightFlowsOnlyLD {
 
         long time = System.currentTimeMillis();
 
-        int year = 2040;
+        int year = 2020;
 
         Properties properties = new Properties();
         properties.setMatrixFolder("./input/matrices/");

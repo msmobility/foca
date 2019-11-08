@@ -94,12 +94,16 @@ public class MATSimTruckPlanGenerator {
         Person person = factory.createPerson(Id.createPersonId(lDTruckTrip.getId()));
         Plan plan = factory.createPlan();
         person.addPlan(plan);
-        population.addPerson(person);
+
 
         Coordinate origCoordinate = lDTruckTrip.getOrigCoord();
-        Coord origCoord = new Coord(origCoordinate.x, origCoordinate.y);
-        //Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
-
+        Coord origCoord;
+        try {
+            origCoord = new Coord(origCoordinate.x, origCoordinate.y);
+            //Link origLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, origCoord));
+        } catch (NullPointerException e){
+            origCoord = null;
+        }
         Activity originActivity = factory.createActivityFromCoord("start", origCoord);
         originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
         plan.addActivity(originActivity);
@@ -107,10 +111,21 @@ public class MATSimTruckPlanGenerator {
         plan.addLeg(factory.createLeg(TransportMode.truck));
 
         Coordinate destCoordinate = lDTruckTrip.getDestCoord();
-        Coord destCoord = new Coord(destCoordinate.x, destCoordinate.y);
+        Coord destCoord;
+        try {
+            destCoord = new Coord(destCoordinate.x, destCoordinate.y);
+        } catch (NullPointerException e){
+            destCoord = null;
+        }
+
         //Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
         Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
         plan.addActivity(destinationActivity);
         counter.incrementAndGet();
+
+        if (origCoord != null && destCoord != null ) {
+            population.addPerson(person);
+        }
+
     }
 }

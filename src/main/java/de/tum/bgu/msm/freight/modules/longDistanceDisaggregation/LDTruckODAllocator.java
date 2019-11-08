@@ -76,9 +76,14 @@ public class LDTruckODAllocator implements Module {
         AtomicInteger counter = new AtomicInteger(0);
         for (FlowSegment flowSegment : dataSet.getAssignedFlowSegments()) {
             for (de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip LDTruckTrip : flowSegment.getTruckTrips()) {
-                setOrigin(LDTruckTrip);
-                setDestination(LDTruckTrip);
-                dataSet.getLDTruckTrips().add(LDTruckTrip);
+                boolean validOrigin = true;
+                boolean validDestination = true;
+                validOrigin = setOrigin(LDTruckTrip);
+                validDestination = setDestination(LDTruckTrip);
+
+                if (validDestination && validOrigin) {
+                    dataSet.getLDTruckTrips().add(LDTruckTrip);
+                }
 
                 if (counter.incrementAndGet() % 100000 == 0) {
                     logger.info("Assigned o/d to " + counter.get() + " LD trucks");
