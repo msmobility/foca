@@ -16,10 +16,10 @@ import java.util.Map;
 
 public class CountEventHandler implements LinkEnterEventHandler {
     private enum CountVehicleType {
-        car, cargoBike, van, lDTruck, sDTruck;
+        car, cargoBike, van, lDTruck, sDTruck, uam
     }
 
-    private final int LAST_HOUR = 49;
+    private final int LAST_HOUR = 30;
     private Properties properties;
 
     private static Logger logger = Logger.getLogger(CountEventHandler.class);
@@ -107,6 +107,8 @@ public class CountEventHandler implements LinkEnterEventHandler {
             return CountVehicleType.lDTruck;
         } else if (vehicleId.contains("SD")){
             return CountVehicleType.sDTruck;
+        } else if (vehicleId.contains("uam")) {
+            return CountVehicleType.uam;
         } else {
             return CountVehicleType.car;
         }
