@@ -42,7 +42,7 @@ public class FreightFlowsTest {
 
         {
             Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/ketten-2010-filtered.csv");
+            properties.setMatrixFolder("./input/matrices/");
             properties.setRunId("testReg");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
@@ -53,11 +53,11 @@ public class FreightFlowsTest {
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
             properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
             properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.xml");
-            listOfProperties.add(properties);
+            //listOfProperties.add(properties);
         }
         {
             Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/ketten-2010-filtered.csv");
+            properties.setMatrixFolder("./input/matrices/");
             properties.setRunId("testReg_2");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
@@ -67,12 +67,12 @@ public class FreightFlowsTest {
             properties.setIterations(50);
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
             properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_scenario2.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/old/distributionCenters_scenario2.xml");
             listOfProperties.add(properties);
         }
         {
             Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/ketten-2010-filtered.csv");
+            properties.setMatrixFolder("./input/matrices/");
             properties.setRunId("testRegNoCargoBikes");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
@@ -123,7 +123,7 @@ public class FreightFlowsTest {
             e.printStackTrace();
         }
 
-        FreightFlows freightFlows = new FreightFlows();
+        FreightFlowsMucRunScenarios freightFlows = new FreightFlowsMucRunScenarios();
         freightFlows.run(properties);
 
         if(check) {

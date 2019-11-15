@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.freight.io.input;
 
 import com.google.common.collect.HashBasedTable;
-import de.tum.bgu.msm.freight.FreightFlows;
 import de.tum.bgu.msm.freight.data.*;
 import de.tum.bgu.msm.freight.data.freight.*;
 import de.tum.bgu.msm.freight.data.freight.longDistance.*;
@@ -11,7 +10,6 @@ import de.tum.bgu.msm.util.MitoUtil;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

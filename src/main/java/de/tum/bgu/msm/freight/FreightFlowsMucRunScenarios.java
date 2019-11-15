@@ -21,14 +21,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FreightFlows {
+public class FreightFlowsMucRunScenarios {
 
 
-    private static final Logger logger = Logger.getLogger(FreightFlows.class);
+    private static final Logger logger = Logger.getLogger(FreightFlowsMucRunScenarios.class);
 
     public static void main(String[] args) {
-
-
 
         List<Properties> listOfSimulations = new ArrayList<>();
 
@@ -47,7 +45,7 @@ public class FreightFlows {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-//        listOfSimulations.add(properties_zero);
+        listOfSimulations.add(properties_zero);
 
 
         Properties properties_one = new Properties();
@@ -83,11 +81,11 @@ public class FreightFlows {
                 FileNotFoundException e) {
             e.printStackTrace();
         }
-        //listOfSimulations.add(properties_two);
+        listOfSimulations.add(properties_two);
 //
 //
         Properties properties_three = new Properties();
-        properties_three.setMatrixFolder("./input/matrices/ketten-2010.csv");
+        properties_three.setMatrixFolder("./input/matrices/");
         properties_three.setAnalysisZones(new int[]{9162});
         properties_three.setTruckScaleFactor(1.00);
         properties_three.setSampleFactorForParcels(1.00);
@@ -101,12 +99,12 @@ public class FreightFlows {
                 FileNotFoundException e) {
             e.printStackTrace();
         }
-        //listOfSimulations.add(properties_three);
+        listOfSimulations.add(properties_three);
 
         for (Properties properties : listOfSimulations) {
             //adds a 5% pf cars as background traffic
             properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
-            FreightFlows freightFlows = new FreightFlows();
+            FreightFlowsMucRunScenarios freightFlows = new FreightFlowsMucRunScenarios();
             logger.info("Start simulation " + properties.getRunId());
             freightFlows.run(properties);
             logger.info("End simulation " + properties.getRunId());

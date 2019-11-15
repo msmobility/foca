@@ -34,7 +34,7 @@ public class FreightFlowsOnlyLD {
             e.printStackTrace();
         }
 
-        FreightFlows freightFlows = new FreightFlows();
+        FreightFlowsMucRunScenarios freightFlows = new FreightFlowsMucRunScenarios();
         logger.info("Start simulation " + properties.getRunId());
         freightFlows.run(properties);
 
