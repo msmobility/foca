@@ -37,7 +37,7 @@ public class FreightFlowsMucRunScenarios {
         properties_zero.setSampleFactorForParcels(1.00);
         properties_zero.setIterations(50);
         properties_zero.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_zero.setRunId("muc_scenario_zero_c");
+        properties_zero.setRunId("muc_scenario_zero_c_v2");
         properties_zero.setDistributionCentersFile("./input/distributionCenters/distributionCenters_zero_c.xml");
         properties_zero.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
         try {
@@ -55,7 +55,7 @@ public class FreightFlowsMucRunScenarios {
         properties_one.setSampleFactorForParcels(1.00);
         properties_one.setIterations(50);
         properties_one.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_one.setRunId("muc_scenario_1km_with_cars");
+        properties_one.setRunId("muc_scenario_1km_with_cars_v2");
         properties_one.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
         try {
             properties_one.logProperties("./output/" + properties_one.getRunId() + "/properties.txt");
@@ -73,7 +73,7 @@ public class FreightFlowsMucRunScenarios {
         properties_two.setSampleFactorForParcels(1.00);
         properties_two.setIterations(50);
         properties_two.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_two.setRunId("muc_scenario_paketbox");
+        properties_two.setRunId("muc_scenario_paketbox_v2");
         properties_two.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.xml");
         try {
             properties_two.logProperties("./output/" + properties_two.getRunId() + "/properties.txt");
@@ -91,7 +91,7 @@ public class FreightFlowsMucRunScenarios {
         properties_three.setSampleFactorForParcels(1.00);
         properties_three.setIterations(50);
         properties_three.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_three.setRunId("muc_scenario_3km");
+        properties_three.setRunId("muc_scenario_3km_v2");
         properties_three.setDistributionCentersFile("./input/distributionCenters/distributionCenters_3km.xml");
         try {
             properties_three.logProperties("./output/" + properties_three.getRunId() + "/properties.txt");
@@ -103,7 +103,7 @@ public class FreightFlowsMucRunScenarios {
 
         for (Properties properties : listOfSimulations) {
             //adds a 5% pf cars as background traffic
-            properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
+            //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
             FreightFlowsMucRunScenarios freightFlows = new FreightFlowsMucRunScenarios();
             logger.info("Start simulation " + properties.getRunId());
             freightFlows.run(properties);

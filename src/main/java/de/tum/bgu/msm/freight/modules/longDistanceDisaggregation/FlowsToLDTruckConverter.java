@@ -73,8 +73,8 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
             for (int destination : dataSet.getFlowMatrix().columnKeySet()) {
                 if (dataSet.getFlowMatrix().contains(origin, destination) && dataSet.getZones().containsKey(origin) &&
                         dataSet.getZones().containsKey(destination)) {
-                    Collection<FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination).values();
-                    for (FlowOriginToDestination flowOriginToDestination : flowsThisOrigDest) {
+                    Map<Integer, FlowOriginToDestination> flowsThisOrigDest = dataSet.getFlowMatrix().get(origin, destination);
+                    for (FlowOriginToDestination flowOriginToDestination : flowsThisOrigDest.values()) {
                         for (FlowSegment flowSegment : flowOriginToDestination.getFlowSegments().values()) {
                             if (flowSegment.getLDMode().equals(LDMode.ROAD)) {
                                 int tripOrigin = flowSegment.getSegmentOrigin();

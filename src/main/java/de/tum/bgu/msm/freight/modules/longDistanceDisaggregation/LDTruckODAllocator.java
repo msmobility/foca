@@ -14,9 +14,12 @@ import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
+import sun.awt.image.ImageWatched;
 
+import javax.transaction.TransactionRequiredException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * For each long distance truck, allocates and origin and a destination, whihc can be a location (zone), a microLocation (company), a distribution center
@@ -60,12 +63,12 @@ public class LDTruckODAllocator implements Module {
                 }
             }
         }
+
         logger.info("Assigned weights to the distribution centers based on number of microZones");
     }
 
     @Override
     public void run() {
-
         subsampleTrucksAndAssignCoordinates();
         logger.warn(cumulatedV);
     }
@@ -90,6 +93,7 @@ public class LDTruckODAllocator implements Module {
                 }
             }
         }
+        logger.warn(properties.getRand().nextDouble());
         logger.info("Assigned o/d to " + counter.get() + " LD trucks");
 
     }
@@ -234,7 +238,6 @@ public class LDTruckODAllocator implements Module {
                         DistributionCenter destinationDistributionCenter = chooseRandomDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
                         LDTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
-
                         addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
                     }
                     break;
@@ -256,10 +259,16 @@ public class LDTruckODAllocator implements Module {
     @Deprecated
     private DistributionCenter chooseRandomDistributionCenter(int zoneId, CommodityGroup commodityGroup) {
         //todo probably not the best way to divide. Think on capacity
-        ArrayList<DistributionCenter> distributionCenters = new ArrayList<>();
-        distributionCenters.addAll(dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, commodityGroup).values());
-        Collections.shuffle(distributionCenters, properties.getRand());
-        return distributionCenters.get(0);
+
+        Map<DistributionCenter, Double> probabilities = new LinkedHashMap<>();
+        Map<Integer, DistributionCenter> distributionCenters = dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, commodityGroup);
+        ArrayList<Integer> listOfDc = distributionCenters.keySet().stream().sorted().collect(Collectors.toCollection(ArrayList::new));
+        for (int key : listOfDc){
+            DistributionCenter distributionCenter = distributionCenters.get(key);
+            probabilities.put(distributionCenter, 1.);
+        }
+
+        return FreightFlowUtils.select(probabilities, FreightFlowUtils.getSum(probabilities.values()));
     }
 
     //todo not sure how this works!

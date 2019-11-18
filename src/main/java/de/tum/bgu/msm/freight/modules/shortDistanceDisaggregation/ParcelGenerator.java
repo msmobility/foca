@@ -117,11 +117,12 @@ public class ParcelGenerator implements Module {
                         double volumeDelivered = volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INBOUND, 0.) +
                                 volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL, 0.) * 0.5;
 
+                        logger.warn("dc: " + distributionCenter.getId() + " volume_to: " + volumeDelivered);
                         dissagregateVolumeToParcels(volumeDelivered, distributionCenter, true, commodity);
 
                         double volumePickedUp = volumesProcessedByThisDistributionCenter.getOrDefault(Bound.OUTBOUND, 0.) +
                                 volumesProcessedByThisDistributionCenter.getOrDefault(Bound.INTRAZONAL, 0.) * 0.5;
-
+                        logger.warn("dc: " + distributionCenter.getId() + " volume_fom: " + volumePickedUp);
                         dissagregateVolumeToParcels(volumePickedUp, distributionCenter, false, commodity);
                     }
 
@@ -201,7 +202,9 @@ public class ParcelGenerator implements Module {
 
             }
         }
+        logger.warn(properties.getRand().nextDouble());
         logger.info(counter.get() + " parcels already processed");
+
     }
 
     private void dissagregateVolumeToParcels(double volume_tn, DistributionCenter distributionCenter, boolean toCustomer, Commodity commodity) {

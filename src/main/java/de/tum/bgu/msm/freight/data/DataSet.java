@@ -28,13 +28,13 @@ public class DataSet {
 
     private Map<Id, Integer> observedCounts = new HashMap<>();
 
-    private final Map<Integer, Map<CommodityGroup, Map<Integer, DistributionCenter>>> distributionCenters = new HashMap<>();
+    private final Map<Integer, Map<CommodityGroup, Map<Integer, DistributionCenter>>> distributionCenters = new LinkedHashMap<>();
 
     private final HashBasedTable<String, Commodity, Double> makeTable = HashBasedTable.create();
 
     private final HashBasedTable<String, Commodity, Double> useTable = HashBasedTable.create();
 
-    private final Map<Integer, Terminal> terminals = new HashMap<>();
+    private final Map<Integer, Terminal> terminals = new LinkedHashMap<>();
 
     private final List<FlowSegment> assignedFlowSegments = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public class DataSet {
 
     private final HashBasedTable<DistributionCenter, Commodity, Map<Bound,Double>> volByCommodityDistributionCenterAndBoundByParcels = HashBasedTable.create();
 
-    private final Map<DistributionCenter, List<Parcel>> parcelsByDistributionCenter = new HashMap<>();
+    private final Map<DistributionCenter, List<Parcel>> parcelsByDistributionCenter = new LinkedHashMap<>();
 
     private Population matsimPopulation;
 

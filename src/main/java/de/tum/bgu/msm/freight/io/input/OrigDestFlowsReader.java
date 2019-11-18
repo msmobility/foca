@@ -11,6 +11,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -88,7 +89,7 @@ public class OrigDestFlowsReader extends CSVReader {
             int index = flowsByYear.get(currentYear).get(origin, destination).keySet().size();
             flowsByYear.get(currentYear).get(origin, destination).put(index, flowOriginToDestination);
         } else {
-            Map<Integer, FlowOriginToDestination> flowsThisOrigDestPair = new HashMap<>();
+            Map<Integer, FlowOriginToDestination> flowsThisOrigDestPair = new LinkedHashMap<>();
             flowsThisOrigDestPair.put(0, flowOriginToDestination);
             flowsByYear.get(currentYear).put(origin, destination, flowsThisOrigDestPair);
         }

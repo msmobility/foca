@@ -31,7 +31,7 @@ public class Properties extends PropertiesGroup {
     private double truckScaleFactor = 1.;
     private String runId = "assignmentFull";
     private int randomSeed = 1;
-    private Random rand = new Random(randomSeed);
+    private final Random rand;
     private int[] analysisZones = new int[]{};
     private boolean storeExpectedTimes = false;
 
@@ -66,6 +66,7 @@ public class Properties extends PropertiesGroup {
 
 
     public Properties() {
+        rand = new Random(randomSeed);
         FreightFlowUtils.setRandomNumber(this);
         zoneSystemProperties = new ZoneSystemProperties();
         flowsProperties = new FlowsProperties();
@@ -158,9 +159,9 @@ public class Properties extends PropertiesGroup {
         return rand;
     }
 
-    public void setRand(Random rand) {
-        this.rand = rand;
-    }
+    //public void setRand(Random rand) {
+//        this.rand = rand;
+//    }
 
     public int[] getAnalysisZones() {
         return analysisZones;
