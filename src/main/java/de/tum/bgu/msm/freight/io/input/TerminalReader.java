@@ -61,7 +61,7 @@ public class TerminalReader extends CSVReader {
         int zoneId = Integer.parseInt(record[posZone]);
         Coordinate coord;
         if (x == -1 || y == -1) {
-            coord = dataSet.getZones().get(zoneId).getCoordinates();
+            coord = dataSet.getZones().get(zoneId).getCoordinates(properties.getRand());
         } else {
             coord = new Coordinate(x, y);
         }

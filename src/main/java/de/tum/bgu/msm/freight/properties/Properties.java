@@ -67,7 +67,6 @@ public class Properties extends PropertiesGroup {
 
     public Properties() {
         rand = new Random(randomSeed);
-        FreightFlowUtils.setRandomNumber(this);
         zoneSystemProperties = new ZoneSystemProperties();
         flowsProperties = new FlowsProperties();
         lDProperties = new LDProperties();

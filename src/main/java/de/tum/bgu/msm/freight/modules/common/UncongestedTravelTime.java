@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight.modules.common;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.geo.Zone;
+import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
@@ -70,17 +71,17 @@ public class UncongestedTravelTime {
         return Math.sqrt(Math.pow(fromCoord.getX() - toCoord.getX(), 2) + Math.pow(fromCoord.getY() - toCoord.getY(), 2));
     }
 
-    public void calculateTravelTimeMatrix(CoordinateTransformation ct, DataSet dataSet) {
+    public void calculateTravelTimeMatrix(CoordinateTransformation ct, DataSet dataSet, Properties properties) {
         LOGGER.info("Starting calculation of matrix for " + dataSet.getZones().size() + " zones.");
         AtomicInteger counter = new AtomicInteger(0);
         dataSet.getZones().values().forEach(origin -> {
-            Coordinate fromCoord = origin.getCoordinates();
+            Coordinate fromCoord = origin.getCoordinates(properties.getRand());
             Node originNode = NetworkUtils.getNearestLink(network, new Coord(fromCoord.x, fromCoord.y)).getToNode();
             LeastCostPathTree leastCostPathTree =
                     new LeastCostPathTree(new MyTravelTime(linkOffPeakHourTimes), new MyTravelDisutility(linkOffPeakHourTimes, linkOffPeakHourTimes));
             leastCostPathTree.calculate(network, originNode, DEFAULT_PEAK_H_S);
             for (Zone destination : dataSet.getZones().values()) {
-                Coordinate toCoord = destination.getCoordinates();
+                Coordinate toCoord = destination.getCoordinates(properties.getRand());
                 double euclideanDistance = getDistancePointToPoint(fromCoord, toCoord);
                 if (euclideanDistance > 200e3) {
                     dataSet.getUncongestedTravelTimeMatrix().put(origin.getId(), destination.getId(), euclideanDistance / 80 * 3.6);

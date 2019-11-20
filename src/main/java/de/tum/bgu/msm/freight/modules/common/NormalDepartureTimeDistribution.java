@@ -14,12 +14,14 @@ public class NormalDepartureTimeDistribution implements DepartureTimeDistributio
 
     private final double mean = 9.91;
     private final double standardDeviation = 5.94;
+    private final Properties properties;
 
 
     private Map<Integer, Double> preCalculatedProbabilities;
 
 
     public NormalDepartureTimeDistribution(Properties properties){
+        this.properties = properties;
         preCalculatedProbabilities = new HashMap<>();
 
         NormalDistribution normalDistribution = new NormalDistribution(mean, standardDeviation);
@@ -36,6 +38,6 @@ public class NormalDepartureTimeDistribution implements DepartureTimeDistributio
 
     @Override
     public double getDepartureTime(double travelTime_m) {
-        return FreightFlowUtils.select(preCalculatedProbabilities, FreightFlowUtils.getSum(preCalculatedProbabilities.values()));
+        return FreightFlowUtils.select(preCalculatedProbabilities, FreightFlowUtils.getSum(preCalculatedProbabilities.values()), properties.getRand());
     }
 }

@@ -48,7 +48,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
 
         if (properties.isStoreExpectedTimes()) {
             uncongestedTravelTime = new UncongestedTravelTime(properties.getSimpleNetworkFile());
-            uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet);
+            uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet, properties);
         }
 
         if (properties.getAnalysisZones().length == 0) {
@@ -81,8 +81,8 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                 int tripDestination = flowSegment.getSegmentDestination();
                                 Zone originZone = dataSet.getZones().get(tripOrigin);
                                 Zone destinationZone = dataSet.getZones().get(tripDestination);
-                                Coordinate origCoord = originZone.getCoordinates();
-                                Coordinate destCoord = destinationZone.getCoordinates();
+                                Coordinate origCoord = originZone.getCoordinates(properties.getRand());
+                                Coordinate destCoord = destinationZone.getCoordinates(properties.getRand());
 
                                 double beelineDistance_km = NetworkUtils.getEuclideanDistance(new Coord(origCoord.x, origCoord.y), new Coord(destCoord.x, destCoord.y)) / 1000;
                                 DistanceBin distanceBin = DistanceBin.getDistanceBin(beelineDistance_km);

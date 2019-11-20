@@ -2,13 +2,15 @@ package de.tum.bgu.msm.freight.data.geo;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import java.util.Random;
+
 public interface Zone {
 
     /**
      * get random coordinate whithin a zone.
      * @return
      */
-    Coordinate getCoordinates();
+    Coordinate getCoordinates(Random random);
 
     String getName();
 

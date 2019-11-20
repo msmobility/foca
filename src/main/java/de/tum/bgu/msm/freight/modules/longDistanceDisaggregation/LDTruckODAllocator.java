@@ -135,16 +135,16 @@ public class LDTruckODAllocator implements Module {
             switch (commodity.getCommodityGroup().getLongDistanceGoodDistribution()) {
                 case DOOR_TO_DOOR:
                     if (!originZone.isInStudyArea()) {
-                        origCoord = originZone.getCoordinates();
+                        origCoord = originZone.getCoordinates(properties.getRand());
                     } else {
                         InternalZone internalZone = (InternalZone) originZone;
-                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone.getMicroZones().values(), dataSet.getMakeTable());
-                        origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone.getMicroZones().values(), dataSet.getMakeTable(), properties.getRand());
+                        origCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates(properties.getRand());
                     }
                     break;
                 case SINGLE_VEHICLE:
                     if (!originZone.isInStudyArea()) {
-                        origCoord = originZone.getCoordinates();
+                        origCoord = originZone.getCoordinates(properties.getRand());
                     } else {
                         DistributionCenter originDistributionCenter = chooseRandomDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
                         LDTruckTrip.setOriginDistributionCenter(originDistributionCenter);
@@ -155,7 +155,7 @@ public class LDTruckODAllocator implements Module {
                 case PARCEL_DELIVERY:
                     if (!originZone.isInStudyArea()) {
                         //if zone does not have microzone
-                        origCoord = originZone.getCoordinates();
+                        origCoord = originZone.getCoordinates(properties.getRand());
                     } else {
                         DistributionCenter originDistributionCenter = chooseRandomDistributionCenter(originZone.getId(), commodity.getCommodityGroup());
                         origCoord = originDistributionCenter.getCoordinates();
@@ -214,16 +214,16 @@ public class LDTruckODAllocator implements Module {
             switch (commodity.getCommodityGroup().getLongDistanceGoodDistribution()) {
                 case DOOR_TO_DOOR:
                     if (!destinationZone.isInStudyArea()) {
-                        destCoord = destinationZone.getCoordinates();
+                        destCoord = destinationZone.getCoordinates(properties.getRand());
                     } else {
                         InternalZone internalZone = (InternalZone) destinationZone;
-                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone.getMicroZones().values(), dataSet.getUseTable());
-                        destCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates();
+                        int microZoneId = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, internalZone.getMicroZones().values(), dataSet.getUseTable(), properties.getRand());
+                        destCoord = internalZone.getMicroZones().get(microZoneId).getCoordinates(properties.getRand());
                     }
                     break;
                 case SINGLE_VEHICLE:
                     if (!destinationZone.isInStudyArea()) {
-                        destCoord = destinationZone.getCoordinates();
+                        destCoord = destinationZone.getCoordinates(properties.getRand());
                     } else {
                         DistributionCenter destinationDistributionCenter = chooseRandomDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
@@ -233,7 +233,7 @@ public class LDTruckODAllocator implements Module {
                     break;
                 case PARCEL_DELIVERY:
                     if (!destinationZone.isInStudyArea()) {
-                        destCoord = destinationZone.getCoordinates();
+                        destCoord = destinationZone.getCoordinates(properties.getRand());
                     } else {
                         DistributionCenter destinationDistributionCenter = chooseRandomDistributionCenter(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
@@ -268,13 +268,13 @@ public class LDTruckODAllocator implements Module {
             probabilities.put(distributionCenter, 1.);
         }
 
-        return FreightFlowUtils.select(probabilities, FreightFlowUtils.getSum(probabilities.values()));
+        return FreightFlowUtils.select(probabilities, FreightFlowUtils.getSum(probabilities.values()), properties.getRand());
     }
 
     //todo not sure how this works!
     private DistributionCenter chooseDistributionCenterByCatchmentAreaPopulation(int zoneId, CommodityGroup commodityGroup) {
         DistributionCenter dc = FreightFlowUtils.select(weightDistributionCenters.get(zoneId).get(commodityGroup),
-                FreightFlowUtils.getSum(weightDistributionCenters.get(zoneId).get(commodityGroup).values()));
+                FreightFlowUtils.getSum(weightDistributionCenters.get(zoneId).get(commodityGroup).values()), properties.getRand());
         return dc;
     }
 

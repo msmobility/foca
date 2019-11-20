@@ -145,11 +145,11 @@ public class ParcelGenerator implements Module {
             for (Parcel parcel : parcels) {
                 if (parcel.isToDestination()) {
                     ParcelTransaction parcelTransaction =
-                            FreightFlowUtils.select(parcelDeliveryTransactionProbabilties, FreightFlowUtils.getSum(parcelDeliveryTransactionProbabilties.values()));
+                            FreightFlowUtils.select(parcelDeliveryTransactionProbabilties, FreightFlowUtils.getSum(parcelDeliveryTransactionProbabilties.values()), properties.getRand());
                     parcel.setParcelTransaction(parcelTransaction);
                 } else {
                     ParcelTransaction parcelTransaction =
-                            FreightFlowUtils.select(parcelPickUpTransactionProbabilties, FreightFlowUtils.getSum(parcelDeliveryTransactionProbabilties.values()));
+                            FreightFlowUtils.select(parcelPickUpTransactionProbabilties, FreightFlowUtils.getSum(parcelDeliveryTransactionProbabilties.values()), properties.getRand());
                     parcel.setParcelTransaction(parcelTransaction);
                 }
             }
@@ -166,14 +166,14 @@ public class ParcelGenerator implements Module {
                     InternalZone destinationZone = (InternalZone) dataSet.getZones().get(parcel.getDistributionCenter().getZoneId());
                     int microZone;
                     if (parcel.getParcelTransaction().equals(ParcelTransaction.PRIVATE_CUSTOMER)) {
-                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(distributionCenter.getZonesServedByThis());
+                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(distributionCenter.getZonesServedByThis(), properties.getRand());
                         parcel.setDestMicroZone(microZone);
-                        parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
+                        parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates(properties.getRand()));
                     } else if (parcel.getParcelTransaction().equals(ParcelTransaction.BUSINESS_CUSTOMER)) {
                         microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
-                                distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
+                                distributionCenter.getZonesServedByThis(), dataSet.getUseTable(), properties.getRand());
                         parcel.setDestMicroZone(microZone);
-                        parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates());
+                        parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates(properties.getRand()));
                     } else {
                         //todo choose a parcel shop
                     }
@@ -182,15 +182,15 @@ public class ParcelGenerator implements Module {
                     InternalZone originZone = (InternalZone) dataSet.getZones().get(parcel.getDistributionCenter().getZoneId());
                     int microZone;
                     if (parcel.getParcelTransaction().equals(ParcelTransaction.PRIVATE_CUSTOMER)) {
-                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(distributionCenter.getZonesServedByThis());
+                        microZone = SpatialDisaggregator.disaggregateToMicroZonePrivate(distributionCenter.getZonesServedByThis(), properties.getRand());
                         parcel.setOrigMicroZone(microZone);
-                        parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
+                        parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates(properties.getRand()));
                     } else if (parcel.getParcelTransaction().equals(ParcelTransaction.BUSINESS_CUSTOMER)) {
 
                         microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(parcel.getCommodity(),
-                                distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
+                                distributionCenter.getZonesServedByThis(), dataSet.getUseTable(), properties.getRand());
                         parcel.setOrigMicroZone(microZone);
-                        parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates());
+                        parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates(properties.getRand()));
                     } else {
                         //todo coose a parcel shop
                     }

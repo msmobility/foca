@@ -24,7 +24,7 @@ public class ParcelWeightDistribution_kg implements WeightDistribution {
 
     @Override
     public double getRandomWeight(Commodity commodity, double distance) {
-        return FreightFlowUtils.select(weightDistribution, FreightFlowUtils.getSum(weightDistribution.values())) - weightDistributionInterval * random.nextDouble();
+        return FreightFlowUtils.select(weightDistribution, FreightFlowUtils.getSum(weightDistribution.values()), random) - weightDistributionInterval * random.nextDouble();
     }
 
 }

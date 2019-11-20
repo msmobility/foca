@@ -31,12 +31,11 @@ import java.util.*;
 
 public class FreightFlowUtils {
 
-    public static Random random;
     private final static CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, TransformationFactory.DHDN_GK4);
     private final static Logger logger = Logger.getLogger(FreightFlowUtils.class);
     private static int projectionErrorCounter = 0;
 
-    public static Coordinate getRandomCoordinatesFromFeature(SimpleFeature feature){
+    public static Coordinate getRandomCoordinatesFromFeature(SimpleFeature feature, Random random){
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) feature.getDefaultGeometry());
@@ -46,11 +45,8 @@ public class FreightFlowUtils {
         return new Coordinate(x, y);
     }
 
-    public static void setRandomNumber(Properties properties){
-        random = properties.getRand();
-    }
 
-    public static <T> T select(Map<T, Double> probabilities, double sum) {
+    public static <T> T select(Map<T, Double> probabilities, double sum, Random random) {
         // select item based on probabilities (for mapped double probabilities)
         double selectedWeight = random.nextDouble() * sum;
         double select = 0;

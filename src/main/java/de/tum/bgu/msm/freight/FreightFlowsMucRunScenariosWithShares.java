@@ -35,11 +35,11 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(1.00);
+            properties.setSampleFactorForParcels(.25);
             properties.setIterations(50);
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_100");
+            properties.setRunId("muc_hd_100_v2");
             properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
@@ -55,11 +55,11 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(1.00);
+            properties.setSampleFactorForParcels(.25);
             properties.setIterations(50);
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.8);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_80");
+            properties.setRunId("muc_hd_80_v2");
             properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
@@ -75,11 +75,11 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(1.00);
+            properties.setSampleFactorForParcels(.25);
             properties.setIterations(50);
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.6);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_60");
+            properties.setRunId("muc_hd_60_v2");
             properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
@@ -95,11 +95,11 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(1.00);
+            properties.setSampleFactorForParcels(.25);
             properties.setIterations(50);
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.4);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_40");
+            properties.setRunId("muc_hd_40_v2");
             properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
@@ -115,11 +115,11 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(1.00);
+            properties.setSampleFactorForParcels(.25);
             properties.setIterations(50);
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.2);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_20");
+            properties.setRunId("muc_hd_20_v2");
             properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
@@ -135,11 +135,11 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(1.00);
+            properties.setSampleFactorForParcels(.25);
             properties.setIterations(50);
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_0");
+            properties.setRunId("muc_hd_0_v2");
             properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");

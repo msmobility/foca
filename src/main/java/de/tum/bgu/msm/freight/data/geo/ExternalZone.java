@@ -3,6 +3,8 @@ package de.tum.bgu.msm.freight.data.geo;
 import de.tum.bgu.msm.freight.FreightFlowUtils;
 import org.locationtech.jts.geom.Coordinate;
 
+import java.util.Random;
+
 public class ExternalZone implements Zone {
 
     private int id;
@@ -17,7 +19,7 @@ public class ExternalZone implements Zone {
 
 
     @Override
-    public Coordinate getCoordinates() {
+    public Coordinate getCoordinates(Random random) {
         return coord_gk4;
     }
 

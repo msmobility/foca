@@ -93,14 +93,14 @@ public class SDTruckGenerator implements Module {
             SDTruckTrip sdtt;
             Coordinate distributionCenterCoord = distributionCenter.getCoordinates();
             if (toDestination) {
-                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, distributionCenter.getZonesServedByThis(), dataSet.getUseTable());
-                Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
+                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity, distributionCenter.getZonesServedByThis(), dataSet.getUseTable(), properties.getRand());
+                Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates(properties.getRand());
                 Id<TruckTrip> truckTripId = Id.create("SD_" + counter.getAndIncrement(), TruckTrip.class);
                 sdtt = new SDTruckTrip(truckTripId, distributionCenterCoord, customerCoord, commodity, distributionCenter, toDestination, load);
 
             } else {
-                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity,  distributionCenter.getZonesServedByThis(), dataSet.getMakeTable());
-                Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates();
+                int microZone = SpatialDisaggregator.disaggregateToMicroZoneBusiness(commodity,  distributionCenter.getZonesServedByThis(), dataSet.getMakeTable(), properties.getRand());
+                Coordinate customerCoord = ((InternalZone) zone).getMicroZones().get(microZone).getCoordinates(properties.getRand());
                 Id<TruckTrip> truckTripId = Id.create("SD_" + counter.getAndIncrement(), TruckTrip.class);
                 sdtt = new SDTruckTrip(truckTripId, customerCoord, distributionCenterCoord, commodity, distributionCenter, toDestination, load);
             }

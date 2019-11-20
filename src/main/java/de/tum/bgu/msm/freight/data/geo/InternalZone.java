@@ -7,6 +7,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 public class InternalZone implements Zone {
 
@@ -31,8 +32,8 @@ public class InternalZone implements Zone {
         this.shapeFeature = shapeFeature;
     }
 
-    public Coordinate getCoordinates() {
-        return Objects.requireNonNull(FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature));
+    public Coordinate getCoordinates(Random random) {
+        return Objects.requireNonNull(FreightFlowUtils.getRandomCoordinatesFromFeature(this.shapeFeature, random));
     }
 
     public void addMicroZone(InternalMicroZone microZone) {

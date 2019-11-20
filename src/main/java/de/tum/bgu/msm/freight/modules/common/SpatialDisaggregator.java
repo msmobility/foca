@@ -18,7 +18,8 @@ public class SpatialDisaggregator {
      * @param makeOrUseTable
      * @return
      */
-    public static int disaggregateToMicroZoneBusiness(Commodity commodity, Collection<InternalMicroZone> internalMicroZones, HashBasedTable<String, Commodity, Double> makeOrUseTable) {
+    public static int disaggregateToMicroZoneBusiness(Commodity commodity, Collection<InternalMicroZone> internalMicroZones,
+                                                      HashBasedTable<String, Commodity, Double> makeOrUseTable, Random random) {
 
         Map<Integer, Double> microZonesProbabilities = new HashMap<>();
 
@@ -33,11 +34,11 @@ public class SpatialDisaggregator {
             microZonesProbabilities.put(microZone.getId(), utility);
         }
         return FreightFlowUtils.select(microZonesProbabilities,
-                FreightFlowUtils.getSum(microZonesProbabilities.values()));
+                FreightFlowUtils.getSum(microZonesProbabilities.values()), random);
 
     }
 
-    public static int disaggregateToMicroZonePrivate(Collection<InternalMicroZone> internalMicroZones) {
+    public static int disaggregateToMicroZonePrivate(Collection<InternalMicroZone> internalMicroZones, Random random) {
 
         Map<Integer, Double> microZonesProbabilities = new HashMap<>();
 
@@ -45,7 +46,7 @@ public class SpatialDisaggregator {
             microZonesProbabilities.put(microZone.getId(), microZone.getAttribute("population"));
         }
         return FreightFlowUtils.select(microZonesProbabilities,
-                FreightFlowUtils.getSum(microZonesProbabilities.values()));
+                FreightFlowUtils.getSum(microZonesProbabilities.values()), random);
 
     }
 }
