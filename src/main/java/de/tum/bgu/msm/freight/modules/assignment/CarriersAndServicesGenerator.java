@@ -35,18 +35,19 @@ public class CarriersAndServicesGenerator {
     private Properties properties;
     private static final Logger logger = Logger.getLogger(CarriersAndServicesGenerator.class);
     /**
-     * this maps keeps the parcels in microdepots to assign first the trips to microdepot
+     * this maps keeps the parcels in micro depots to assign first the trips to micro depot
      * with motorized vehicles and later the cargo bike trips from the depot
      */
     private Map<MicroDepot, List<Parcel>> parcelsByMicrodepot_scaled = new HashMap<>();
     private final int fixDeliveryTime_s = 60;
     private final double parcelAccessSpeed_ms = 5 / 3.6;
-    private final int MAX_NUMBER_PARCELS = 500;
+    private final int MAX_NUMBER_PARCELS;
 
     public CarriersAndServicesGenerator(DataSet dataSet, Network network, Properties properties) {
         this.dataSet = dataSet;
         this.network = network;
         this.properties = properties;
+        MAX_NUMBER_PARCELS = properties.shortDistance().getMaxParcelsByCarrier();
     }
 
     public void generateCarriers(Carriers carriers, CarrierVehicleTypes types) {
@@ -63,8 +64,6 @@ public class CarriersAndServicesGenerator {
                 selectedDistributionCenters.add(allDistributionCenters.get(distCentId));
             }
         }
-
-
 
         for (DistributionCenter distributionCenter : selectedDistributionCenters) {
             List<Parcel> parcelsInThisDistributionCenter = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
@@ -103,7 +102,6 @@ public class CarriersAndServicesGenerator {
             }
 
             //deliveries by cargo bikes
-
             //feeders
             Carrier feederCarrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement() + "_feeder", Carrier.class));
             carriers.addCarrier(feederCarrier);
@@ -117,7 +115,6 @@ public class CarriersAndServicesGenerator {
             feederCarrier.getCarrierCapabilities().getCarrierVehicles().add(vehicle);
 
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
-
                 Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
                 TimeWindow timeWindow = generateRandomTimeSubWindow(7, 8, 1);
                 int demandedCapacity = parcelsByMicrodepot_scaled.get(microDepot).size();
@@ -139,10 +136,6 @@ public class CarriersAndServicesGenerator {
                         feederCarrier.getServices().add(serviceBuilder.build());
                         feederCounter++;
                     }
-
-
-
-
 
                     //create a microdepot Carrier (sub-carrier) with only bicycles
                     Carrier microDepotCarrier = CarrierImpl.newInstance(Id.create(microDepot.getId() + "_microDepot", Carrier.class));
