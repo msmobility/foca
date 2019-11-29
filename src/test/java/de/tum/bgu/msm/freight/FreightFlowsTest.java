@@ -52,7 +52,7 @@ public class FreightFlowsTest {
             properties.setIterations(50);
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
             properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCentersReg.csv");
             //listOfProperties.add(properties);
         }
         {
@@ -67,7 +67,7 @@ public class FreightFlowsTest {
             properties.setIterations(50);
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
             properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
-            properties.setDistributionCentersFile("./input/distributionCenters/old/distributionCenters_scenario2.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCentersReg_2.csv");
             listOfProperties.add(properties);
         }
         {
@@ -82,7 +82,7 @@ public class FreightFlowsTest {
             properties.setIterations(50);
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
             properties.setVehicleFileForParcelDelivery("./input/vehicleTypesForParcelDelivery.xml");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCentersReg.csv");
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
             listOfProperties.add(properties);
         }

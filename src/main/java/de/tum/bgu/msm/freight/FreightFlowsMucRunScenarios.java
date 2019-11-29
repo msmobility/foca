@@ -38,7 +38,7 @@ public class FreightFlowsMucRunScenarios {
         properties_zero.setIterations(50);
         properties_zero.shortDistance().setSelectedDistributionCenters(new int[]{20});
         properties_zero.setRunId("muc_scenario_zero_c_v2");
-        properties_zero.setDistributionCentersFile("./input/distributionCenters/distributionCenters_zero_c.xml");
+        properties_zero.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
         properties_zero.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
         try {
             properties_zero.logProperties("./output/" + properties_zero.getRunId() + "/properties.txt");
@@ -56,7 +56,7 @@ public class FreightFlowsMucRunScenarios {
         properties_one.setIterations(50);
         properties_one.shortDistance().setSelectedDistributionCenters(new int[]{20});
         properties_one.setRunId("muc_scenario_1km_with_cars_v2");
-        properties_one.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+        properties_one.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
         try {
             properties_one.logProperties("./output/" + properties_one.getRunId() + "/properties.txt");
         } catch (
@@ -74,7 +74,7 @@ public class FreightFlowsMucRunScenarios {
         properties_two.setIterations(50);
         properties_two.shortDistance().setSelectedDistributionCenters(new int[]{20});
         properties_two.setRunId("muc_scenario_paketbox_v2");
-        properties_two.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.xml");
+        properties_two.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.csv");
         try {
             properties_two.logProperties("./output/" + properties_two.getRunId() + "/properties.txt");
         } catch (
@@ -92,7 +92,7 @@ public class FreightFlowsMucRunScenarios {
         properties_three.setIterations(50);
         properties_three.shortDistance().setSelectedDistributionCenters(new int[]{20});
         properties_three.setRunId("muc_scenario_3km_v2");
-        properties_three.setDistributionCentersFile("./input/distributionCenters/distributionCenters_3km.xml");
+        properties_three.setDistributionCentersFile("./input/distributionCenters/distributionCenters_3km.csv");
         try {
             properties_three.logProperties("./output/" + properties_three.getRunId() + "/properties.txt");
         } catch (

@@ -36,8 +36,8 @@ public class FreightFlowsRunSingle {
         properties.setSampleFactorForParcels(1.00);
         properties.setIterations(50);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties.setRunId("test_Scenario");
-        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+        properties.setRunId("test_scenario_weight");
+        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.csv");
         properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.0);
         try {
             properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
@@ -78,6 +78,7 @@ public class FreightFlowsRunSingle {
         LDTruckODAllocator.run();
         SDTruckGenerator.run();
         parcelGenerator.run();
+
         matSimAssignment.run();
 
         PopulationWriter pw;

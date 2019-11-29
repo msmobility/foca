@@ -16,6 +16,7 @@ import org.xml.sax.Attributes;
 
 import java.util.*;
 
+@Deprecated
 public class DistributionCenterReaderXML extends MatsimXmlParser {
 
     private final static Logger logger = Logger.getLogger(DistributionCenterReaderXML.class);
@@ -34,7 +35,8 @@ public class DistributionCenterReaderXML extends MatsimXmlParser {
     private List<InternalMicroZone> currentCatchmentArea;
 
 
-    DistributionCenterReaderXML(DataSet dataSet){
+
+    public DistributionCenterReaderXML(DataSet dataSet){
         this.dataSet = dataSet;
     }
 

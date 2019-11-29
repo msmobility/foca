@@ -40,7 +40,7 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
             properties.setRunId("muc_hd_100_v2");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
             } catch (
@@ -60,7 +60,7 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.8);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
             properties.setRunId("muc_hd_80_v2");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
             } catch (
@@ -80,7 +80,7 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.6);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
             properties.setRunId("muc_hd_60_v2");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
             } catch (
@@ -100,7 +100,7 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.4);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
             properties.setRunId("muc_hd_40_v2");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
             } catch (
@@ -120,7 +120,7 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.2);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
             properties.setRunId("muc_hd_20_v2");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
             } catch (
@@ -140,7 +140,7 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
             properties.setRunId("muc_hd_0_v2");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.xml");
+            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
             } catch (

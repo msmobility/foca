@@ -27,7 +27,7 @@ public class ZonesReader extends CSVReader {
 
     private Properties properties;
 
-    protected ZonesReader(DataSet dataSet, Properties properties) {
+    public ZonesReader(DataSet dataSet, Properties properties) {
         super(dataSet);
         this.properties = properties;
 
