@@ -93,15 +93,20 @@ public class DistributionCenterReader extends CSVReader {
             currentDistributionCenter.getZonesServedByThis().add(internalMicroZone);
         }
 
-        if (object.equalsIgnoreCase(ObjectTypes.microDepot.toString())){
-            currentMicroDepot = new MicroDepot(mdId, mdName, new Coordinate(mdX, mdY), currentDistributionCenter.getCommodityGroup(),
-                    currentDistributionCenter, currentDistributionCenter.getZoneId(), microZoneId);
-        }
+        if (properties.shortDistance().isReadMicroDepotsFromFile()) {
 
-        if (object.equalsIgnoreCase(ObjectTypes.microDepotCatchmentArea.toString())){
-            InternalZone internalZone = (InternalZone) dataSet.getZones().get(currentDistributionCenter.getZoneId());
-            InternalMicroZone internalMicroZone = internalZone.getMicroZones().get(microZoneId);
-            currentMicroDepot.getZonesServedByThis().add(internalMicroZone);
+            if (object.equalsIgnoreCase(ObjectTypes.microDepot.toString())) {
+                currentMicroDepot = new MicroDepot(mdId, mdName, new Coordinate(mdX, mdY), currentDistributionCenter.getCommodityGroup(),
+                        currentDistributionCenter, currentDistributionCenter.getZoneId(), microZoneId);
+            }
+
+            if (object.equalsIgnoreCase(ObjectTypes.microDepotCatchmentArea.toString())) {
+                InternalZone internalZone = (InternalZone) dataSet.getZones().get(currentDistributionCenter.getZoneId());
+                InternalMicroZone internalMicroZone = internalZone.getMicroZones().get(microZoneId);
+                currentMicroDepot.getZonesServedByThis().add(internalMicroZone);
+            }
+        } else {
+            logger.warn("No micro depot information read from distribution center input file. Need to generate microdepots with other method if using cargo-bikes");
         }
     }
 

@@ -13,6 +13,7 @@ import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckC
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
+import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.core.population.io.PopulationWriter;
@@ -36,9 +37,12 @@ public class FreightFlowsRunSingle {
         properties.setSampleFactorForParcels(1.00);
         properties.setIterations(50);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties.setRunId("test_scenario_weight");
+        properties.setRunId("testtest");
         properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.csv");
         properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.0);
+
+        properties.shortDistance().setReadMicroDepotsFromFile(false);
+
         try {
             properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
         } catch (FileNotFoundException e) {
@@ -61,19 +65,21 @@ public class FreightFlowsRunSingle {
 
         DataSet dataSet = io.getDataSet();
 
+        SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
         FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
         LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
-
+        syntehticMicroDepots.setup(dataSet, properties);
         flowsToLDTruckConverter.setup(dataSet, properties);
         LDTruckODAllocator.setup(dataSet, properties);
         SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
+        syntehticMicroDepots.run();
         flowsToLDTruckConverter.run();
         LDTruckODAllocator.run();
         SDTruckGenerator.run();

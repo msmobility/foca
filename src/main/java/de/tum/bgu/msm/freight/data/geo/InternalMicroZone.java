@@ -11,6 +11,11 @@ import java.util.Random;
 public class InternalMicroZone implements Zone {
 
     private int id;
+
+    public SimpleFeature getShapeFeature() {
+        return shapeFeature;
+    }
+
     private SimpleFeature shapeFeature;
     private Map<String, Double> attributes;
     private boolean isInStudyArea = true;
