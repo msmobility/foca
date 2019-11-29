@@ -11,15 +11,20 @@ import javax.print.attribute.standard.PrinterName;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class DistributionCenterCsvWriter {
+
+    private int order = 0;
 
     public void writeToCsv(DataSet dataSet, String fileName) throws FileNotFoundException {
 
         PrintWriter pw = new PrintWriter(new File(fileName));
 
-        pw.println("object,zone,dcId,dcName,dcX,dcY,commodityGroup,microDepotId,microDepotName,microDepotX,microDepotY,microZoneId");
+        pw.println("object,zone,dcId,dcName,dcX,dcY,commodityGroup,microDepotId,microDepotName,microDepotX,microDepotY,microZoneId,order");
+
 
 
         for (int zoneId : dataSet.getDistributionCenters().keySet()){
@@ -41,13 +46,18 @@ public class DistributionCenterCsvWriter {
 
                     pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
 
+                    Set<Integer> controlList = new HashSet<>();
                     for (InternalMicroZone internalMicroZOne : dc.getZonesServedByThis()){
                         dcX = -1;
                         dcY = -1;
                         dcName = "-1";
                         object = "catchmentArea";
                         idMicroZone =  internalMicroZOne.getId();
-                        pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
+                        if (!controlList.contains(idMicroZone)){
+                            pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
+                            controlList.add(idMicroZone);
+                        }
+
                     }
 
                     for (MicroDepot microDepot : dc.getMicroDeportsServedByThis()) {
@@ -58,13 +68,17 @@ public class DistributionCenterCsvWriter {
                         yMicroDepot = microDepot.getCoord_gk4().y;
                         idMicroZone = microDepot.getMicroZoneId();
                         pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
+                       controlList = new HashSet<>();
                         for (InternalMicroZone internalMicroZOne : microDepot.getZonesServedByThis()){
                             object = "microDepotCatchmentArea";
                             nameMicroDepot = "-1";
                             xMicroDepot = -1;
                             yMicroDepot =  -1;
                             idMicroZone =  internalMicroZOne.getId();
-                            pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
+                            if (!controlList.contains(idMicroZone)) {
+                                pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY, idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
+                                controlList.add(idMicroZone);
+                            }
                         }
                     }
                 }
@@ -87,6 +101,7 @@ public class DistributionCenterCsvWriter {
                 append(nameMicroDepot).append(","). //mdName
                 append(xMicroDepot).append(","). //mdx
                 append(yMicroDepot).append(","). //mdY
-                append(idMicroZone); //microZone
+                append(idMicroZone).append(","). //microZone
+                append(order++);
     }
 }
