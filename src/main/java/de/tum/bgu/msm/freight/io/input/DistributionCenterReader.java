@@ -98,6 +98,7 @@ public class DistributionCenterReader extends CSVReader {
             if (object.equalsIgnoreCase(ObjectTypes.microDepot.toString())) {
                 currentMicroDepot = new MicroDepot(mdId, mdName, new Coordinate(mdX, mdY), currentDistributionCenter.getCommodityGroup(),
                         currentDistributionCenter, currentDistributionCenter.getZoneId(), microZoneId);
+                currentDistributionCenter.getMicroDeportsServedByThis().add(currentMicroDepot);
             }
 
             if (object.equalsIgnoreCase(ObjectTypes.microDepotCatchmentArea.toString())) {
