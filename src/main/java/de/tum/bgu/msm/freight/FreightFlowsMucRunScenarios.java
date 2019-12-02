@@ -40,6 +40,7 @@ public class FreightFlowsMucRunScenarios {
         thisProperties.setTruckScaleFactor(1.00);
         thisProperties.setSampleFactorForParcels(0.25);
         thisProperties.setIterations(50);
+        thisProperties.shortDistance().setReadMicroDepotsFromFile(false);
         thisProperties.shortDistance().setDistanceBetweenMicrodepotsInGrid(distGrid);
         thisProperties.shortDistance().setSelectedDistributionCenters(new int[]{20});
         thisProperties.setRunId("muc_densities_" + args[0]);
