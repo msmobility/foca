@@ -33,8 +33,8 @@ public class FreightFlowsRunSingle {
         Properties properties = new Properties();
         properties.setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{9162});
-        properties.setTruckScaleFactor(1.00);
-        properties.setSampleFactorForParcels(1.00);
+        properties.setTruckScaleFactor(0.05);
+        properties.setSampleFactorForParcels(0.01);
         properties.setIterations(50);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
         properties.setRunId("testtest");

@@ -72,7 +72,7 @@ public class CarriersAndServicesGenerator {
                 parcelsByMicrodepot_scaled.put(microDepot, new ArrayList<>());
             }
 
-            int numberOfCarriers = (int) Math.floor(parcelsInThisDistributionCenter.size() / MAX_NUMBER_PARCELS) + 1;
+            int numberOfCarriers = (int) Math.floor(parcelsInThisDistributionCenter.size() / MAX_NUMBER_PARCELS * properties.getSampleFactorForParcels()) + 1;
             int numberOfParcelsByCarrier = parcelsInThisDistributionCenter.size() / numberOfCarriers;
 
             //split the problem of van deliveries to various carriers by limiting the number of services by carrier

@@ -13,6 +13,7 @@ import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerato
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckConverter;
 import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
+import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.core.population.io.PopulationWriter;
@@ -30,76 +31,27 @@ public class FreightFlowsMucRunScenarios {
 
         List<Properties> listOfSimulations = new ArrayList<>();
 
-        Properties properties_zero = new Properties();
-        properties_zero.setMatrixFolder("./input/matrices/");
-        properties_zero.setAnalysisZones(new int[]{9162});
-        properties_zero.setTruckScaleFactor(1.00);
-        properties_zero.setSampleFactorForParcels(1.00);
-        properties_zero.setIterations(50);
-        properties_zero.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_zero.setRunId("muc_scenario_zero_c_v2");
-        properties_zero.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
-        properties_zero.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.0);
+        double distGrid = Double.parseDouble(args[0]);
+
+        Properties thisProperties = new Properties();
+        thisProperties.initializeRandomNumber();
+        thisProperties.setMatrixFolder("./input/matrices/");
+        thisProperties.setAnalysisZones(new int[]{9162});
+        thisProperties.setTruckScaleFactor(1.00);
+        thisProperties.setSampleFactorForParcels(0.25);
+        thisProperties.setIterations(50);
+        thisProperties.shortDistance().setDistanceBetweenMicrodepotsInGrid(distGrid);
+        thisProperties.shortDistance().setSelectedDistributionCenters(new int[]{20});
+        thisProperties.setRunId("muc_densities_" + args[0]);
+        thisProperties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
+        thisProperties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.0);
         try {
-            properties_zero.logProperties("./output/" + properties_zero.getRunId() + "/properties.txt");
+            thisProperties.logProperties("./output/" + thisProperties.getRunId() + "/properties.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        listOfSimulations.add(properties_zero);
+        listOfSimulations.add(thisProperties);
 
-
-        Properties properties_one = new Properties();
-        properties_one.setMatrixFolder("./input/matrices/");
-        properties_one.setAnalysisZones(new int[]{9162});
-        properties_one.setTruckScaleFactor(1.00);
-        properties_one.setSampleFactorForParcels(1.00);
-        properties_one.setIterations(50);
-        properties_one.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_one.setRunId("muc_scenario_1km_with_cars_v2");
-        properties_one.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
-        try {
-            properties_one.logProperties("./output/" + properties_one.getRunId() + "/properties.txt");
-        } catch (
-                FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        listOfSimulations.add(properties_one);
-
-
-        Properties properties_two = new Properties();
-        properties_two.setMatrixFolder("./input/matrices/");
-        properties_two.setAnalysisZones(new int[]{9162});
-        properties_two.setTruckScaleFactor(1.00);
-        properties_two.setSampleFactorForParcels(1.00);
-        properties_two.setIterations(50);
-        properties_two.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_two.setRunId("muc_scenario_paketbox_v2");
-        properties_two.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.csv");
-        try {
-            properties_two.logProperties("./output/" + properties_two.getRunId() + "/properties.txt");
-        } catch (
-                FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        listOfSimulations.add(properties_two);
-//
-//
-        Properties properties_three = new Properties();
-        properties_three.setMatrixFolder("./input/matrices/");
-        properties_three.setAnalysisZones(new int[]{9162});
-        properties_three.setTruckScaleFactor(1.00);
-        properties_three.setSampleFactorForParcels(1.00);
-        properties_three.setIterations(50);
-        properties_three.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties_three.setRunId("muc_scenario_3km_v2");
-        properties_three.setDistributionCentersFile("./input/distributionCenters/distributionCenters_3km.csv");
-        try {
-            properties_three.logProperties("./output/" + properties_three.getRunId() + "/properties.txt");
-        } catch (
-                FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        listOfSimulations.add(properties_three);
 
         for (Properties properties : listOfSimulations) {
             //adds a 5% pf cars as background traffic
@@ -120,19 +72,21 @@ public class FreightFlowsMucRunScenarios {
 
         DataSet dataSet = io.getDataSet();
 
+        SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
         FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
         LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
-
+        syntehticMicroDepots.setup(dataSet, properties);
         flowsToLDTruckConverter.setup(dataSet, properties);
         LDTruckODAllocator.setup(dataSet, properties);
         SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
+        syntehticMicroDepots.run();
         flowsToLDTruckConverter.run();
         LDTruckODAllocator.run();
         SDTruckGenerator.run();

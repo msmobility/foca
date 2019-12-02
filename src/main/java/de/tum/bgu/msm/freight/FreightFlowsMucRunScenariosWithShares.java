@@ -13,6 +13,7 @@ import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckC
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
+import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.core.population.io.PopulationWriter;
@@ -28,6 +29,8 @@ public class FreightFlowsMucRunScenariosWithShares {
 
     public static void main(String[] args) {
 
+        double shareOfCargoBikes = Double.parseDouble(args[0])/100;
+
         List<Properties> listOfSimulations = new ArrayList<>();
 
         {
@@ -35,112 +38,12 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(.25);
+            properties.setSampleFactorForParcels(0.25);
             properties.setIterations(50);
-            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.);
+            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(shareOfCargoBikes);
             properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_100");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
-            try {
-                properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
-            } catch (
-                    FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            listOfSimulations.add(properties);
-        }
-
-        {
-            Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/");
-            properties.setAnalysisZones(new int[]{9162});
-            properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(.25);
-            properties.setIterations(50);
-            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.8);
-            properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_80");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
-            try {
-                properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
-            } catch (
-                    FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            listOfSimulations.add(properties);
-        }
-
-        {
-            Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/");
-            properties.setAnalysisZones(new int[]{9162});
-            properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(.25);
-            properties.setIterations(50);
-            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.6);
-            properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_60");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
-            try {
-                properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
-            } catch (
-                    FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            listOfSimulations.add(properties);
-        }
-
-        {
-            Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/");
-            properties.setAnalysisZones(new int[]{9162});
-            properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(.25);
-            properties.setIterations(50);
-            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.4);
-            properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_40");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
-            try {
-                properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
-            } catch (
-                    FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            listOfSimulations.add(properties);
-        }
-
-        {
-            Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/");
-            properties.setAnalysisZones(new int[]{9162});
-            properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(.25);
-            properties.setIterations(50);
-            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.2);
-            properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_20");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
-            try {
-                properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
-            } catch (
-                    FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            listOfSimulations.add(properties);
-        }
-
-        {
-            Properties properties = new Properties();
-            properties.setMatrixFolder("./input/matrices/");
-            properties.setAnalysisZones(new int[]{9162});
-            properties.setTruckScaleFactor(1.00);
-            properties.setSampleFactorForParcels(.25);
-            properties.setIterations(50);
-            properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
-            properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-            properties.setRunId("muc_hd_0");
-            properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_1km.csv");
+            properties.setRunId("muc_hd_" + args[0]);
+            properties.shortDistance().setReadMicroDepotsFromFile(false);
             try {
                 properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
             } catch (
@@ -166,24 +69,28 @@ public class FreightFlowsMucRunScenariosWithShares {
 
     public void run(Properties properties) {
 
+        properties.initializeRandomNumber();
+
         InputManager io = new InputManager(properties);
         io.readInput();
 
         DataSet dataSet = io.getDataSet();
 
+        SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
         FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
         LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
-
+        syntehticMicroDepots.setup(dataSet, properties);
         flowsToLDTruckConverter.setup(dataSet, properties);
         LDTruckODAllocator.setup(dataSet, properties);
         SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
+        syntehticMicroDepots.run();
         flowsToLDTruckConverter.run();
         LDTruckODAllocator.run();
         SDTruckGenerator.run();
