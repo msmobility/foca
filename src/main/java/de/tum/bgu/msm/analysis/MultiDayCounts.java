@@ -17,25 +17,33 @@ public class MultiDayCounts {
 
         DataSet dataSet = new DataSet();
 
-        String eventsFile = args[0];
-        String linksFile = args[1];
-        String countsFile = args[2];
+        String linksFile = args[0];
 
-        Properties propertiesForStandAloneEventManager = new Properties();
-        propertiesForStandAloneEventManager.setIterations(0);
+        for (int i = 1; i < args.length; i++){
 
-        EventsManager eventsManager = EventsUtils.createEventsManager();
-        CountEventHandler countEventHandler = new CountEventHandler(propertiesForStandAloneEventManager);
-        LinksFileReader linksFileReader = new LinksFileReader(dataSet, linksFile);
-        linksFileReader.read();
+            String scenario = args [i];
 
-        for (Id linkId : dataSet.getObservedCounts().keySet()) {
-            countEventHandler.addLinkById(linkId);
+            String eventsFile = "./output/" + scenario + "/matsim/" + scenario  + ".output_events.xml.gz";
+            String countsFile = "./output/" + scenario + "/matsim/counts.csv";
+
+
+            Properties propertiesForStandAloneEventManager = new Properties();
+            propertiesForStandAloneEventManager.setIterations(0);
+
+            EventsManager eventsManager = EventsUtils.createEventsManager();
+            CountEventHandler countEventHandler = new CountEventHandler(propertiesForStandAloneEventManager);
+            LinksFileReader linksFileReader = new LinksFileReader(dataSet, linksFile);
+            linksFileReader.read();
+
+            for (Id linkId : dataSet.getObservedCounts().keySet()) {
+                countEventHandler.addLinkById(linkId);
+            }
+
+            eventsManager.addHandler(countEventHandler);
+            new MatsimEventsReader(eventsManager).readFile(eventsFile);
+            countEventHandler.printOutCounts(countsFile);
         }
 
-        eventsManager.addHandler(countEventHandler);
-        new MatsimEventsReader(eventsManager).readFile(eventsFile);
-        countEventHandler.printOutCounts(countsFile);
 
 
 
