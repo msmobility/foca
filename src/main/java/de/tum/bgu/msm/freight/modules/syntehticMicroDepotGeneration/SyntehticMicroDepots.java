@@ -61,7 +61,7 @@ public class SyntehticMicroDepots implements Module {
             double yMin = bbox.getMinY();
             double yMax = bbox.getMaxY();
 
-            double gridSpacing = 1000;
+            double gridSpacing = properties.shortDistance().getDistanceBetweenMicrodepotsInGrid();
 
             double x = xMin + gridSpacing / 2;
             double y;
@@ -114,7 +114,7 @@ public class SyntehticMicroDepots implements Module {
 
     private void assignMicroZonesToMicroDepots() {
 
-        double maxDistanceToMicroDepot = 4000;
+        double maxDistanceToMicroDepot = properties.shortDistance().getMaxDistanceToMicroDepot();
         logger.info("Assign: " + "microzone" +  "," + "microDepot" + "," + "distributionCenter");
         for (int zoneId : properties.getAnalysisZones()){
             for (DistributionCenter distributionCenter : dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, CommodityGroup.PACKET).values()) {

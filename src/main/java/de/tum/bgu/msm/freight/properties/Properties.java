@@ -21,7 +21,7 @@ public class Properties extends PropertiesGroup {
     private String matrixFileNamePrefix = "ketten-uniform-";
     private String matrixFileNameSuffix = ".csv";
     private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
-    private String distributionCentersFile = "input/distributionCenters/distributionCenters.xml";
+    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
     private String terminalsFileName = "input/distributionCenters/intermodal_terminals_31468.csv";
 
     private String networkFile = "./networks/matsim/final_V9_emissions.xml.gz";
@@ -31,7 +31,7 @@ public class Properties extends PropertiesGroup {
     private double truckScaleFactor = 1.;
     private String runId = "assignmentFull";
     private int randomSeed = 1;
-    private final Random rand;
+    private Random rand;
     private int[] analysisZones = new int[]{};
     private boolean storeExpectedTimes = false;
 
@@ -66,7 +66,7 @@ public class Properties extends PropertiesGroup {
 
 
     public Properties() {
-        rand = new Random(randomSeed);
+
         zoneSystemProperties = new ZoneSystemProperties();
         flowsProperties = new FlowsProperties();
         lDProperties = new LDProperties();
@@ -325,5 +325,8 @@ public class Properties extends PropertiesGroup {
 
     public String getMatrixFileNameSuffix() {
         return matrixFileNameSuffix;
+    }
+
+    public void initializeRandomNumber() { rand = new Random(randomSeed);
     }
 }

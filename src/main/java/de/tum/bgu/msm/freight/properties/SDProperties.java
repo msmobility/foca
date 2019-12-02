@@ -6,6 +6,17 @@ public class SDProperties extends PropertiesGroup {
     private int[] selectedDistributionCenters = new int[]{-1};
     private int maxNumberOfParcelsByCarrier = 500;
     private boolean readMicroDepotsFromFile = true;
+    private double maxDistanceToMicroDepot = 4000;
+
+    public void setMaxDistanceToMicroDepot(double maxDistanceToMicroDepot) {
+        this.maxDistanceToMicroDepot = maxDistanceToMicroDepot;
+    }
+
+    public void setDistanceBetweenMicrodepotsInGrid(double distanceBetweenMicrodepotsInGrid) {
+        this.distanceBetweenMicrodepotsInGrid = distanceBetweenMicrodepotsInGrid;
+    }
+
+    private double distanceBetweenMicrodepotsInGrid = 1000;
 
 
     public int[] getSelectedDistributionCenters() {
@@ -34,5 +45,13 @@ public class SDProperties extends PropertiesGroup {
 
     public void setReadMicroDepotsFromFile(boolean readMicroDepotsFromFile) {
         this.readMicroDepotsFromFile = readMicroDepotsFromFile;
+    }
+
+    public double getMaxDistanceToMicroDepot() {
+        return maxDistanceToMicroDepot;
+    }
+
+    public double getDistanceBetweenMicrodepotsInGrid() {
+        return distanceBetweenMicrodepotsInGrid;
     }
 }
