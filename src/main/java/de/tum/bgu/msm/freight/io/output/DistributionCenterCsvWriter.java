@@ -5,9 +5,7 @@ import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.MicroDepot;
-import sun.print.PrinterJobWrapper;
 
-import javax.print.attribute.standard.PrinterName;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

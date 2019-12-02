@@ -14,9 +14,7 @@ import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
-import sun.awt.image.ImageWatched;
 
-import javax.transaction.TransactionRequiredException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
