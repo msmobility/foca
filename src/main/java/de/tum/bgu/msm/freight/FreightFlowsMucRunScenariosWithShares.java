@@ -31,10 +31,15 @@ public class FreightFlowsMucRunScenariosWithShares {
 
         double shareOfCargoBikes = Double.parseDouble(args[0])/100;
 
+
+
         List<Properties> listOfSimulations = new ArrayList<>();
 
         {
+
+
             Properties properties = new Properties();
+            properties.initializeRandomNumber();
             properties.setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
@@ -68,8 +73,6 @@ public class FreightFlowsMucRunScenariosWithShares {
     }
 
     public void run(Properties properties) {
-
-        properties.initializeRandomNumber();
 
         InputManager io = new InputManager(properties);
         io.readInput();

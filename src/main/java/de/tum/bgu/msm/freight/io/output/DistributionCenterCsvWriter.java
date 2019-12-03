@@ -45,16 +45,19 @@ public class DistributionCenterCsvWriter {
                     pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
 
                     Set<Integer> controlList = new HashSet<>();
-                    for (InternalMicroZone internalMicroZOne : dc.getZonesServedByThis()){
-                        dcX = -1;
-                        dcY = -1;
-                        dcName = "-1";
-                        object = "catchmentArea";
-                        idMicroZone =  internalMicroZOne.getId();
-                        if (!controlList.contains(idMicroZone)){
-                            pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
-                            controlList.add(idMicroZone);
+                    for (InternalMicroZone internalMicroZone : dc.getZonesServedByThis()){
+                        if (internalMicroZone != null){
+                            dcX = -1;
+                            dcY = -1;
+                            dcName = "-1";
+                            object = "catchmentArea";
+                            idMicroZone =  internalMicroZone.getId();
+                            if (!controlList.contains(idMicroZone)){
+                                pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
+                                controlList.add(idMicroZone);
+                            }
                         }
+
 
                     }
 
@@ -66,17 +69,20 @@ public class DistributionCenterCsvWriter {
                         yMicroDepot = microDepot.getCoord_gk4().y;
                         idMicroZone = microDepot.getMicroZoneId();
                         pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY,idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
-                       controlList = new HashSet<>();
-                        for (InternalMicroZone internalMicroZOne : microDepot.getZonesServedByThis()){
-                            object = "microDepotCatchmentArea";
-                            nameMicroDepot = "-1";
-                            xMicroDepot = -1;
-                            yMicroDepot =  -1;
-                            idMicroZone =  internalMicroZOne.getId();
-                            if (!controlList.contains(idMicroZone)) {
-                                pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY, idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
-                                controlList.add(idMicroZone);
+                        controlList = new HashSet<>();
+                        for (InternalMicroZone internalMicroZone : microDepot.getZonesServedByThis()){
+                            if (internalMicroZone != null){
+                                object = "microDepotCatchmentArea";
+                                nameMicroDepot = "-1";
+                                xMicroDepot = -1;
+                                yMicroDepot =  -1;
+                                idMicroZone =  internalMicroZone.getId();
+                                if (!controlList.contains(idMicroZone)) {
+                                    pw.println(buildCsvLine(zoneId, commodityGroup, dcId, object, dcName, dcX, dcY, idMicroDepot, nameMicroDepot, xMicroDepot, yMicroDepot, idMicroZone));
+                                    controlList.add(idMicroZone);
+                                }
                             }
+
                         }
                     }
                 }

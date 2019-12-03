@@ -154,7 +154,7 @@ public class SyntehticMicroDepots implements Module {
     }
 
     private void printOutData() throws FileNotFoundException {
-        new DistributionCenterCsvWriter().writeToCsv(dataSet, "/output/" + properties.getRunId() + "/distributionCenters.csv");
+        new DistributionCenterCsvWriter().writeToCsv(dataSet, "./output/" + properties.getRunId() + "/distributionCenters.csv");
 
     }
 

@@ -107,7 +107,7 @@ public class DistributionCenterReader extends CSVReader {
                 currentMicroDepot.getZonesServedByThis().add(internalMicroZone);
             }
         } else {
-            logger.warn("No micro depot information read from distribution center input file. Need to generate microdepots with other method if using cargo-bikes");
+            //logger.warn("No micro depot information read from distribution center input file. Need to generate microdepots with other method if using cargo-bikes");
         }
     }
 
