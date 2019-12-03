@@ -7,6 +7,7 @@ import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
 import de.tum.bgu.msm.freight.data.geo.MicroDepot;
+import de.tum.bgu.msm.freight.io.output.DistributionCenterCsvWriter;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
@@ -24,6 +25,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.BoundingBox;
 
 import java.awt.geom.Point2D;
+import java.io.FileNotFoundException;
 
 
 /**
@@ -45,6 +47,11 @@ public class SyntehticMicroDepots implements Module {
     public void run() {
         generateMicroDepots();
         assignMicroZonesToMicroDepots();
+        try {
+            printOutData();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -143,6 +150,11 @@ public class SyntehticMicroDepots implements Module {
 
         logger.info("Finished micro depot assignment" );
 
+
+    }
+
+    private void printOutData() throws FileNotFoundException {
+        new DistributionCenterCsvWriter().writeToCsv(dataSet, "/output/" + properties.getRunId() + "/distributionCenters.csv");
 
     }
 
