@@ -66,12 +66,12 @@ public class NetworkMergeTool {
         Set<Id<Node>> nodesInBaseNetwork = new HashSet<>();
         baseNetwork.getNodes().keySet().forEach(nodeId -> {nodesInBaseNetwork.add(nodeId);});
 
-        Iterator addNetowrkIterator = addNetwork.getNodes().values().iterator();
+        Iterator addNetworkIterator = addNetwork.getNodes().values().iterator();
 
         int counter = 0;
 
-        while(addNetowrkIterator.hasNext()) {
-            Node node = (Node)addNetowrkIterator.next();
+        while(addNetworkIterator.hasNext()) {
+            Node node = (Node)addNetworkIterator.next();
             Node node2 = factory.createNode(Id.create(node.getId().toString(), Node.class), node.getCoord());
             if (!nodesInBaseNetwork.contains(node2.getId())){
                 baseNetwork.addNode(node2);
@@ -81,11 +81,11 @@ public class NetworkMergeTool {
 
         System.out.println("ADDED " + counter + " NODES.");
 
-        addNetowrkIterator = addNetwork.getLinks().values().iterator();
+        addNetworkIterator = addNetwork.getLinks().values().iterator();
 
         counter = 0;
-        while(addNetowrkIterator.hasNext()) {
-            Link link = (Link)addNetowrkIterator.next();
+        while(addNetworkIterator.hasNext()) {
+            Link link = (Link)addNetworkIterator.next();
             Id<Node> fromNodeId = Id.create(link.getFromNode().getId().toString(), Node.class);
             Id<Node> toNodeId = Id.create(link.getToNode().getId().toString(), Node.class);
             Node fromNode = baseNetwork.getNodes().get(fromNodeId);

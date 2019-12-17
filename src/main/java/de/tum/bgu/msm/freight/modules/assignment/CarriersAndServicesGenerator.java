@@ -38,7 +38,7 @@ public class CarriersAndServicesGenerator {
      * this maps keeps the parcels in micro depots to assign first the trips to micro depot
      * with motorized vehicles and later the cargo bike trips from the depot
      */
-    private Map<MicroDepot, List<Parcel>> parcelsByMicrodepot_scaled = new HashMap<>();
+    private Map<MicroDepot, List<Parcel>> parcelsByMicrodepotScaled = new HashMap<>();
     private final int fixDeliveryTime_s = 60;
     private final double parcelAccessSpeed_ms = 5 / 3.6;
     private final int MAX_NUMBER_PARCELS;
@@ -69,7 +69,7 @@ public class CarriersAndServicesGenerator {
             List<Parcel> parcelsInThisDistributionCenter = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
                 //initialize
-                parcelsByMicrodepot_scaled.put(microDepot, new ArrayList<>());
+                parcelsByMicrodepotScaled.put(microDepot, new ArrayList<>());
             }
 
             int numberOfCarriers = (int) Math.floor(parcelsInThisDistributionCenter.size() / MAX_NUMBER_PARCELS * properties.getSampleFactorForParcels()) + 1;
@@ -117,7 +117,7 @@ public class CarriersAndServicesGenerator {
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
                 Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
                 TimeWindow timeWindow = generateRandomTimeSubWindow(7, 8, 1);
-                int demandedCapacity = parcelsByMicrodepot_scaled.get(microDepot).size();
+                int demandedCapacity = parcelsByMicrodepotScaled.get(microDepot).size();
 
                 if (demandedCapacity > 0) {
                     int remainder = demandedCapacity;
@@ -145,7 +145,7 @@ public class CarriersAndServicesGenerator {
                     Id<Link> microDepotLinkId = microDepotLink.getId();
                     CarrierVehicleType cargoBikeType = types.getVehicleTypes().get(Id.create("cargoBike", VehicleType.class));
                     microDepotCarrier.getCarrierCapabilities().getVehicleTypes().add(cargoBikeType);
-                    List<Parcel> parcelsInThisMicroDepot = parcelsByMicrodepot_scaled.get(microDepot);
+                    List<Parcel> parcelsInThisMicroDepot = parcelsByMicrodepotScaled.get(microDepot);
                     CarrierVehicle cargoBike = getGenericVehicle(cargoBikeType, microDepotCarrier.getId(),
                             microDepotLinkId, 8 * 60 * 60, 17 * 60 * 60);
                     microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().add(cargoBike);
@@ -201,13 +201,13 @@ public class CarriersAndServicesGenerator {
                         parcelIndex++;
                     } else {
                         MicroDepot microDepot = parcel.getMicroDepot();
-                        parcelsByMicrodepot_scaled.get(microDepot).add(parcel);
+                        parcelsByMicrodepotScaled.get(microDepot).add(parcel);
                         parcelsToMicroDepotIndex++;
                     }
                 }
             }
         }
-//        for (MicroDepot microDepot : parcelsByMicrodepot_scaled.keySet()) {
+//        for (MicroDepot microDepot : parcelsByMicrodepotScaled.keySet()) {
 //        }
         logger.info("Assigned " + parcelIndex + " parcels at this carrier");
         logger.info("Assigned " + parcelsToMicroDepotIndex + " parcels at this carrier via microDepot");

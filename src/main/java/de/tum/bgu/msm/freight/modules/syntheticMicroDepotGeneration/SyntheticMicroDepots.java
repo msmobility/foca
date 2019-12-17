@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration;
+package de.tum.bgu.msm.freight.modules.syntheticMicroDepotGeneration;
 
 
 import de.tum.bgu.msm.freight.data.DataSet;
@@ -11,29 +11,21 @@ import de.tum.bgu.msm.freight.io.output.DistributionCenterCsvWriter;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
-import org.locationtech.jts.awt.PointShapeFactory;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.operation.overlay.PointBuilder;
-import org.locationtech.jts.shape.GeometricShapeBuilder;
-import org.locationtech.jts.shape.random.RandomPointsBuilder;
-import org.matsim.api.core.v01.Coord;
-import org.matsim.core.utils.gis.PointFeatureFactory;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.BoundingBox;
 
-import java.awt.geom.Point2D;
 import java.io.FileNotFoundException;
 
 
 /**
  * creates micro depot at synthetic locations for each distribution center of selectedDistributionCenters
  */
-public class SyntehticMicroDepots implements Module {
+public class SyntheticMicroDepots implements Module {
 
-    private static Logger logger = Logger.getLogger(SyntehticMicroDepots.class);
+    private static Logger logger = Logger.getLogger(SyntheticMicroDepots.class);
     private DataSet dataSet;
     private Properties properties;
 
@@ -135,7 +127,7 @@ public class SyntehticMicroDepots implements Module {
                         if ( currentDistance < maxDistance){
                             maxDistance = currentDistance;
                             md = microDepot;
-                        };
+                        }
                     }
                     if (md != null && maxDistance < maxDistanceToMicroDepot){
                         md.getZonesServedByThis().add(internalMicroZone);
@@ -143,7 +135,7 @@ public class SyntehticMicroDepots implements Module {
                         counter++;
                     }
                 }
-                logger.info("Assinged " + counter + " micro zones to micro depots in " + distributionCenter.getId());
+                logger.info("Assigned " + counter + " micro zones to micro depots in " + distributionCenter.getId());
             }
 
         }

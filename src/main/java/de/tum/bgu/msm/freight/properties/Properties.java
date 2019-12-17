@@ -1,28 +1,28 @@
 package de.tum.bgu.msm.freight.properties;
 
-import de.tum.bgu.msm.freight.FreightFlowUtils;
+import de.tum.bgu.msm.properties.PropertiesUtil;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.PropertyResourceBundle;
 import java.util.Random;
+import java.util.ResourceBundle;
 
 
 public class Properties extends PropertiesGroup {
 
     private ZoneSystemProperties zoneSystemProperties;
-    private FlowsProperties flowsProperties;
+    public FlowsProperties flowsProperties;
     private LDProperties lDProperties;
     private SDProperties sDProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
-    private String matrixFolder = "./input/matrices/";
-    private String matrixFileNamePrefix = "ketten-uniform-";
-    private String matrixFileNameSuffix = ".csv";
-    private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
-    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
-    private String terminalsFileName = "input/distributionCenters/intermodal_terminals_31468.csv";
+
+    private String matrixFileNamePrefix = null;
+    private String matrixFileNameSuffix = null;
+    private String commodityAttributeFile = null;
+    private String distributionCentersFile = null;
+    private String terminalsFileName = null;
 
     private String networkFile = "./networks/matsim/final_V9_emissions.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
@@ -35,7 +35,7 @@ public class Properties extends PropertiesGroup {
     private int[] analysisZones = new int[]{};
     private boolean storeExpectedTimes = false;
 
-    private int daysPerYear = 365;
+    private int daysPerYear;
 
     private boolean readEventsForCounts = true;
     private String countStationLinkListFile = "input/matsim_links_stations.csv";
@@ -54,40 +54,94 @@ public class Properties extends PropertiesGroup {
     private String vehicleFileForParcelDelivery = "./input/vehicleTypesForParcelDelivery.xml";
 
     @Deprecated
-    private String distributionCentersCatchmenAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
+    private String distributionCentersCatchmentAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
 
     private String matsimBackgroundTrafficPlanFile = "";
 
     private String outputFolder = "output/";
 
 
-
     private int year = 2010;
 
 
-    public Properties() {
+    public static ResourceBundle initializeResourceBundleFromFile(String propertiesFileName){
+        File propFile = null;
+        propFile = new File(propertiesFileName);
+        ResourceBundle bundle = null;
+        try {
+            bundle = new PropertyResourceBundle(new FileReader(propFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bundle;
 
-        zoneSystemProperties = new ZoneSystemProperties();
-        flowsProperties = new FlowsProperties();
-        lDProperties = new LDProperties();
-        sDProperties = new SDProperties();
+    }
+
+    public Properties(ResourceBundle bundle) {
+        super(bundle);
+
+        //read all the properties of this class and assign the values
+        matrixFileNamePrefix = PropertiesUtil.getStringProperty(bundle, "matrixFileNamePrefix");
+        matrixFileNameSuffix = PropertiesUtil.getStringProperty(bundle, "matrixFileNameSuffix");
+        commodityAttributeFile = PropertiesUtil.getStringProperty(bundle, "commodityAttributeFile");
+        distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile");
+        terminalsFileName = PropertiesUtil.getStringProperty(bundle, "terminalsFileName");
+        networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName");
+        simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName");
+        iterations = PropertiesUtil.getIntProperty(bundle, "iterations");
+        flowsScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "flowsScaleFactor");
+        truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor");
+        runId = PropertiesUtil.getStringProperty(bundle, "runId");
+        randomSeed = PropertiesUtil.getIntProperty(bundle, "randomSeed");
+        analysisZones = PropertiesUtil.getIntPropertyArray(bundle, "analysisZones");
+        storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes");
+        daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", 365);
+
+        readEventsForCounts = PropertiesUtil.getBooleanProperty(bundle, "readEventsForCounts", true);
+        countStationLinkListFile = PropertiesUtil.getStringProperty(bundle, "countStationLinkListFile");
+        countsFileName = PropertiesUtil.getStringProperty(bundle, "countsFileName");
+        vehicleFile = PropertiesUtil.getStringProperty(bundle, "vehicleFile");
+
+        jobTypes = PropertiesUtil.getStringPropertyArray(bundle, "jobTypes");
+        makeTableFileName = PropertiesUtil.getStringProperty(bundle, "makeTableFileName");
+        useTableFileName = PropertiesUtil.getStringProperty(bundle, "useTableFileName");
+
+        parcelWeightDistributionFile = PropertiesUtil.getStringProperty(bundle, "parcelWeightDistributionFile");
+
+        sampleFactorForParcels = PropertiesUtil.getDoubleProperty(bundle, "sampleFactorForParcels");
+        runParcelDelivery = PropertiesUtil.getBooleanProperty(bundle, "runParcelDelivery");
+        vehicleFileForParcelDelivery = PropertiesUtil.getStringProperty(bundle, "vehicleFileForParcelDelivery");
+
+        //distributionCentersCatchmentAreaFile = PropertiesUtil.getBooleanProperty(bundle, "distributionCentersCatchmentAreaFile");
+
+        matsimBackgroundTrafficPlanFile = PropertiesUtil.getStringProperty(bundle, "matsimBackgroundTrafficPlanFile");
+
+        outputFolder = PropertiesUtil.getStringProperty(bundle, "outputFolder");
+
+        year = PropertiesUtil.getIntProperty(bundle, "year");
+
+        zoneSystemProperties = new ZoneSystemProperties(bundle);
+        flowsProperties = new FlowsProperties(bundle);
+        lDProperties = new LDProperties(bundle);
+        sDProperties = new SDProperties(bundle);
 
     }
 
     public void logProperties(String outPropFile) throws FileNotFoundException {
+
         File propFile = new File(outPropFile);
-        if (!propFile.getParentFile().exists()){
+        if (!propFile.getParentFile().exists()) {
             propFile.getParentFile().mkdirs();
         }
-        PrintWriter pw = new PrintWriter(propFile);
-        this.logUsedProperties(pw);
-        zoneSystemProperties.logUsedProperties(pw);
-        flowsProperties.logUsedProperties(pw);
-        lDProperties.logUsedProperties(pw);
-        sDProperties.logUsedProperties(pw);
-        pw.close();
+        PropertiesUtil.printOutPropertiesOfThisRun(outPropFile);
+//        PrintWriter pw = new PrintWriter(propFile);
+//        this.logUsedProperties(pw);
+//        zoneSystemProperties.logUsedProperties(pw);
+//        flowsProperties.logUsedProperties(pw);
+//        lDProperties.logUsedProperties(pw);
+//        sDProperties.logUsedProperties(pw);
+//        pw.close();
     }
-
 
 
     public ZoneSystemProperties zoneSystem() {
@@ -104,14 +158,6 @@ public class Properties extends PropertiesGroup {
 
     public SDProperties shortDistance() {
         return sDProperties;
-    }
-
-    public String getMatrixFolder() {
-        return matrixFolder;
-    }
-
-    public void setMatrixFolder(String matrixFolder) {
-        this.matrixFolder = matrixFolder;
     }
 
     public String getNetworkFile() {
@@ -284,7 +330,7 @@ public class Properties extends PropertiesGroup {
 
     @Deprecated
     public String getDistributionCentersCatchmentAreaFile() {
-        return distributionCentersCatchmenAreaFile;
+        return distributionCentersCatchmentAreaFile;
     }
 
     public String getMatsimBackgroundTraffic() {
@@ -327,6 +373,7 @@ public class Properties extends PropertiesGroup {
         return matrixFileNameSuffix;
     }
 
-    public void initializeRandomNumber() { rand = new Random(randomSeed);
+    public void initializeRandomNumber() {
+        rand = new Random(randomSeed);
     }
 }

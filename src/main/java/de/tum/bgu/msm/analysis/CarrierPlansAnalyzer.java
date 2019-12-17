@@ -56,7 +56,7 @@ public class CarrierPlansAnalyzer {
 
 
     public void analyzeCarriersPlans(String carrierVehicleTypeFile, String carriersPlanFile, String outputFile) throws FileNotFoundException {
-        Properties properties = new Properties();
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
         PrintWriter pw = new PrintWriter(new File(outputFile));
 
         Config config = ConfigUtils.createConfig();

@@ -64,16 +64,16 @@ public class CarrierTourDesigner {
         tpcostsBuilder.setBaseTravelTimeAndDisutility(travelTime,
                 TravelDisutilities.createBaseDisutility(carrierVehicleTypes, travelTime));
 
-        NetworkBasedTransportCosts netbasedTransportcosts = tpcostsBuilder.build();
+        NetworkBasedTransportCosts netBasedTransportCosts = tpcostsBuilder.build();
 
         //set transport-costs
-        vrpBuilder.setRoutingCost(netbasedTransportcosts);
+        vrpBuilder.setRoutingCost(netBasedTransportCosts);
 
         //******
         //Define activity-costs
         //******
         //should be inline with activity-scoring
-        VehicleRoutingActivityCosts activitycosts = new VehicleRoutingActivityCosts(){
+        VehicleRoutingActivityCosts activityCosts = new VehicleRoutingActivityCosts(){
 
             private double penalty4missedTws = 0.01;
 
@@ -96,7 +96,7 @@ public class CarrierTourDesigner {
             }
 
         };
-        vrpBuilder.setActivityCosts(activitycosts);
+        vrpBuilder.setActivityCosts(activityCosts);
 
         //build the problem
         VehicleRoutingProblem vrp = vrpBuilder.build();
@@ -132,7 +132,7 @@ public class CarrierTourDesigner {
 
         //create carrierPlan from solution
         CarrierPlan plan = MatsimJspritFactory.createPlan(carrier, solution);
-        NetworkRouter.routePlan(plan, netbasedTransportcosts);
+        NetworkRouter.routePlan(plan, netBasedTransportCosts);
 
         logger.warn("Completed carrier " + carrier.getId().toString());
 

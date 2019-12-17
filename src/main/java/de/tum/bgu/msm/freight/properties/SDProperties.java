@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.freight.properties;
 
+import java.util.ResourceBundle;
+
 public class SDProperties extends PropertiesGroup {
 
     private double shareOfCargoBikesAtZonesServedByMicroDepot = 1.;
@@ -7,6 +9,10 @@ public class SDProperties extends PropertiesGroup {
     private int maxNumberOfParcelsByCarrier = 500;
     private boolean readMicroDepotsFromFile = true;
     private double maxDistanceToMicroDepot = 4000;
+
+    public SDProperties(ResourceBundle bundle) {
+        super(bundle);
+    }
 
     public void setMaxDistanceToMicroDepot(double maxDistanceToMicroDepot) {
         this.maxDistanceToMicroDepot = maxDistanceToMicroDepot;
