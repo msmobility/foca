@@ -37,8 +37,8 @@ public class ZonesReader extends CSVReader {
         idIndex = MitoUtil.findPositionInArray("id", header);
         nameIndex = MitoUtil.findPositionInArray("name", header);
         zoneTypeIndex = MitoUtil.findPositionInArray("type", header);
-        yIndex = MitoUtil.findPositionInArray("xcoord", header);
-        xIndex = MitoUtil.findPositionInArray("ycoord", header);
+        xIndex = MitoUtil.findPositionInArray("xcoord", header);
+        yIndex = MitoUtil.findPositionInArray("ycoord", header);
 
     }
 
