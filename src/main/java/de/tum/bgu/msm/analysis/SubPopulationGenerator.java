@@ -1,6 +1,10 @@
 package de.tum.bgu.msm.analysis;
 
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
@@ -11,9 +15,11 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.collections.Tuple;
+import org.matsim.core.utils.gis.PointFeatureFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -92,12 +98,17 @@ public class SubPopulationGenerator {
             Activity activityAtDestination = (Activity) plan.getPlanElements().get(2);
             Coord destCoord = activityAtDestination.getCoord();
 
-            if (feature.getBounds().contains(origCoord.getX(), origCoord.getY())) {
+            GeometryFactory factory = new GeometryFactory();
+
+            Point originPoint = factory.createPoint(new Coordinate(origCoord.getX(), origCoord.getY()));
+
+            if (((Geometry) feature.getDefaultGeometry()).contains(originPoint)) {
                 originInside = true;
                 choosePerson = true;
             }
+            Point destPoint = factory.createPoint(new Coordinate(destCoord.getX(), destCoord.getY()));
 
-            if (feature.getBounds().contains(destCoord.getX(), destCoord.getY())) {
+            if (((Geometry) feature.getDefaultGeometry()).contains(destPoint)) {
                 destInside = true;
                 choosePerson = true;
             }
