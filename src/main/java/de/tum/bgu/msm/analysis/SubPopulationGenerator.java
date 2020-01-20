@@ -131,7 +131,7 @@ public class SubPopulationGenerator {
                         countInternal++;
                         dest = PopulationUtils.createActivityFromCoord(activityAtDestination.getType(), activityAtDestination.getCoord());
                         newPlan.addActivity(orig);
-                        newPlan.addLeg(PopulationUtils.createLeg(TransportMode.truck));
+                        newPlan.addLeg(PopulationUtils.createLeg(TransportMode.car));
                         newPlan.addActivity(dest);
                         subPopulation.addPerson(newPerson);
                     } else {
@@ -139,7 +139,7 @@ public class SubPopulationGenerator {
                         countOutbound++;
                         dest = PopulationUtils.createActivityFromCoord(activityAtDestination.getType(), firstLinkAtBorder.getFromNode().getCoord());
                         newPlan.addActivity(orig);
-                        newPlan.addLeg(PopulationUtils.createLeg(TransportMode.truck));
+                        newPlan.addLeg(PopulationUtils.createLeg(TransportMode.car));
                         newPlan.addActivity(dest);
                         subPopulation.addPerson(newPerson);
                     }
@@ -151,7 +151,7 @@ public class SubPopulationGenerator {
                         countInbound++;
                         dest = PopulationUtils.createActivityFromCoord(activityAtDestination.getType(), activityAtDestination.getCoord());
                         newPlan.addActivity(orig);
-                        newPlan.addLeg(PopulationUtils.createLeg(TransportMode.truck));
+                        newPlan.addLeg(PopulationUtils.createLeg(TransportMode.car));
                         newPlan.addActivity(dest);
                         subPopulation.addPerson(newPerson);
                     } else {
@@ -161,7 +161,7 @@ public class SubPopulationGenerator {
                             Link secondLinkAtBorder = borderCrossings.get(1).getSecond();
                             dest = PopulationUtils.createActivityFromCoord(activityAtDestination.getType(), secondLinkAtBorder.getFromNode().getCoord());
                             newPlan.addActivity(orig);
-                            newPlan.addLeg(PopulationUtils.createLeg(TransportMode.truck));
+                            newPlan.addLeg(PopulationUtils.createLeg(TransportMode.car));
                             newPlan.addActivity(dest);
                             subPopulation.addPerson(newPerson);
                         } catch (NullPointerException e ){
