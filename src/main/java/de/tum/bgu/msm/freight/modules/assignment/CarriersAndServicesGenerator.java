@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
@@ -85,11 +86,12 @@ public class CarriersAndServicesGenerator {
                 Coordinate coordinates = distributionCenter.getCoordinates();
                 Link link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
                 Id<Link> linkId = link.getId();
-                CarrierVehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
+                VehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
                 carrier.getCarrierCapabilities().getVehicleTypes().add(type);
                 carrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
                 CarrierVehicle vehicle = getGenericVehicle(type, carrier.getId(), linkId, 7 * 60 * 60, 17 * 60 * 60);
-                carrier.getCarrierCapabilities().getCarrierVehicles().add(vehicle);
+                vehicle.getType().setNetworkMode(TransportMode.truck);
+                carrier.getCarrierCapabilities().getCarrierVehicles().put(vehicle.getId(), vehicle);
                 createDeliveriesByMotorizedModes(parcelsInThisCarrier, carrier);
 
                 //add only if there are effective parcels to deliver
@@ -108,11 +110,12 @@ public class CarriersAndServicesGenerator {
             Coordinate coordinates = distributionCenter.getCoordinates();
             Link link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
             Id<Link> linkId = link.getId();
-            CarrierVehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
+            VehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
             feederCarrier.getCarrierCapabilities().getVehicleTypes().add(type);
             feederCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
             CarrierVehicle vehicle = getGenericVehicle(type, feederCarrier.getId(), linkId, 7 * 60 * 60, 8 * 60 * 60);
-            feederCarrier.getCarrierCapabilities().getCarrierVehicles().add(vehicle);
+            vehicle.getType().setNetworkMode(TransportMode.truck);
+            feederCarrier.getCarrierCapabilities().getCarrierVehicles().put(vehicle.getId(), vehicle);
 
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
                 Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
@@ -120,20 +123,21 @@ public class CarriersAndServicesGenerator {
                 int demandedCapacity = parcelsByMicrodepot_scaled.get(microDepot).size();
 
                 if (demandedCapacity > 0) {
-                    int remainder = demandedCapacity;
+                    double remainder = demandedCapacity;
                     int feederCounter = 0;
                     //add feeder trips to the carrier
                     while (remainder > 0){
-                        int current = Math.min(remainder, type.getCarrierVehicleCapacity());
+                        double current = Math.min(remainder, type.getCapacity().getOther());
                         remainder = remainder - current;
 
                         double duration_s = Math.min(5 * demandedCapacity, 15 * 60);
                         Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
                         CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId() + "_" + feederCounter, CarrierService.class), linkParcelDelivery);
-                        serviceBuilder.setCapacityDemand(current);
+                        serviceBuilder.setCapacityDemand((int) Math.round(current));
                         serviceBuilder.setServiceDuration(duration_s);
                         serviceBuilder.setServiceStartTimeWindow(timeWindow);
-                        feederCarrier.getServices().add(serviceBuilder.build());
+                        CarrierService carrierService = serviceBuilder.build();
+                        feederCarrier.getServices().put(carrierService.getId(), carrierService);
                         feederCounter++;
                     }
 
@@ -143,12 +147,13 @@ public class CarriersAndServicesGenerator {
                     Coordinate microDepotCoord = microDepot.getCoord_gk4();
                     Link microDepotLink = getNearestLinkByMode(microDepotCoord, ParcelDistributionType.MOTORIZED);
                     Id<Link> microDepotLinkId = microDepotLink.getId();
-                    CarrierVehicleType cargoBikeType = types.getVehicleTypes().get(Id.create("cargoBike", VehicleType.class));
+                    VehicleType cargoBikeType = types.getVehicleTypes().get(Id.create("cargoBike", VehicleType.class));
                     microDepotCarrier.getCarrierCapabilities().getVehicleTypes().add(cargoBikeType);
                     List<Parcel> parcelsInThisMicroDepot = parcelsByMicrodepot_scaled.get(microDepot);
                     CarrierVehicle cargoBike = getGenericVehicle(cargoBikeType, microDepotCarrier.getId(),
                             microDepotLinkId, 8 * 60 * 60, 17 * 60 * 60);
-                    microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().add(cargoBike);
+                    cargoBike.getType().setNetworkMode(TransportMode.bike);
+                    microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().put(cargoBike.getId(), cargoBike);
                     microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
 
                     //deliver the parcels later with cargo bikes
@@ -197,7 +202,8 @@ public class CarriersAndServicesGenerator {
                         serviceBuilder.setCapacityDemand(1);
                         serviceBuilder.setServiceDuration(duration_s);
                         serviceBuilder.setServiceStartTimeWindow(timeWindow);
-                        carrier.getServices().add(serviceBuilder.build());
+                        CarrierService carrierService = serviceBuilder.build();
+                        carrier.getServices().put(carrierService.getId(), carrierService);
                         parcelIndex++;
                     } else {
                         MicroDepot microDepot = parcel.getMicroDepot();
@@ -232,7 +238,8 @@ public class CarriersAndServicesGenerator {
                 serviceBuilder.setCapacityDemand(1);
                 serviceBuilder.setServiceDuration(duration_s);
                 serviceBuilder.setServiceStartTimeWindow(timeWindow);
-                carrier.getServices().add(serviceBuilder.build());
+                CarrierService carrierService = serviceBuilder.build();
+                carrier.getServices().put(carrierService.getId(), carrierService);
                 parcelIndex++;
             }
         }
@@ -242,7 +249,7 @@ public class CarriersAndServicesGenerator {
     }
 
 
-    private static CarrierVehicle getGenericVehicle(CarrierVehicleType type, Id<?> carrierId, Id<Link> homeId, double start_s, double end_s) {
+    private static CarrierVehicle getGenericVehicle(VehicleType type, Id<?> carrierId, Id<Link> homeId, double start_s, double end_s) {
         CarrierVehicle.Builder vBuilder = CarrierVehicle.Builder.newInstance(Id.create(("carrier_" +
                 carrierId.toString() +
                 "_" + type.getId().toString()), Vehicle.class), homeId);
@@ -252,7 +259,7 @@ public class CarriersAndServicesGenerator {
         return vBuilder.build();
     }
 
-    private static CarrierVehicle getSpecificVehicle(CarrierVehicleType type, Id<?> carrierId, int index, Id<Link> homeId, double start_s, double end_s) {
+    private static CarrierVehicle getSpecificVehicle(VehicleType type, Id<?> carrierId, int index, Id<Link> homeId, double start_s, double end_s) {
         CarrierVehicle.Builder vBuilder = CarrierVehicle.Builder.newInstance(Id.create(("carrier_" +
                 carrierId.toString() +
                 "_" + type.getId().toString() + "_" + index), Vehicle.class), homeId);

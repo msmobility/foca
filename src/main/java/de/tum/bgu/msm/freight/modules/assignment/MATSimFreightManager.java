@@ -6,8 +6,8 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.freight.Freight;
 import org.matsim.contrib.freight.carrier.*;
 import org.matsim.contrib.freight.controler.CarrierModule;
-import org.matsim.contrib.freight.replanning.CarrierPlanStrategyManagerFactory;
-import org.matsim.contrib.freight.scoring.CarrierScoringFunctionFactory;
+import org.matsim.contrib.freight.controler.CarrierPlanStrategyManagerFactory;
+import org.matsim.contrib.freight.controler.CarrierScoringFunctionFactory;
 import org.matsim.contrib.freight.usecases.analysis.CarrierScoreStats;
 import org.matsim.contrib.freight.usecases.analysis.LegHistogram;
 import org.matsim.contrib.freight.utils.FreightUtils;
@@ -19,6 +19,7 @@ import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.listener.IterationEndsListener;
 
 import javax.inject.Inject;
+import java.util.function.BiConsumer;
 
 /**
  * Class that contains the freight extension data containers - carriers, carrier vehicle types, etc.
@@ -63,8 +64,7 @@ public class MATSimFreightManager {
         controler.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
-                CarrierModule carrierModule = new CarrierModule(carriers);
-                carrierModule.setPhysicallyEnforceTimeWindowBeginnings(true);
+                CarrierModule carrierModule = new CarrierModule();
                 install(carrierModule);
 
                 bind(CarrierPlanStrategyManagerFactory.class).toInstance(new MatsimFreightUtils.MyCarrierPlanStrategyManagerFactory(carrierVehicleTypes));
