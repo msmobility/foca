@@ -18,60 +18,55 @@ import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.core.population.io.PopulationWriter;
 
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FreightFlowsRunSingle {
+public class FreightFlowsMucRunScenariosDcs {
 
 
-    private static final Logger logger = Logger.getLogger(FreightFlowsRunSingle.class);
+    private static final Logger logger = Logger.getLogger(FreightFlowsMucRunScenariosDcs.class);
 
     public static void main(String[] args) {
 
+        List<Properties> listOfSimulations = new ArrayList<>();
 
-        Properties properties = new Properties();
-        properties.setMatrixFolder("./input/matrices/");
-        properties.setAnalysisZones(new int[]{9162});
-        properties.setTruckScaleFactor(1.);
-        properties.setSampleFactorForParcels(1.);
-        properties.setIterations(50);
-        properties.shortDistance().setSelectedDistributionCenters(new int[]{16,
-                17,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24,
-                13,
-                14
-        });
-        properties.setRunId("allMuc");
-        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
-        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
-        properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(5000.);
-        properties.shortDistance().setMaxDistanceToMicroDepot(5000.);
+        int dc = Integer.parseInt(args[0]);
 
-        properties.shortDistance().setReadMicroDepotsFromFile(false);
-
+        Properties thisProperties = new Properties();
+        thisProperties.initializeRandomNumber();
+        thisProperties.setMatrixFolder("./input/matrices/");
+        thisProperties.setAnalysisZones(new int[]{9162});
+        thisProperties.setTruckScaleFactor(1.00);
+        thisProperties.setSampleFactorForParcels(0.25);
+        thisProperties.setIterations(50);
+        thisProperties.shortDistance().setReadMicroDepotsFromFile(false);
+        thisProperties.shortDistance().setSelectedDistributionCenters(new int[]{dc});
+        thisProperties.setRunId("muc_dc_" + args[0]);
+        thisProperties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
+        thisProperties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.0);
         try {
-            properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
+            thisProperties.logProperties("./output/" + thisProperties.getRunId() + "/properties.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        listOfSimulations.add(thisProperties);
 
-        //adds a 5% pf cars as background traffic
-        //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
-        FreightFlowsRunSingle freightFlows = new FreightFlowsRunSingle();
-        logger.info("Start simulation " + properties.getRunId());
-        freightFlows.run(properties);
-        logger.info("End simulation " + properties.getRunId());
+
+        for (Properties properties : listOfSimulations) {
+            //adds a 5% pf cars as background traffic
+            //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
+            FreightFlowsMucRunScenariosDcs freightFlows = new FreightFlowsMucRunScenariosDcs();
+            logger.info("Start simulation " + properties.getRunId());
+            freightFlows.run(properties);
+            logger.info("End simulation " + properties.getRunId());
+        }
+
 
     }
 
     public void run(Properties properties) {
-        properties.initializeRandomNumber();
 
         InputManager io = new InputManager(properties);
         io.readInput();
@@ -97,7 +92,6 @@ public class FreightFlowsRunSingle {
         LDTruckODAllocator.run();
         SDTruckGenerator.run();
         parcelGenerator.run();
-
         matSimAssignment.run();
 
         PopulationWriter pw;

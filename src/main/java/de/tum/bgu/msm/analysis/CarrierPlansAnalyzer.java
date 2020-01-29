@@ -32,24 +32,13 @@ public class CarrierPlansAnalyzer {
     public static void main(String[] args) throws FileNotFoundException {
 
 
-        String[] scenarios = new String[]{"muc_scenario_zero_c",
-                "muc_scenario_3km",
-                "muc_scenario_1km",
-                "muc_scenario_paketbox"};
-
+        String[] scenarios = args;
         String baseFolder = "./output/";
-
-
-
-
         for (String scenario : scenarios) {
-
             String vehicleTypes = baseFolder + scenario + "/matsim/output_vehicleTypes.xml";
             String carrierPlans = baseFolder + scenario + "/matsim/output_carriers.xml.gz";
             String outputFile = baseFolder + scenario + "/carriers_analysis.csv";
-
             new CarrierPlansAnalyzer().analyzeCarriersPlans(vehicleTypes, carrierPlans, outputFile);
-
         }
 
     }
