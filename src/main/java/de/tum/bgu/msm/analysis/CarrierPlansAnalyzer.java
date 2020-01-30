@@ -61,7 +61,7 @@ public class CarrierPlansAnalyzer {
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
 
 
-        CarrierPlanXmlReaderV2 carriersPlanReader = new CarrierPlanXmlReaderV2(carriers);
+        CarrierPlanXmlReader carriersPlanReader = new CarrierPlanXmlReader(carriers);
         carriersPlanReader.readFile(carriersPlanFile);
 
         pw.println("carrier,tour,service,number_of_services,time,distance,type,vehicle_type,parcels");

@@ -90,7 +90,7 @@ public class CarriersAndServicesGenerator {
                 carrier.getCarrierCapabilities().getVehicleTypes().add(type);
                 carrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
                 CarrierVehicle vehicle = getGenericVehicle(type, carrier.getId(), linkId, 7 * 60 * 60, 17 * 60 * 60);
-                vehicle.getType().setNetworkMode(TransportMode.truck);
+                //vehicle.getType().setNetworkMode(TransportMode.truck);
                 carrier.getCarrierCapabilities().getCarrierVehicles().put(vehicle.getId(), vehicle);
                 createDeliveriesByMotorizedModes(parcelsInThisCarrier, carrier);
 
@@ -114,7 +114,7 @@ public class CarriersAndServicesGenerator {
             feederCarrier.getCarrierCapabilities().getVehicleTypes().add(type);
             feederCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
             CarrierVehicle vehicle = getGenericVehicle(type, feederCarrier.getId(), linkId, 7 * 60 * 60, 8 * 60 * 60);
-            vehicle.getType().setNetworkMode(TransportMode.truck);
+            //vehicle.getType().setNetworkMode(TransportMode.truck); looks like it does not make anything
             feederCarrier.getCarrierCapabilities().getCarrierVehicles().put(vehicle.getId(), vehicle);
 
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
@@ -152,7 +152,7 @@ public class CarriersAndServicesGenerator {
                     List<Parcel> parcelsInThisMicroDepot = parcelsByMicrodepot_scaled.get(microDepot);
                     CarrierVehicle cargoBike = getGenericVehicle(cargoBikeType, microDepotCarrier.getId(),
                             microDepotLinkId, 8 * 60 * 60, 17 * 60 * 60);
-                    cargoBike.getType().setNetworkMode(TransportMode.bike);
+                    //cargoBike.getType().setNetworkMode(TransportMode.bike);
                     microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().put(cargoBike.getId(), cargoBike);
                     microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
 

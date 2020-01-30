@@ -33,15 +33,15 @@ public class FreightFlowsRunSingle {
         Properties properties = new Properties();
         properties.setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{9162});
-        properties.setTruckScaleFactor(0.01);
+        properties.setTruckScaleFactor(0.0);
         properties.setSampleFactorForParcels(0.1);
-        properties.setIterations(50);
-        properties.shortDistance().setSelectedDistributionCenters(new int[]{16});
+        properties.setIterations(2);
+        properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
         properties.setRunId("test");
         properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
-        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0.);
-        properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(5000.);
-        properties.shortDistance().setMaxDistanceToMicroDepot(5000.);
+        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.);
+        properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(2000.);
+        properties.shortDistance().setMaxDistanceToMicroDepot(2000.);
 
         properties.shortDistance().setReadMicroDepotsFromFile(false);
 
@@ -90,7 +90,7 @@ public class FreightFlowsRunSingle {
 
         matSimAssignment.run();
 
-        PopulationWriter pw;
+        //PopulationWriter pw;
 
 
         String outputFolder = properties.getOutputFolder();
