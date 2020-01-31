@@ -44,6 +44,8 @@ public class CarriersAndServicesGenerator {
     private final double parcelAccessSpeed_ms = 5 / 3.6;
     private final int MAX_NUMBER_PARCELS;
 
+    private final Map<Carrier, String> modeByCarrier = new HashMap<>();
+
     public CarriersAndServicesGenerator(DataSet dataSet, Network network, Properties properties) {
         this.dataSet = dataSet;
         this.network = network;
@@ -83,6 +85,7 @@ public class CarriersAndServicesGenerator {
                 logger.info("Split distribution center into carrier " + carrierIndex + ": parcels " + firstParcel + " to " + lastParcel);
                 List<Parcel> parcelsInThisCarrier = parcelsInThisDistributionCenter.subList(firstParcel, lastParcel);
                 Carrier carrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement(), Carrier.class));
+                modeByCarrier.put(carrier, TransportMode.truck);
                 Coordinate coordinates = distributionCenter.getCoordinates();
                 Link link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
                 Id<Link> linkId = link.getId();
@@ -107,6 +110,7 @@ public class CarriersAndServicesGenerator {
             //feeders
             Carrier feederCarrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement() + "_feeder", Carrier.class));
             carriers.addCarrier(feederCarrier);
+            modeByCarrier.put(feederCarrier, TransportMode.truck);
             Coordinate coordinates = distributionCenter.getCoordinates();
             Link link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
             Id<Link> linkId = link.getId();
@@ -144,6 +148,7 @@ public class CarriersAndServicesGenerator {
                     //create a microdepot Carrier (sub-carrier) with only bicycles
                     Carrier microDepotCarrier = CarrierImpl.newInstance(Id.create(microDepot.getId() + "_microDepot", Carrier.class));
                     carriers.addCarrier(microDepotCarrier);
+                    modeByCarrier.put(microDepotCarrier, TransportMode.bike);
                     Coordinate microDepotCoord = microDepot.getCoord_gk4();
                     Link microDepotLink = getNearestLinkByMode(microDepotCoord, ParcelDistributionType.MOTORIZED);
                     Id<Link> microDepotLinkId = microDepotLink.getId();
@@ -163,6 +168,7 @@ public class CarriersAndServicesGenerator {
             logger.info("Completed distribution center: " + distributionCenter.getId() + ", " + distributionCenter.getName());
 
         }
+        dataSet.setModeByCarrier(modeByCarrier);
 
     }
 

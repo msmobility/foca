@@ -95,7 +95,7 @@ public class MATSimAssignment implements Module {
         //create carriers
         new CarriersAndServicesGenerator(dataSet, network, properties).generateCarriers(carriers, carrierVehicleTypes);
         //assign plans to carriers
-        new CarrierTourDesigner(scenario.getNetwork()).generateCarriersPlan(carriers);
+        new CarrierTourDesigner(scenario.getNetwork(), dataSet).generateCarriersPlan(carriers);
 
     }
 

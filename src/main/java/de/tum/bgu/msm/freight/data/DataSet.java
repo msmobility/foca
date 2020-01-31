@@ -11,6 +11,7 @@ import de.tum.bgu.msm.freight.data.geo.*;
 import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Population;
+import org.matsim.contrib.freight.carrier.Carrier;
 
 import java.util.*;
 
@@ -53,6 +54,7 @@ public class DataSet {
     private final List<SDTruckTrip> SDTruckTrips = new ArrayList<>();
 
     private DataContainerWithSchools siloDataContainer;
+    private Map<Carrier, String> modeByCarrier;
 
 
     //getters and setters
@@ -163,5 +165,13 @@ public class DataSet {
     }
     public void setSiloDataContainer(DataContainerWithSchools dataContainer) {
         this.siloDataContainer = dataContainer;
+    }
+
+    public void setModeByCarrier(Map<Carrier, String> modeByCarrier) {
+        this.modeByCarrier = modeByCarrier;
+    }
+
+    public Map<Carrier, String> getModeByCarrier() {
+        return modeByCarrier;
     }
 }

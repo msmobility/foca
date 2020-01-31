@@ -8,13 +8,19 @@ import org.matsim.vehicles.Vehicle;
 
 public class ByModeTravelTime implements TravelTime {
 
+    private final String mode;
+
+    public ByModeTravelTime(String mode) {
+        this.mode = mode;
+    }
+
     @Override
     public double getLinkTravelTime(Link link, double time, Person person, Vehicle vehicle) {
-        String mode = vehicle.getType().getNetworkMode();
+        double velocity = vehicle.getType().getMaximumVelocity();
         if(link.getAllowedModes().contains(mode)){
-            return link.getLength()/link.getFreespeed();
+            return link.getLength()/Math.min(velocity, link.getFreespeed());
         } else {
-            return Double.MAX_VALUE;
+            return link.getLength()/0.001;
         }
     }
 }

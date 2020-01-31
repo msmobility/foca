@@ -13,6 +13,7 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfig;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfigXmlReader;
 import com.graphhopper.jsprit.io.algorithm.VehicleRoutingAlgorithms;
+import de.tum.bgu.msm.freight.data.DataSet;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.freight.carrier.Carrier;
@@ -37,8 +38,10 @@ public class CarrierTourDesigner {
 
     private Network network;
     private CarrierVehicleTypes carrierVehicleTypes;
+    private DataSet dataSet;
 
-    public CarrierTourDesigner(Network network) {
+    public CarrierTourDesigner(Network network, DataSet dataSet) {
+        this.dataSet = dataSet;
         this.network = network;
     }
 
@@ -64,7 +67,7 @@ public class CarrierTourDesigner {
         //				tpcostsBuilder.setFIFO(true);
         //assign netBasedCosts to RoutingProblem
 
-        ByModeTravelTime travelTime = new ByModeTravelTime();
+        ByModeTravelTime travelTime = new ByModeTravelTime(dataSet.getModeByCarrier().get(carrier));
         tpcostsBuilder.setTravelTime(travelTime);
         tpcostsBuilder.setBaseTravelTimeAndDisutility(travelTime,
                 TravelDisutilities.createBaseDisutility(carrierVehicleTypes, travelTime));
