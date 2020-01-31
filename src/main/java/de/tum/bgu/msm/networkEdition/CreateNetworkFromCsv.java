@@ -22,7 +22,7 @@ public class CreateNetworkFromCsv {
 
     private static Logger logger = Logger.getLogger(CreateNetworkFromCsv.class);
 
-    private final static Set<String> ALLOWED_MODES = new HashSet<>(Arrays.asList("bike"));
+    private final static Set<String> ALLOWED_MODES = new HashSet<>(Arrays.asList("TransportMode.bike"));
     private final static double CAPACITY = 1000;
     private final static int LANES = 2;
     private final static double FREE_SPEED = 20/3.6;

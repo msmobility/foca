@@ -65,7 +65,7 @@ public class MATSimFreightManager {
             if (type.getId().equals(Id.create("van", VehicleType.class))){
                 type.setNetworkMode(TransportMode.truck);
             } else if (type.getId().equals(Id.create("cargoBike", VehicleType.class))) {
-                type.setNetworkMode(TransportMode.bike);
+                type.setNetworkMode("TransportMode.bike");
             }
         }
 

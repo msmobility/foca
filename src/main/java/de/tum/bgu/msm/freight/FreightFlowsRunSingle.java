@@ -33,7 +33,8 @@ public class FreightFlowsRunSingle {
         Properties properties = new Properties();
         properties.setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{9162});
-        properties.setTruckScaleFactor(0.0);
+        properties.setNetworkFile("./networks/matsim/final_V11_emissions.xml.gz");
+        properties.setTruckScaleFactor(0.01);
         properties.setSampleFactorForParcels(0.1);
         properties.setIterations(2);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});

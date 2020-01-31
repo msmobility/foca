@@ -37,7 +37,7 @@ public class CarriersAndServicesGenerator {
     private static final Logger logger = Logger.getLogger(CarriersAndServicesGenerator.class);
     /**
      * this maps keeps the parcels in micro depots to assign first the trips to micro depot
-     * with motorized vehicles and later the cargo bike trips from the depot
+     * with motorized vehicles and later the cargo "TransportMode.bike" trips from the depot
      */
     private Map<MicroDepot, List<Parcel>> parcelsByMicrodepot_scaled = new HashMap<>();
     private final int fixDeliveryTime_s = 60;
@@ -152,7 +152,7 @@ public class CarriersAndServicesGenerator {
                     List<Parcel> parcelsInThisMicroDepot = parcelsByMicrodepot_scaled.get(microDepot);
                     CarrierVehicle cargoBike = getGenericVehicle(cargoBikeType, microDepotCarrier.getId(),
                             microDepotLinkId, 8 * 60 * 60, 17 * 60 * 60);
-                    //cargoBike.getType().setNetworkMode(TransportMode.bike);
+                    //cargoBike.getType().setNetworkMode("TransportMode.bike");
                     microDepotCarrier.getCarrierCapabilities().getCarrierVehicles().put(cargoBike.getId(), cargoBike);
                     microDepotCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
 

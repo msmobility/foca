@@ -23,6 +23,8 @@ import org.matsim.contrib.freight.jsprit.MatsimJspritFactory;
 import org.matsim.contrib.freight.jsprit.NetworkBasedTransportCosts;
 import org.matsim.contrib.freight.jsprit.NetworkRouter;
 import org.matsim.contrib.freight.usecases.chessboard.TravelDisutilities;
+import org.matsim.core.router.util.TravelTime;
+import org.matsim.core.router.util.TravelTimeUtils;
 
 import java.util.*;
 
@@ -52,6 +54,9 @@ public class CarrierTourDesigner {
     private CarrierPlan createPlan(Carrier carrier) {
         VehicleRoutingProblem.Builder vrpBuilder = MatsimJspritFactory.createRoutingProblemBuilder(carrier, network);
         NetworkBasedTransportCosts.Builder tpcostsBuilder = NetworkBasedTransportCosts.Builder.newInstance(network, carrier.getCarrierCapabilities().getVehicleTypes());
+
+
+
         //sets time-dependent travelTimes
         //				tpcostsBuilder.setTravelTime(travelTimes);
         //sets time-slice to build time-dependent tpcosts and traveltime matrices
@@ -59,7 +64,7 @@ public class CarrierTourDesigner {
         //				tpcostsBuilder.setFIFO(true);
         //assign netBasedCosts to RoutingProblem
 
-        MyNonCongestedTravelTime travelTime = new MyNonCongestedTravelTime();
+        ByModeTravelTime travelTime = new ByModeTravelTime();
         tpcostsBuilder.setTravelTime(travelTime);
         tpcostsBuilder.setBaseTravelTimeAndDisutility(travelTime,
                 TravelDisutilities.createBaseDisutility(carrierVehicleTypes, travelTime));

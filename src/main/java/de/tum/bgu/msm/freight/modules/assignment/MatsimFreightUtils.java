@@ -73,7 +73,7 @@ public class MatsimFreightUtils {
 
         @Override
         public GenericStrategyManager<CarrierPlan, Carrier> createStrategyManager() {
-            TravelTime myNonCongestedTravelTime = new MyNonCongestedTravelTime();
+            TravelTime myNonCongestedTravelTime = new ByModeTravelTime();
             TravelTime congestedTravelTime = modeTravelTimes.get(TransportMode.car);
 
             TravelTime myTravelTime = (link, v, person, vehicle) -> {
