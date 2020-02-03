@@ -24,8 +24,6 @@ import org.matsim.contrib.freight.jsprit.MatsimJspritFactory;
 import org.matsim.contrib.freight.jsprit.NetworkBasedTransportCosts;
 import org.matsim.contrib.freight.jsprit.NetworkRouter;
 import org.matsim.contrib.freight.usecases.chessboard.TravelDisutilities;
-import org.matsim.core.router.util.TravelTime;
-import org.matsim.core.router.util.TravelTimeUtils;
 
 import java.util.*;
 

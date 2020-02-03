@@ -73,16 +73,14 @@ public class MatsimFreightUtils {
 
         @Override
         public GenericStrategyManager<CarrierPlan, Carrier> createStrategyManager() {
-            TravelTime myNonCongestedTravelTime = new ByModeTravelTime(TransportMode.car);
-            TravelTime congestedTravelTime = modeTravelTimes.get(TransportMode.car);
 
             TravelTime myTravelTime = (link, v, person, vehicle) -> {
-                VehicleType type = vehicle.getType();
-                if (type.getId().equals(cargoBikeType.getId())) {
-                    return myNonCongestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
-                }  else {
-                    return congestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
-                }
+                TravelTime myCongestedTravelTime = new ByModeCongestedTravelTime(vehicle.getType().getNetworkMode(),  modeTravelTimes.get(vehicle.getType().getNetworkMode()));
+//                if (type.getId().equals(cargoBikeType.getId())) {
+//                    return myNonCongestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
+//                }  else {
+                    return myCongestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
+//                }
             };
 
 
