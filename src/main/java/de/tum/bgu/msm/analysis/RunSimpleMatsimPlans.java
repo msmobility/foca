@@ -17,13 +17,16 @@ public class RunSimpleMatsimPlans {
 
         Config config = ConfigUtils.createConfig();
         Properties properties = new Properties();
-        properties.setNetworkFile("networks/matsim/studyNetworkDense.xml.gz");
-        properties.setRunId("subAreaAssignment");
-        properties.setIterations(10);
+        properties.setRunId("test_passengers");
+        properties.setIterations(50);
 
 
         config = MATSimConfigUtils.configure(config, properties);
-        config.plans().setInputFile("output/ld_all_2011/ld_all_2011.mito_network_plans.xml.gz");
+        config.plans().setInputFile("input/carPlans/plans_dc_20_5.xml.gz");
+
+        config.qsim().setFlowCapFactor(0.05);
+        config.qsim().setStorageCapFactor(0.05);
+
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
         Controler controler = new Controler(scenario);
