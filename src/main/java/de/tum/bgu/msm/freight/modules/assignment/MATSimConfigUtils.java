@@ -74,6 +74,18 @@ public class MATSimConfigUtils {
         airportActivity.setTypicalDuration(1*60*60);
         config.planCalcScore().addActivityParams(airportActivity);
 
+        {
+            PlanCalcScoreConfigGroup.ActivityParams activityParams = new PlanCalcScoreConfigGroup.ActivityParams("orig_passenger");
+            activityParams.setTypicalDuration(1 * 60 * 60);
+            config.planCalcScore().addActivityParams(activityParams);
+        }
+        {
+            PlanCalcScoreConfigGroup.ActivityParams activityParams = new PlanCalcScoreConfigGroup.ActivityParams("dest_passenger");
+            activityParams.setTypicalDuration(1*60*60);
+            config.planCalcScore().addActivityParams(activityParams);
+        }
+
+
         PlansCalcRouteConfigGroup.ModeRoutingParams carPassengerParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("car_passenger");
         carPassengerParams.setTeleportedModeFreespeedFactor(1.0);
         config.plansCalcRoute().addModeRoutingParams(carPassengerParams);
