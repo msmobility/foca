@@ -16,12 +16,15 @@ public class NetworkFromOsm {
     public static void main (String[] args){
 
         /*
-         * The input file name.
+         * Provide the following arguments:
+         * 0: input file from osm
+         * 1: outfile name
+         * 2: integer with the hierarchy level
          */
         String networkFolder = "./networks/";
-        String osm = networkFolder +  "output/network_bicycle_muc_v2.osm";
+        String osm = networkFolder +  args[0];
 
-        String outputFile = "matsim/muc_bicycle_v2.xml.gz";
+        String outputFile = "/.matsim/" + args[1] + "xml.gz";
 
         boolean networkCleaning = true;
 
@@ -56,6 +59,7 @@ public class NetworkFromOsm {
         Network network = scenario.getNetwork();
 
         OsmNetworkReader onr = new OsmNetworkReader(network,ct);
+        onr.setHierarchyLayer(Integer.parseInt(args[2]));
         onr.parse(osm);
 
 
