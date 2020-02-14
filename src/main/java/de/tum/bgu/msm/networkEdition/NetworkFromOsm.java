@@ -24,7 +24,7 @@ public class NetworkFromOsm {
         String networkFolder = "./networks/";
         String osm = networkFolder +  args[0];
 
-        String outputFile = "/.matsim/" + args[1] + "xml.gz";
+        String outputFile = "matsim/" + args[1] + ".xml.gz";
 
         boolean networkCleaning = true;
 
@@ -60,9 +60,8 @@ public class NetworkFromOsm {
 
         OsmNetworkReader onr = new OsmNetworkReader(network,ct);
         onr.setHierarchyLayer(Integer.parseInt(args[2]));
+        //onr.setKeepPaths(true);
         onr.parse(osm);
-
-
 
         /*
          * Clean the Network. Cleaning means removing disconnected components, so that afterwards there is a route from every link

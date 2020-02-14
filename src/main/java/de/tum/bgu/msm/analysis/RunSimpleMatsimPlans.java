@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.analysis;
 
-import de.tum.bgu.msm.freight.data.DataSet;
-import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.assignment.MATSimConfigUtils;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.matsim.api.core.v01.Scenario;
@@ -17,15 +15,17 @@ public class RunSimpleMatsimPlans {
 
         Config config = ConfigUtils.createConfig();
         Properties properties = new Properties();
-        properties.setRunId("test_passengers");
+        properties.setRunId("test_passengers_100");
         properties.setIterations(50);
+
+        properties.setNetworkFile("./networks/matsim/muc_all_bicycle_v2.xml.gz");
 
 
         config = MATSimConfigUtils.configure(config, properties);
-        config.plans().setInputFile("input/carPlans/plans_dc_20_5.xml.gz");
+        config.plans().setInputFile("input/carPlans/plans_dc_20.xml.gz");
 
-        config.qsim().setFlowCapFactor(0.05);
-        config.qsim().setStorageCapFactor(0.05);
+//        config.qsim().setFlowCapFactor(0.05);
+//        config.qsim().setStorageCapFactor(0.05);
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
 

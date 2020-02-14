@@ -128,7 +128,7 @@ public class MATSimConfigUtils {
         config.qsim().setFlowCapFactor(1);
         config.qsim().setStorageCapFactor(1);
 
-        config.linkStats().setWriteLinkStatsInterval(1);
+        config.linkStats().setWriteLinkStatsInterval(config.controler().getLastIteration());
 
         //add truck and TransportMode.bike as new mode to MATSim - these modes are routed in the same network and affected by congestion
         Set<String> modes = new HashSet<>();
