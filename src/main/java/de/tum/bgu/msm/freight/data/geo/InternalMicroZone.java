@@ -19,6 +19,8 @@ public class InternalMicroZone implements Zone {
     private SimpleFeature shapeFeature;
     private Map<String, Double> attributes;
     private boolean isInStudyArea = true;
+    private double area_m2 = 0;
+
 
     public InternalMicroZone(int id, SimpleFeature shapeFeature) {
         this.id = id;
@@ -53,5 +55,11 @@ public class InternalMicroZone implements Zone {
         return isInStudyArea;
     }
 
+    public double getArea_m2() {
+        return area_m2;
+    }
 
+    public void setArea_m2(double area_m2) {
+        this.area_m2 = area_m2;
+    }
 }
