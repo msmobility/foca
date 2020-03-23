@@ -11,10 +11,7 @@ import de.tum.bgu.msm.freight.io.output.OutputWriter;
 import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckConverter;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.GlobalModalShareModeChoice;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ModeChoiceModel;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
+import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.*;
 import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
@@ -76,7 +73,7 @@ public class FreightFlowsRunSingle {
         LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
-        ModeChoiceModel modeChoiceModel = new GlobalModalShareModeChoice();
+        ModeChoiceModel modeChoiceModel = new ContinuousApproximationModeChoice();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
         syntehticMicroDepots.setup(dataSet, properties);
