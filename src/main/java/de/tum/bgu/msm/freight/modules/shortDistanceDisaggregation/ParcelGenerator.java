@@ -37,7 +37,6 @@ public class ParcelGenerator implements Module {
     private WeightDistribution weightDistribution;
 
     private final int density_kg_m3 = 16;
-    private double MAX_WEIGHT_FOR_CARGO_BIKE_KG = 10.;
 
 
     @Override
@@ -60,53 +59,9 @@ public class ParcelGenerator implements Module {
         generateParcels();
         chooseTransactionType();
         assignCoordinates();
-        chooseParcelDistributionType();
     }
 
-    private void chooseParcelDistributionType() {
 
-        for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
-            List<Integer> internalZonesServedByMicroDepots = new ArrayList<>();
-            for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()){
-                for (InternalMicroZone internalMicroZone : microDepot.getZonesServedByThis()){
-                    internalZonesServedByMicroDepots.add(internalMicroZone.getId());
-                }
-            }
-
-            for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
-                double randomValue = properties.getRand().nextDouble();
-                //random number to assign to microdepot or to motorized(here, to try to obtain deterministic results)
-                if (!parcel.isToDestination()) {
-                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
-                    continue;
-                }
-
-                if (!internalZonesServedByMicroDepots.contains(parcel.getDestMicroZoneId())) {
-                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
-                    continue;
-                }
-                if (parcel.getWeight_kg() > MAX_WEIGHT_FOR_CARGO_BIKE_KG) {
-                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
-                    continue;
-                }
-                //may be distributed by cargo bikes, then depend on the share only
-                if (randomValue <
-                        properties.shortDistance().getShareOfCargoBikesAtZonesServedByMicroDepot()) {
-                    here:
-                    for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
-                        InternalZone internalZone = (InternalZone) dataSet.getZones().get(distributionCenter.getZoneId());
-                        if (microDepot.getZonesServedByThis().contains(internalZone.getMicroZones().get(parcel.getDestMicroZoneId()))) {
-                            parcel.setParcelDistributionType(ParcelDistributionType.CARGO_BIKE);
-                            parcel.setMicroDepot(microDepot);
-                            break here;
-                        }
-                    }
-                } else {
-                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
-                }
-            }
-        }
-    }
 
     private void generateParcels() {
         for (DistributionCenter distributionCenter : dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().rowKeySet()) {
