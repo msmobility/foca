@@ -22,7 +22,6 @@ public class GlobalModalShareModeChoice implements ModeChoiceModel {
 
     private double MAX_WEIGHT_FOR_CARGO_BIKE_KG = 10.;
 
-    @Override
     public double getShareOfCargoBikesAtThisMicroZone(int microzoneId, double weight) {
         return properties.shortDistance().getShareOfCargoBikesAtZonesServedByMicroDepot();
     }

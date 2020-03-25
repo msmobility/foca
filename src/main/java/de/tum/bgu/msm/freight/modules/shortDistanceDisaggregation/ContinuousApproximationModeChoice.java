@@ -6,7 +6,9 @@ import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
 import de.tum.bgu.msm.freight.data.freight.urban.ParcelDistributionType;
 import de.tum.bgu.msm.freight.data.freight.urban.ParcelTransaction;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
+import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
+import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
@@ -19,41 +21,43 @@ import java.util.*;
 
 public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
-    private Logger logger = Logger.getLogger(ContinuousApproximationModeChoice.class);
+    private final Logger logger = Logger.getLogger(ContinuousApproximationModeChoice.class);
     private DataSet dataSet;
     private Properties properties;
 
     private PrintWriter printWriter;
 
-    private double operatingCostBike_eur_km = 0.9200;
-    private double operatingCostTruck_eur_km = 1.7765;
-    private double kApproximation = 1.5;
-    private double serviceCostBike_eur_parcel = 1.0152;
-    private double serviceCostTruck_eur_parcel = 1.2585;
-    private double extraHandlingBike_eur_l = 0.84;
-    private double capacityTruck_l = 12500;
-    private double capacityFeeder_l = 25000;
+    private final double operatingCostBike_eur_km = 0.9200;
+    private final double operatingCostTruck_eur_km = 1.7765;
+    private final double kApproximation = 1.5;
+    private final double serviceCostBike_eur_parcel = 1.0152;
+    private final double serviceCostTruck_eur_parcel = 1.2585;
+    private final double extraHandlingBike_eur_m3 = 8.4;
+    private final double capacityTruck_m3 = 12.5;
+    private final double capacityFeeder_m3 = 12.5;
 
-    private double gridSpacing = 4000;
-    private Map<Integer, Integer> microZoneToAnalysisZoneMap = new HashMap<>();
+    private final double gridSpacing = 4000;
+    private final Map<Integer, Integer> microZoneToAnalysisZoneMap = new HashMap<>();
 
 
-    private Map<Integer, Map<LoadClass, ParcelDistributionType>> modeByClassAndZone = new HashMap<>();
+    private final Map<Integer, Map<LoadClass, ParcelDistributionType>> modeByClassAndZone = new HashMap<>();
+    private final double MAX_WEIGHT_FOR_CARGO_BIKE_KG = 10;
 
     enum LoadClass {
-        XS(1., 0.1), S(2., 1.), M(5., 10), L(100., 20.);
+        XS(1., 0.005), S(2., 0.01), M(5., 0.05), L(100., 0.2);
         private double weightUpperThreshold_kg;
-        private double volume_l;
+        private double volume_m3;
 
-        LoadClass(double weight, double volume_l) {
+        LoadClass(double weight, double volume_m3) {
             this.weightUpperThreshold_kg = weight;
-            this.volume_l = volume_l;
+            this.volume_m3 = volume_m3;
         }
     }
 
-    @Override
-    public double getShareOfCargoBikesAtThisMicroZone(int microzoneId, double weight) {
-        return 0;
+    public ParcelDistributionType getModeAtThisMicroZone(int microzoneId, double weight) {
+
+        int analysisZone = microZoneToAnalysisZoneMap.get(microzoneId);
+        return modeByClassAndZone.get(analysisZone).get(getLoadClassFromWeight(weight));
     }
 
     @Override
@@ -72,8 +76,32 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
     @Override
     public void run() {
         chooseZonalModes();
-        assignModes();
+        chooseParcelDistributionType();
+        summarizeModeChoice();
 
+    }
+
+    private void summarizeModeChoice() {
+        int countVan = 0;
+        int countBike = 0;
+        int countNull = 0;
+        for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
+            for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
+                if (parcel.getParcelDistributionType() == null){
+                    countNull++;
+                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)){
+                    countVan++;
+                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.CARGO_BIKE)){
+                    countBike++;
+                } else {
+                    logger.error("another parcel distribution type");
+                }
+            }
+        }
+
+        logger.info("Modal share van = " + countVan);
+        logger.info("Modal share bike = " + countBike);
+        logger.info("Cases with null = " + countNull);
     }
 
     class AnalysisZone {
@@ -182,17 +210,17 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                         densities.put(loadClass, density);
 
                         //by cargo bike
-                        longHaulCostsBike.put(loadClass, area_km2 * loadClass.volume_l * density *
-                                2d * distanceToDc_km * operatingCostTruck_eur_km / capacityFeeder_l);
+                        longHaulCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
+                                2d * distanceToDc_km * operatingCostTruck_eur_km / capacityFeeder_m3);
 
-                        extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_l * density *
-                                extraHandlingBike_eur_l);
+                        extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
+                                extraHandlingBike_eur_m3);
 
                         serviceCostBike.put(loadClass, area_km2 * density * serviceCostBike_eur_parcel);
 
                         //by truck
-                        longHaulCostsTruck.put(loadClass, area_km2 * loadClass.volume_l * density *
-                                2d * distanceToDc_km * operatingCostTruck_eur_km / capacityTruck_l);
+                        longHaulCostsTruck.put(loadClass, area_km2 * loadClass.volume_m3 * density *
+                                2d * distanceToDc_km * operatingCostTruck_eur_km / capacityTruck_m3);
 
                         serviceCostTruck.put(loadClass, area_km2 * density * serviceCostTruck_eur_parcel);
                     }
@@ -318,7 +346,54 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
     }
 
-    private void assignModes() {
+    private void chooseParcelDistributionType() {
+
+        for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
+            List<Integer> internalZonesServedByMicroDepots = new ArrayList<>();
+            for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()){
+                for (InternalMicroZone internalMicroZone : microDepot.getZonesServedByThis()){
+                    internalZonesServedByMicroDepots.add(internalMicroZone.getId());
+                }
+            }
+
+            for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
+
+                if (!parcel.isToDestination()) {
+                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+                    continue;
+                }
+
+                if (!internalZonesServedByMicroDepots.contains(parcel.getDestMicroZoneId())) {
+                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+                    continue;
+                }
+                if (parcel.getWeight_kg() > MAX_WEIGHT_FOR_CARGO_BIKE_KG) {
+                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+                    continue;
+                }
+
+                if (parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)){
+                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+                    continue;
+                }
+                ParcelDistributionType modeAtThisMicroZone = getModeAtThisMicroZone(parcel.getDestMicroZoneId(), parcel.getWeight_kg());
+                parcel.setParcelDistributionType(modeAtThisMicroZone);
+                if (modeAtThisMicroZone.equals(ParcelDistributionType.CARGO_BIKE)){
+                    here:
+                    for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
+                        InternalZone internalZone = (InternalZone) dataSet.getZones().get(distributionCenter.getZoneId());
+                        if (microDepot.getZonesServedByThis().contains(internalZone.getMicroZones().get(parcel.getDestMicroZoneId()))) {
+                            parcel.setMicroDepot(microDepot);
+                            break here;
+                        }
+                    }
+                }
+
+
+
+            }
+        }
+        logger.info("Finished mode choice assignment");
     }
 
 
