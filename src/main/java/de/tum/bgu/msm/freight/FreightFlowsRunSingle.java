@@ -36,7 +36,7 @@ public class FreightFlowsRunSingle {
         properties.setSampleFactorForParcels(0.1);
         properties.setIterations(2);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties.setRunId("withoutLdDisaggregationDc20_matsim_modified");
+        properties.setRunId("base");
         properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
         properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.);
         properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(2000.);
