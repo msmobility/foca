@@ -87,11 +87,11 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
         int countNull = 0;
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
             for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
-                if (parcel.getParcelDistributionType() == null){
+                if (parcel.getParcelDistributionType() == null) {
                     countNull++;
-                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)){
+                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
                     countVan++;
-                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.CARGO_BIKE)){
+                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.CARGO_BIKE)) {
                     countBike++;
                 } else {
                     logger.error("another parcel distribution type");
@@ -146,102 +146,143 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
             for (DistributionCenter distributionCenter : dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, CommodityGroup.PACKET).values()) {
                 Map<Integer, Map<LoadClass, Integer>> parcelsByZoneAndLoadClass = new HashMap<>();
-                for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
-                    LoadClass loadClass = getLoadClassFromWeight(parcel.getWeight_kg());
-                    Coordinate coordinate;
-                    if (!parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
-                        if (parcel.isToDestination()) {
-                            coordinate = parcel.getDestCoord();
-                        } else {
-                            coordinate = parcel.getOriginCoord();
-                        }
+                if (dataSet.getParcelsByDistributionCenter().get(distributionCenter) != null) {
+                    for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
+                        LoadClass loadClass = getLoadClassFromWeight(parcel.getWeight_kg());
+                        Coordinate coordinate;
+                        if (!parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
+                            if (parcel.isToDestination()) {
+                                coordinate = parcel.getDestCoord();
+                            } else {
+                                coordinate = parcel.getOriginCoord();
+                            }
 
-                        //int microZoneid = parcel.getDestMicroZoneId();
-                        //finds the closest analysis zone
-                        int selecteAZ = -1;
-                        double distance = Double.MAX_VALUE;
-                        for (AnalysisZone az : analysisZones.values()) {
-                            double thisDistance = Math.sqrt(Math.pow(az.xCenter - coordinate.getX(), 2) + Math.pow(az.yCenter - coordinate.getY(), 2));
-                            if (thisDistance < distance) {
-                                distance = thisDistance;
-                                selecteAZ = az.id;
+                            //int microZoneid = parcel.getDestMicroZoneId();
+                            //finds the closest analysis zone
+                            int selecteAZ = -1;
+                            double distance = Double.MAX_VALUE;
+                            for (AnalysisZone az : analysisZones.values()) {
+                                double thisDistance = Math.sqrt(Math.pow(az.xCenter - coordinate.getX(), 2) + Math.pow(az.yCenter - coordinate.getY(), 2));
+                                if (thisDistance < distance) {
+                                    distance = thisDistance;
+                                    selecteAZ = az.id;
+                                }
+                            }
+
+                            if (selecteAZ != -1) {
+                                microZoneToAnalysisZoneMap.put(parcel.getDestMicroZoneId(), selecteAZ);
+                                parcelsByZoneAndLoadClass.putIfAbsent(selecteAZ, new HashMap<>());
+                                parcelsByZoneAndLoadClass.get(selecteAZ).putIfAbsent(loadClass, 0);
+                                parcelsByZoneAndLoadClass.get(selecteAZ).put(loadClass, parcelsByZoneAndLoadClass.get(selecteAZ).get(loadClass) + 1);
+                            } else {
+                                logger.warn("The closest zone is not found!");
                             }
                         }
-
-                        if (selecteAZ != -1) {
-                            microZoneToAnalysisZoneMap.put(parcel.getDestMicroZoneId(), selecteAZ);
-                            parcelsByZoneAndLoadClass.putIfAbsent(selecteAZ, new HashMap<>());
-                            parcelsByZoneAndLoadClass.get(selecteAZ).putIfAbsent(loadClass, 0);
-                            parcelsByZoneAndLoadClass.get(selecteAZ).put(loadClass, parcelsByZoneAndLoadClass.get(selecteAZ).get(loadClass) + 1);
-                        } else {
-                            logger.warn("The closest zone is not found!");
-                        }
-                    }
-                }
-
-                for (int analysisZoneId : parcelsByZoneAndLoadClass.keySet()) {
-                    AnalysisZone analysisZone = analysisZones.get(analysisZoneId);
-                    Coordinate zoneCoordinates = new Coordinate(analysisZone.xCenter, analysisZone.yCenter);
-                    Coordinate dcCoordinate = distributionCenter.getCoordinates();
-                    double distanceToDc_km = Math.abs(zoneCoordinates.getX() - dcCoordinate.getX()) / 1000d +
-                            Math.abs(zoneCoordinates.getY() - dcCoordinate.getY()) / 1000d;
-
-                    modeByClassAndZone.putIfAbsent(analysisZone.id, new HashMap<>());
-                    double area_km2 = Math.pow(gridSpacing, 2) / 1e6;
-
-                    Map<LoadClass, Double> longHaulCostsTruck = new HashMap<>();
-                    Map<LoadClass, Double> longHaulCostsBike = new HashMap<>();
-                    Map<LoadClass, Double> extraHandlingCostsBike = new HashMap<>();
-                    Map<LoadClass, Double> serviceCostTruck = new HashMap<>();
-                    Map<LoadClass, Double> serviceCostBike = new HashMap<>();
-                    Map<LoadClass, Double> densities = new HashMap<>();
-
-                    for (LoadClass loadClass : LoadClass.values()) {
-                        //calculate costs by truck and by cargo bike and by size
-                        int parcels;
-                        try {
-                            parcels = parcelsByZoneAndLoadClass.get(analysisZone.id).get(loadClass);
-                        } catch (NullPointerException e) {
-                            parcels = 0;
-                        }
-
-                        double density = parcels / area_km2;
-
-                        densities.put(loadClass, density);
-
-                        //by cargo bike
-                        longHaulCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
-                                2d * distanceToDc_km * operatingCostTruck_eur_km / capacityFeeder_m3);
-
-                        extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
-                                extraHandlingBike_eur_m3);
-
-                        serviceCostBike.put(loadClass, area_km2 * density * serviceCostBike_eur_parcel);
-
-                        //by truck
-                        longHaulCostsTruck.put(loadClass, area_km2 * loadClass.volume_m3 * density *
-                                2d * distanceToDc_km * operatingCostTruck_eur_km / capacityTruck_m3);
-
-                        serviceCostTruck.put(loadClass, area_km2 * density * serviceCostTruck_eur_parcel);
                     }
 
-                    double minCost = Double.MAX_VALUE;
-                    int selectedCombinationIndex = 0;
-                    Map<Integer, EnumMap<LoadClass, Double>> combinations = generateCombinations();
-                    for (int combinationIndex : combinations.keySet()) {
-                        double cost = 0d;
-                        double sumOfDensitiesBike = 0d;
-                        double sumOfDensitiesTruck = 0d;
-                        EnumMap<LoadClass, Double> thisCombination = combinations.get(combinationIndex);
+                    for (int analysisZoneId : parcelsByZoneAndLoadClass.keySet()) {
+                        AnalysisZone analysisZone = analysisZones.get(analysisZoneId);
+                        Coordinate zoneCoordinates = new Coordinate(analysisZone.xCenter, analysisZone.yCenter);
+                        Coordinate dcCoordinate = distributionCenter.getCoordinates();
+                        double distanceToDc_km = Math.abs(zoneCoordinates.getX() - dcCoordinate.getX()) / 1000d +
+                                Math.abs(zoneCoordinates.getY() - dcCoordinate.getY()) / 1000d;
+
+                        modeByClassAndZone.putIfAbsent(analysisZone.id, new HashMap<>());
+                        double area_km2 = Math.pow(gridSpacing, 2) / 1e6;
+
+                        Map<LoadClass, Double> longHaulCostsTruck = new HashMap<>();
+                        Map<LoadClass, Double> longHaulCostsBike = new HashMap<>();
+                        Map<LoadClass, Double> extraHandlingCostsBike = new HashMap<>();
+                        Map<LoadClass, Double> serviceCostTruck = new HashMap<>();
+                        Map<LoadClass, Double> serviceCostBike = new HashMap<>();
+                        Map<LoadClass, Double> densities = new HashMap<>();
+
                         for (LoadClass loadClass : LoadClass.values()) {
-                            double isCargoBike = thisCombination.get(loadClass);
-                            cost += longHaulCostsBike.get(loadClass) * isCargoBike;
-                            cost += longHaulCostsTruck.get(loadClass) * (1d - isCargoBike);
-                            cost += extraHandlingCostsBike.get(loadClass) * isCargoBike;
-                            cost += serviceCostBike.get(loadClass) * isCargoBike;
-                            cost += serviceCostTruck.get(loadClass) * (1d - isCargoBike);
-                            sumOfDensitiesBike += densities.get(loadClass) * isCargoBike;
-                            sumOfDensitiesTruck += densities.get(loadClass) * (1d - isCargoBike);
+                            //calculate costs by truck and by cargo bike and by size
+                            int parcels;
+                            try {
+                                parcels = parcelsByZoneAndLoadClass.get(analysisZone.id).get(loadClass);
+                            } catch (NullPointerException e) {
+                                parcels = 0;
+                            }
+
+                            double density = parcels / area_km2;
+
+                            densities.put(loadClass, density);
+
+                            //by cargo bike
+                            longHaulCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
+                                    2d * distanceToDc_km * operatingCostTruck_eur_km / capacityFeeder_m3);
+
+                            extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
+                                    extraHandlingBike_eur_m3);
+
+                            serviceCostBike.put(loadClass, area_km2 * density * serviceCostBike_eur_parcel);
+
+                            //by truck
+                            longHaulCostsTruck.put(loadClass, area_km2 * loadClass.volume_m3 * density *
+                                    2d * distanceToDc_km * operatingCostTruck_eur_km / capacityTruck_m3);
+
+                            serviceCostTruck.put(loadClass, area_km2 * density * serviceCostTruck_eur_parcel);
+                        }
+
+                        double minCost = Double.MAX_VALUE;
+                        int selectedCombinationIndex = 0;
+                        Map<Integer, EnumMap<LoadClass, Double>> combinations = generateCombinations();
+                        for (int combinationIndex : combinations.keySet()) {
+                            double cost = 0d;
+                            double sumOfDensitiesBike = 0d;
+                            double sumOfDensitiesTruck = 0d;
+                            EnumMap<LoadClass, Double> thisCombination = combinations.get(combinationIndex);
+                            for (LoadClass loadClass : LoadClass.values()) {
+                                double isCargoBike = thisCombination.get(loadClass);
+                                cost += longHaulCostsBike.get(loadClass) * isCargoBike;
+                                cost += longHaulCostsTruck.get(loadClass) * (1d - isCargoBike);
+                                cost += extraHandlingCostsBike.get(loadClass) * isCargoBike;
+                                cost += serviceCostBike.get(loadClass) * isCargoBike;
+                                cost += serviceCostTruck.get(loadClass) * (1d - isCargoBike);
+                                sumOfDensitiesBike += densities.get(loadClass) * isCargoBike;
+                                sumOfDensitiesTruck += densities.get(loadClass) * (1d - isCargoBike);
+
+                                printWriter.print(zone.getId());
+                                printWriter.print(",");
+                                printWriter.print(analysisZone.id);
+                                printWriter.print(",");
+                                printWriter.print(analysisZone.xCenter);
+                                printWriter.print(",");
+                                printWriter.print(analysisZone.yCenter);
+                                printWriter.print(",");
+                                printWriter.print(distributionCenter.getId());
+                                printWriter.print(",");
+                                printWriter.print(distanceToDc_km);
+                                printWriter.print(",");
+                                printWriter.print(loadClass.toString());
+                                printWriter.print(",");
+                                printWriter.print(area_km2);
+                                printWriter.print(",");
+                                printWriter.print(densities.get(loadClass));
+                                printWriter.print(",");
+                                printWriter.print(combinationIndex);
+                                printWriter.print(",");
+                                printWriter.print(isCargoBike == 1 ? "cargoBike" : "truck");
+                                printWriter.print(",");
+                                printWriter.print(longHaulCostsBike.get(loadClass) * isCargoBike + longHaulCostsTruck.get(loadClass) * (1d - isCargoBike));
+                                printWriter.print(",");
+                                printWriter.print(serviceCostBike.get(loadClass) * isCargoBike + serviceCostTruck.get(loadClass) * (1d - isCargoBike));
+                                printWriter.print(",");
+                                printWriter.print(extraHandlingCostsBike.get(loadClass) * isCargoBike);
+                                printWriter.print(",");
+                                printWriter.print(0);
+                                printWriter.print(",");
+                                printWriter.print(0);
+                                printWriter.print(",");
+                                printWriter.print(0);
+                                printWriter.println();
+                            }
+
+                            cost = cost +
+                                    Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2 +
+                                    Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2;
 
                             printWriter.print(zone.getId());
                             printWriter.print(",");
@@ -255,91 +296,47 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             printWriter.print(",");
                             printWriter.print(distanceToDc_km);
                             printWriter.print(",");
-                            printWriter.print(loadClass.toString());
+                            printWriter.print("all");
                             printWriter.print(",");
                             printWriter.print(area_km2);
                             printWriter.print(",");
-                            printWriter.print(densities.get(loadClass));
+                            printWriter.print(0);
                             printWriter.print(",");
                             printWriter.print(combinationIndex);
                             printWriter.print(",");
-                            printWriter.print(isCargoBike == 1 ? "cargoBike" : "truck");
-                            printWriter.print(",");
-                            printWriter.print(longHaulCostsBike.get(loadClass) * isCargoBike + longHaulCostsTruck.get(loadClass) * (1d - isCargoBike));
-                            printWriter.print(",");
-                            printWriter.print(serviceCostBike.get(loadClass) * isCargoBike + serviceCostTruck.get(loadClass) * (1d - isCargoBike));
-                            printWriter.print(",");
-                            printWriter.print(extraHandlingCostsBike.get(loadClass) * isCargoBike);
+                            printWriter.print("all");
                             printWriter.print(",");
                             printWriter.print(0);
                             printWriter.print(",");
                             printWriter.print(0);
                             printWriter.print(",");
                             printWriter.print(0);
+                            printWriter.print(",");
+                            printWriter.print(Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2);
+                            printWriter.print(",");
+                            printWriter.print(Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2);
+                            printWriter.print(",");
+                            printWriter.print(cost);
                             printWriter.println();
+
+
+                            if (cost < minCost) {
+                                minCost = cost;
+                                selectedCombinationIndex = combinationIndex;
+                            }
                         }
 
-                        cost = cost +
-                                Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2 +
-                                Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2;
+                        EnumMap<LoadClass, Double> selectedCombination = combinations.get(selectedCombinationIndex);
+                        for (LoadClass loadClass : selectedCombination.keySet()) {
+                            ParcelDistributionType parcelDistributionType = selectedCombination.get(loadClass) == 0. ?
+                                    ParcelDistributionType.MOTORIZED : ParcelDistributionType.CARGO_BIKE;
 
-                        printWriter.print(zone.getId());
-                        printWriter.print(",");
-                        printWriter.print(analysisZone.id);
-                        printWriter.print(",");
-                        printWriter.print(analysisZone.xCenter);
-                        printWriter.print(",");
-                        printWriter.print(analysisZone.yCenter);
-                        printWriter.print(",");
-                        printWriter.print(distributionCenter.getId());
-                        printWriter.print(",");
-                        printWriter.print(distanceToDc_km);
-                        printWriter.print(",");
-                        printWriter.print("all");
-                        printWriter.print(",");
-                        printWriter.print(area_km2);
-                        printWriter.print(",");
-                        printWriter.print(0);
-                        printWriter.print(",");
-                        printWriter.print(combinationIndex);
-                        printWriter.print(",");
-                        printWriter.print("all");
-                        printWriter.print(",");
-                        printWriter.print(0);
-                        printWriter.print(",");
-                        printWriter.print(0);
-                        printWriter.print(",");
-                        printWriter.print(0);
-                        printWriter.print(",");
-                        printWriter.print(Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2);
-                        printWriter.print(",");
-                        printWriter.print(Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2);
-                        printWriter.print(",");
-                        printWriter.print(cost);
-                        printWriter.println();
+                            modeByClassAndZone.get(analysisZone.id).put(loadClass, parcelDistributionType);
 
-
-                        if (cost < minCost) {
-                            minCost = cost;
-                            selectedCombinationIndex = combinationIndex;
                         }
                     }
-
-                    EnumMap<LoadClass, Double> selectedCombination = combinations.get(selectedCombinationIndex);
-                    for (LoadClass loadClass : selectedCombination.keySet()) {
-                        ParcelDistributionType parcelDistributionType = selectedCombination.get(loadClass) == 0. ?
-                                ParcelDistributionType.MOTORIZED : ParcelDistributionType.CARGO_BIKE;
-
-                        modeByClassAndZone.get(analysisZone.id).put(loadClass, parcelDistributionType);
-
-                    }
-
-
                 }
-
             }
-
-
         }
 
         printWriter.close();
@@ -350,8 +347,8 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
             List<Integer> internalZonesServedByMicroDepots = new ArrayList<>();
-            for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()){
-                for (InternalMicroZone internalMicroZone : microDepot.getZonesServedByThis()){
+            for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
+                for (InternalMicroZone internalMicroZone : microDepot.getZonesServedByThis()) {
                     internalZonesServedByMicroDepots.add(internalMicroZone.getId());
                 }
             }
@@ -372,13 +369,13 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                     continue;
                 }
 
-                if (parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)){
+                if (parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
                 }
                 ParcelDistributionType modeAtThisMicroZone = getModeAtThisMicroZone(parcel.getDestMicroZoneId(), parcel.getWeight_kg());
                 parcel.setParcelDistributionType(modeAtThisMicroZone);
-                if (modeAtThisMicroZone.equals(ParcelDistributionType.CARGO_BIKE)){
+                if (modeAtThisMicroZone.equals(ParcelDistributionType.CARGO_BIKE)) {
                     here:
                     for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
                         InternalZone internalZone = (InternalZone) dataSet.getZones().get(distributionCenter.getZoneId());
@@ -388,7 +385,6 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                         }
                     }
                 }
-
 
 
             }
