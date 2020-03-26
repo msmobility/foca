@@ -21,11 +21,19 @@ public class InputManager {
         readTerminals();
         readMakeUseTable();
         readWeightDistribution();
-        readOrigDestFlows();
 
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            readOrigDestFlows();
+        } else {
+            readLongDistanceTrucks();
+        }
         //todo this will add a silo data container for a certain study area (so far only covers the silo study area)
         //new SPReader(dataSet).readSyntheticPopulation("C:/models/silo/muc/siloMuc.properties");
 
+    }
+
+    private void readLongDistanceTrucks() {
+        new LongDistanceTruckReader(dataSet, properties).read();
     }
 
     private void readDistributionCenterCatchmentAreas() {

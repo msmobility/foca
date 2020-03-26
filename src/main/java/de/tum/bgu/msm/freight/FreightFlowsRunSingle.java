@@ -45,6 +45,9 @@ public class FreightFlowsRunSingle {
 
         properties.shortDistance().setReadMicroDepotsFromFile(false);
 
+        properties.longDistance().setDisaggregateLongDistanceFlows(false);
+        properties.longDistance().setLongDistanceTruckInputFile("./input/preProcessedInput/ld_trucks_muc.csv");
+
         try {
             properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
         } catch (FileNotFoundException e) {
@@ -69,24 +72,37 @@ public class FreightFlowsRunSingle {
         DataSet dataSet = io.getDataSet();
 
         SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
-        FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
-        LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
+
+        FlowsToLDTruckConverter flowsToLDTruckConverter = null;
+        LDTruckODAllocator LDTruckODAllocator = null;
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            LDTruckODAllocator = new LDTruckODAllocator();
+            flowsToLDTruckConverter = new FlowsToLDTruckConverter();
+        }
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
         ModeChoiceModel modeChoiceModel = new ContinuousApproximationModeChoice();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
+
         syntehticMicroDepots.setup(dataSet, properties);
-        flowsToLDTruckConverter.setup(dataSet, properties);
-        LDTruckODAllocator.setup(dataSet, properties);
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            flowsToLDTruckConverter.setup(dataSet, properties);
+            LDTruckODAllocator.setup(dataSet, properties);
+        }
+
         SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
         modeChoiceModel.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
         syntehticMicroDepots.run();
-        flowsToLDTruckConverter.run();
-        LDTruckODAllocator.run();
+
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            flowsToLDTruckConverter.run();
+            LDTruckODAllocator.run();
+
+        }
         SDTruckGenerator.run();
         parcelGenerator.run();
         modeChoiceModel.run();
