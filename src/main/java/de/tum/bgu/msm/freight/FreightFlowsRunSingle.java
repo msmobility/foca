@@ -12,10 +12,9 @@ import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckConverter;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.*;
-import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
+import de.tum.bgu.msm.freight.modules.syntheticMicroDepotGeneration.SyntheticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
-import org.matsim.core.population.io.PopulationWriter;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class FreightFlowsRunSingle {
         properties.setSampleFactorForParcels(0.1);
         properties.setIterations(2);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties.setRunId("withoutLdDisaggregationDc20_matsim_base");
+        properties.setRunId("withoutLdDisaggregationDc20_matsim_modified");
         properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
         properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.);
         properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(2000.);
@@ -71,7 +70,7 @@ public class FreightFlowsRunSingle {
 
         DataSet dataSet = io.getDataSet();
 
-        SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
+        SyntheticMicroDepots syntehticMicroDepots = new SyntheticMicroDepots();
 
         FlowsToLDTruckConverter flowsToLDTruckConverter = null;
         LDTruckODAllocator LDTruckODAllocator = null;
