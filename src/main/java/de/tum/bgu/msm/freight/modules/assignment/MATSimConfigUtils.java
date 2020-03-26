@@ -74,6 +74,18 @@ public class MATSimConfigUtils {
         airportActivity.setTypicalDuration(1*60*60);
         config.planCalcScore().addActivityParams(airportActivity);
 
+        {
+            PlanCalcScoreConfigGroup.ActivityParams activityParams = new PlanCalcScoreConfigGroup.ActivityParams("orig_passenger");
+            activityParams.setTypicalDuration(1 * 60 * 60);
+            config.planCalcScore().addActivityParams(activityParams);
+        }
+        {
+            PlanCalcScoreConfigGroup.ActivityParams activityParams = new PlanCalcScoreConfigGroup.ActivityParams("dest_passenger");
+            activityParams.setTypicalDuration(1*60*60);
+            config.planCalcScore().addActivityParams(activityParams);
+        }
+
+
         PlansCalcRouteConfigGroup.ModeRoutingParams carPassengerParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("car_passenger");
         carPassengerParams.setTeleportedModeFreespeedFactor(1.0);
         config.plansCalcRoute().addModeRoutingParams(carPassengerParams);
@@ -83,10 +95,13 @@ public class MATSimConfigUtils {
         ptParams.setTeleportedModeSpeed(50/3.6);
         config.plansCalcRoute().addModeRoutingParams(ptParams);
 
-        PlansCalcRouteConfigGroup.ModeRoutingParams bicycleParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("bike");
+        /*PlansCalcRouteConfigGroup.ModeRoutingParams bicycleParams = new PlansCalcRouteConfigGroup.ModeRoutingParams(""TransportMode.bike"");
         bicycleParams.setBeelineDistanceFactor(1.3);
         bicycleParams.setTeleportedModeSpeed(15/3.6);
-        config.plansCalcRoute().addModeRoutingParams(bicycleParams);
+        config.plansCalcRoute().addModeRoutingParams(bicycleParams);*/
+
+        config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
+
 
         PlansCalcRouteConfigGroup.ModeRoutingParams walkParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("walk");
         walkParams.setBeelineDistanceFactor(1.3);
@@ -113,16 +128,17 @@ public class MATSimConfigUtils {
         config.qsim().setFlowCapFactor(1);
         config.qsim().setStorageCapFactor(1);
 
-        config.linkStats().setWriteLinkStatsInterval(1);
+        config.linkStats().setWriteLinkStatsInterval(config.controler().getLastIteration());
 
-        //add truck as new mode to MATSim
+        //add truck and TransportMode.bike as new mode to MATSim - these modes are routed in the same network and affected by congestion
         Set<String> modes = new HashSet<>();
         modes.addAll(config.qsim().getMainModes());
         modes.add(TransportMode.truck);
-//        modes.add("cargoBike");
-        config.qsim().setMainModes(modes);
+        modes.add(TransportMode.bike);
 
+        config.qsim().setMainModes(modes);
         config.plansCalcRoute().setNetworkModes(modes);
+
 
         PlanCalcScoreConfigGroup.ModeParams carParams = config.planCalcScore().getOrCreateModeParams(TransportMode.car);
         PlanCalcScoreConfigGroup.ModeParams truckParams = new PlanCalcScoreConfigGroup.ModeParams(TransportMode.truck);
@@ -133,25 +149,25 @@ public class MATSimConfigUtils {
         truckParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
         config.planCalcScore().addModeParams(truckParams);
 
-//        PlanCalcScoreConfigGroup.ModeParams cargoBikeParams = new PlanCalcScoreConfigGroup.ModeParams("cargoBike");
-//        cargoBikeParams.setConstant(carParams.getConstant());
-//        cargoBikeParams.setDailyMonetaryConstant(carParams.getDailyMonetaryConstant());
-//        cargoBikeParams.setMarginalUtilityOfDistance(carParams.getMarginalUtilityOfDistance());
-//        cargoBikeParams.setDailyUtilityConstant(carParams.getDailyUtilityConstant());
-//        cargoBikeParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
-//        config.planCalcScore().addModeParams(cargoBikeParams);
+        PlanCalcScoreConfigGroup.ModeParams cargoBikeParams = new PlanCalcScoreConfigGroup.ModeParams("TransportMode.bike");
+        cargoBikeParams.setConstant(carParams.getConstant());
+        cargoBikeParams.setDailyMonetaryConstant(carParams.getDailyMonetaryConstant());
+        cargoBikeParams.setMarginalUtilityOfDistance(carParams.getMarginalUtilityOfDistance());
+        cargoBikeParams.setDailyUtilityConstant(carParams.getDailyUtilityConstant());
+        cargoBikeParams.setMonetaryDistanceRate(carParams.getMonetaryDistanceRate());
+        config.planCalcScore().addModeParams(cargoBikeParams);
 
         Set<String> analyzedModes = new HashSet<>();
-        analyzedModes.add("truck");
-        analyzedModes.add("car");
-//        analyzedModes.add("cargoBike");
+        analyzedModes.add(TransportMode.truck);
+        analyzedModes.add(TransportMode.car);
+        analyzedModes.add(TransportMode.bike);
 
         config.travelTimeCalculator().setAnalyzedModes(analyzedModes);
-        config.travelTimeCalculator().setSeparateModes(false);
+        config.travelTimeCalculator().setSeparateModes(true);
 
         config.vehicles().setVehiclesFile(properties.getVehicleFile());
         config.qsim().setVehiclesSource(QSimConfigGroup.VehiclesSource.modeVehicleTypesFromVehiclesData);
-        config.qsim().setLinkDynamics(QSimConfigGroup.LinkDynamics.FIFO);
+        config.qsim().setLinkDynamics(QSimConfigGroup.LinkDynamics.FIFO); //todo consider passingQ? how is passing in MATSim?
         config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.queue);
 
         return config;

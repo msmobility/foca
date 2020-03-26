@@ -10,9 +10,9 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.contrib.freight.carrier.*;
+import org.matsim.contrib.freight.controler.CarrierScoringFunctionFactory;
+import org.matsim.contrib.freight.controler.FreightActivity;
 import org.matsim.contrib.freight.jsprit.VehicleTypeDependentRoadPricingCalculator;
-import org.matsim.contrib.freight.scoring.CarrierScoringFunctionFactory;
-import org.matsim.contrib.freight.scoring.FreightActivity;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.scoring.ScoringFunction;
 import org.matsim.core.scoring.SumScoringFunction;
@@ -137,13 +137,13 @@ public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
 
         private final Carrier carrier;
 
-        private Set<CarrierVehicle> employedVehicles;
+        private Set<Vehicle> employedVehicles;
 
         public DriversLegScoring(Carrier carrier, Network network) {
             super();
             this.network = network;
             this.carrier = carrier;
-            employedVehicles = new HashSet<CarrierVehicle>();
+            employedVehicles = new HashSet<>();
         }
 
 
@@ -158,19 +158,19 @@ public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
             return score;
         }
 
-        private double getTimeParameter(CarrierVehicle vehicle) {
+        private double getTimeParameter(Vehicle vehicle) {
             return vehicle.getVehicleType().getVehicleCostInformation().getPerTimeUnit();
         }
 
 
-        private double getDistanceParameter(CarrierVehicle vehicle) {
+        private double getDistanceParameter(Vehicle vehicle) {
             return vehicle.getVehicleType().getVehicleCostInformation().getPerDistanceUnit();
         }
 
 
-        private CarrierVehicle getVehicle(Id vehicleId) {
-            for(CarrierVehicle cv : carrier.getCarrierCapabilities().getCarrierVehicles()){
-                if(cv.getVehicleId().equals(vehicleId)){
+        private Vehicle getVehicle(Id vehicleId) {
+            for(Vehicle cv : carrier.getCarrierCapabilities().getCarrierVehicles().values()){
+                if(cv.getId().equals(vehicleId)){
                     return cv;
                 }
             }
@@ -182,7 +182,7 @@ public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
             if(leg.getRoute() instanceof NetworkRoute){
                 NetworkRoute nRoute = (NetworkRoute) leg.getRoute();
                 Id vehicleId = nRoute.getVehicleId();
-                CarrierVehicle vehicle = getVehicle(vehicleId);
+                Vehicle vehicle = getVehicle(vehicleId);
                 if(vehicle == null) throw new IllegalStateException("vehicle with id " + vehicleId + " is missing");
                 if(!employedVehicles.contains(vehicle)){
                     employedVehicles.add(vehicle);
@@ -241,7 +241,7 @@ public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
         }
 
         private CarrierVehicle getVehicle(Id<Vehicle> vehicleId) {
-            for(CarrierVehicle v : carrier.getCarrierCapabilities().getCarrierVehicles()){
+            for(CarrierVehicle v : carrier.getCarrierCapabilities().getCarrierVehicles().values()){
                 if(v.getVehicleId().equals(vehicleId)){
                     return v;
                 }

@@ -13,6 +13,7 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfig;
 import com.graphhopper.jsprit.io.algorithm.AlgorithmConfigXmlReader;
 import com.graphhopper.jsprit.io.algorithm.VehicleRoutingAlgorithms;
+import de.tum.bgu.msm.freight.data.DataSet;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.freight.carrier.Carrier;
@@ -35,8 +36,10 @@ public class CarrierTourDesigner {
 
     private Network network;
     private CarrierVehicleTypes carrierVehicleTypes;
+    private DataSet dataSet;
 
-    public CarrierTourDesigner(Network network) {
+    public CarrierTourDesigner(Network network, DataSet dataSet) {
+        this.dataSet = dataSet;
         this.network = network;
     }
 
@@ -52,6 +55,9 @@ public class CarrierTourDesigner {
     private CarrierPlan createPlan(Carrier carrier) {
         VehicleRoutingProblem.Builder vrpBuilder = MatsimJspritFactory.createRoutingProblemBuilder(carrier, network);
         NetworkBasedTransportCosts.Builder tpcostsBuilder = NetworkBasedTransportCosts.Builder.newInstance(network, carrier.getCarrierCapabilities().getVehicleTypes());
+
+
+
         //sets time-dependent travelTimes
         //				tpcostsBuilder.setTravelTime(travelTimes);
         //sets time-slice to build time-dependent tpcosts and traveltime matrices
@@ -59,21 +65,21 @@ public class CarrierTourDesigner {
         //				tpcostsBuilder.setFIFO(true);
         //assign netBasedCosts to RoutingProblem
 
-        MyNonCongestedTravelTime travelTime = new MyNonCongestedTravelTime();
+        ByModeTravelTime travelTime = new ByModeTravelTime(dataSet.getModeByCarrier().get(carrier));
         tpcostsBuilder.setTravelTime(travelTime);
         tpcostsBuilder.setBaseTravelTimeAndDisutility(travelTime,
                 TravelDisutilities.createBaseDisutility(carrierVehicleTypes, travelTime));
 
-        NetworkBasedTransportCosts netbasedTransportcosts = tpcostsBuilder.build();
+        NetworkBasedTransportCosts netBasedTransportCosts = tpcostsBuilder.build();
 
         //set transport-costs
-        vrpBuilder.setRoutingCost(netbasedTransportcosts);
+        vrpBuilder.setRoutingCost(netBasedTransportCosts);
 
         //******
         //Define activity-costs
         //******
         //should be inline with activity-scoring
-        VehicleRoutingActivityCosts activitycosts = new VehicleRoutingActivityCosts(){
+        VehicleRoutingActivityCosts activityCosts = new VehicleRoutingActivityCosts(){
 
             private double penalty4missedTws = 0.01;
 
@@ -96,7 +102,7 @@ public class CarrierTourDesigner {
             }
 
         };
-        vrpBuilder.setActivityCosts(activitycosts);
+        vrpBuilder.setActivityCosts(activityCosts);
 
         //build the problem
         VehicleRoutingProblem vrp = vrpBuilder.build();
@@ -132,7 +138,7 @@ public class CarrierTourDesigner {
 
         //create carrierPlan from solution
         CarrierPlan plan = MatsimJspritFactory.createPlan(carrier, solution);
-        NetworkRouter.routePlan(plan, netbasedTransportcosts);
+        NetworkRouter.routePlan(plan, netBasedTransportCosts);
 
         logger.warn("Completed carrier " + carrier.getId().toString());
 

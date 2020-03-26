@@ -5,11 +5,16 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.util.ResourceBundle;
 
 public abstract class PropertiesGroup {
 
     public final Logger LOGGER = Logger.getLogger(PropertiesGroup.class);
+    private final ResourceBundle bundle;
 
+    public PropertiesGroup(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
 
     protected void logUsedProperties(PrintWriter pw){
         for (Field x : this.getClass().getDeclaredFields()) {

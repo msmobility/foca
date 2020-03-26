@@ -10,6 +10,7 @@ import de.tum.bgu.msm.freight.data.freight.longDistance.SegmentType;
 import de.tum.bgu.msm.freight.data.freight.Bound;
 import de.tum.bgu.msm.freight.data.geo.*;
 import de.tum.bgu.msm.freight.modules.Module;
+import de.tum.bgu.msm.freight.modules.common.DistributionCenterUtils;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
@@ -167,7 +168,7 @@ public class LDTruckODAllocator implements Module {
                         DistributionCenter originDistributionCenter = chooseDistributionCenterByWeight(originZone.getId(), commodity.getCommodityGroup());
                         LDTruckTrip.setOriginDistributionCenter(originDistributionCenter);
                         origCoord = originDistributionCenter.getCoordinates();
-                        addVolumeForSmallTruckDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                        DistributionCenterUtils.addVolumeForSmallTruckDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad, dataSet);
                     }
                     break;
                 case PARCEL_DELIVERY:
@@ -178,7 +179,7 @@ public class LDTruckODAllocator implements Module {
                         DistributionCenter originDistributionCenter = chooseDistributionCenterByWeight(originZone.getId(), commodity.getCommodityGroup());
                         origCoord = originDistributionCenter.getCoordinates();
                         LDTruckTrip.setOriginDistributionCenter(originDistributionCenter);
-                        addVolumeForParcelDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                        DistributionCenterUtils.addVolumeForParcelDelivery(originDistributionCenter, commodity, bound, thisTruckEffectiveLoad, dataSet);
                     }
                     break;
                 default:
@@ -246,7 +247,7 @@ public class LDTruckODAllocator implements Module {
                         DistributionCenter destinationDistributionCenter = chooseDistributionCenterByWeight(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
                         LDTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
-                        addVolumeForSmallTruckDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                        DistributionCenterUtils.addVolumeForSmallTruckDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad, dataSet);
                     }
                     break;
                 case PARCEL_DELIVERY:
@@ -256,7 +257,7 @@ public class LDTruckODAllocator implements Module {
                         DistributionCenter destinationDistributionCenter = chooseDistributionCenterByWeight(destinationZone.getId(), commodity.getCommodityGroup());
                         destCoord = destinationDistributionCenter.getCoordinates();
                         LDTruckTrip.setDestinationDistributionCenter(destinationDistributionCenter);
-                        addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad);
+                        DistributionCenterUtils.addVolumeForParcelDelivery(destinationDistributionCenter, commodity, bound, thisTruckEffectiveLoad, dataSet);
                     }
                     break;
                 default:
@@ -294,40 +295,6 @@ public class LDTruckODAllocator implements Module {
         DistributionCenter dc = FreightFlowUtils.select(weightDistributionCenters.get(zoneId).get(commodityGroup),
                 FreightFlowUtils.getSum(weightDistributionCenters.get(zoneId).get(commodityGroup).values()), properties.getRand());
         return dc;
-    }
-
-    private void addVolumeForSmallTruckDelivery(DistributionCenter distributionCenter, Commodity commodity, Bound bound, double load_tn) {
-        cumulatedV += load_tn;
-        if (dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().contains(distributionCenter, commodity)) {
-            if (dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).containsKey(bound)) {
-                double current_load = dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).get(bound);
-                dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).put(bound, load_tn + current_load);
-            } else {
-                dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().get(distributionCenter, commodity).put(bound, load_tn);
-            }
-
-        } else {
-            Map<Bound, Double> map = new HashMap<>();
-            map.put(bound, load_tn);
-            dataSet.getVolByCommodityDistributionCenterAndBoundBySmallTrucks().put(distributionCenter, commodity, map);
-        }
-
-    }
-
-    private void addVolumeForParcelDelivery(DistributionCenter distributionCenter, Commodity commodity, Bound bound, double load_tn) {
-        if (dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().contains(distributionCenter, commodity)) {
-            if (dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().get(distributionCenter, commodity).containsKey(bound)) {
-                double current_load = dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().get(distributionCenter, commodity).get(bound);
-                dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().get(distributionCenter, commodity).put(bound, load_tn + current_load);
-            } else {
-                dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().get(distributionCenter, commodity).put(bound, load_tn);
-            }
-        } else {
-            Map<Bound, Double> map = new HashMap<>();
-            map.put(bound, load_tn);
-            dataSet.getVolByCommodityDistributionCenterAndBoundByParcels().put(distributionCenter, commodity, map);
-        }
-
     }
 
 

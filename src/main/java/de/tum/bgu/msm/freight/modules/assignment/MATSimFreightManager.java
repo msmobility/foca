@@ -2,12 +2,14 @@ package de.tum.bgu.msm.freight.modules.assignment;
 
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.freight.Freight;
 import org.matsim.contrib.freight.carrier.*;
 import org.matsim.contrib.freight.controler.CarrierModule;
-import org.matsim.contrib.freight.replanning.CarrierPlanStrategyManagerFactory;
-import org.matsim.contrib.freight.scoring.CarrierScoringFunctionFactory;
+import org.matsim.contrib.freight.controler.CarrierPlanStrategyManagerFactory;
+import org.matsim.contrib.freight.controler.CarrierScoringFunctionFactory;
 import org.matsim.contrib.freight.usecases.analysis.CarrierScoreStats;
 import org.matsim.contrib.freight.usecases.analysis.LegHistogram;
 import org.matsim.contrib.freight.utils.FreightUtils;
@@ -17,8 +19,10 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.listener.IterationEndsListener;
+import org.matsim.vehicles.VehicleType;
 
 import javax.inject.Inject;
+import java.util.function.BiConsumer;
 
 /**
  * Class that contains the freight extension data containers - carriers, carrier vehicle types, etc.
@@ -48,7 +52,7 @@ public class MATSimFreightManager {
         this.controler = controler;
         this.properties = properties;
         Freight.configure(controler);
-        carriers = FreightUtils.getCarriers(scenario);
+        carriers = FreightUtils.getOrCreateCarriers(scenario);
         carrierVehicleTypes = new CarrierVehicleTypes();
     }
 
@@ -57,14 +61,21 @@ public class MATSimFreightManager {
         new CarrierVehicleTypeReader(carrierVehicleTypes).readFile(properties.getVehicleFileForParcelDelivery());
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
 
+        for (VehicleType type : carrierVehicleTypes.getVehicleTypes().values()) {
+            if (type.getId().equals(Id.create("van", VehicleType.class))){
+                type.setNetworkMode(TransportMode.truck);
+            } else if (type.getId().equals(Id.create("cargoBike", VehicleType.class))) {
+                type.setNetworkMode("TransportMode.bike");
+            }
+        }
+
 
         logger.info("Vehicle types loaded");
 
         controler.addOverridingModule(new AbstractModule() {
             @Override
             public void install() {
-                CarrierModule carrierModule = new CarrierModule(carriers);
-                carrierModule.setPhysicallyEnforceTimeWindowBeginnings(true);
+                CarrierModule carrierModule = new CarrierModule();
                 install(carrierModule);
 
                 bind(CarrierPlanStrategyManagerFactory.class).toInstance(new MatsimFreightUtils.MyCarrierPlanStrategyManagerFactory(carrierVehicleTypes));

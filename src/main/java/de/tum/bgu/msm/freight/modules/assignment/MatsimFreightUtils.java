@@ -7,10 +7,10 @@ import org.matsim.contrib.freight.carrier.Carrier;
 import org.matsim.contrib.freight.carrier.CarrierPlan;
 import org.matsim.contrib.freight.carrier.CarrierVehicleType;
 import org.matsim.contrib.freight.carrier.CarrierVehicleTypes;
-import org.matsim.contrib.freight.replanning.CarrierPlanStrategyManagerFactory;
-import org.matsim.contrib.freight.replanning.modules.ReRouteVehicles;
-import org.matsim.contrib.freight.replanning.modules.TimeAllocationMutator;
-import org.matsim.contrib.freight.scoring.CarrierScoringFunctionFactory;
+import org.matsim.contrib.freight.controler.CarrierPlanStrategyManagerFactory;
+import org.matsim.contrib.freight.controler.CarrierScoringFunctionFactory;
+import org.matsim.contrib.freight.controler.ReRouteVehicles;
+import org.matsim.contrib.freight.controler.TimeAllocationMutator;
 import org.matsim.contrib.freight.usecases.chessboard.TravelDisutilities;
 import org.matsim.core.replanning.GenericPlanStrategyImpl;
 import org.matsim.core.replanning.GenericStrategyManager;
@@ -73,18 +73,14 @@ public class MatsimFreightUtils {
 
         @Override
         public GenericStrategyManager<CarrierPlan, Carrier> createStrategyManager() {
-            TravelTime myNonCongestedTravelTime = new MyNonCongestedTravelTime();
-            TravelTime congestedTravelTime = modeTravelTimes.get(TransportMode.car);
 
             TravelTime myTravelTime = (link, v, person, vehicle) -> {
-                CarrierVehicleType type = (CarrierVehicleType) vehicle.getType();
-                if (type.getId().equals(cargoBikeType.getId())) {
-                    return myNonCongestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
-                } else if (link.getAttributes().getAttribute("onlyCargoBike").equals(true)) {
-                    return Double.MAX_VALUE;
-                } else {
-                    return congestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
-                }
+                TravelTime myCongestedTravelTime = new ByModeCongestedTravelTime(vehicle.getType().getNetworkMode(),  modeTravelTimes.get(vehicle.getType().getNetworkMode()));
+//                if (type.getId().equals(cargoBikeType.getId())) {
+//                    return myNonCongestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
+//                }  else {
+                    return myCongestedTravelTime.getLinkTravelTime(link, v, person, vehicle);
+//                }
             };
 
 

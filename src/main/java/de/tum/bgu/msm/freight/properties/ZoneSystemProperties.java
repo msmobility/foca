@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.freight.properties;
 
+import java.util.ResourceBundle;
+
 public class ZoneSystemProperties extends PropertiesGroup {
 
     private String zoneInputFile = "./input/zones_edit_31468.csv";
@@ -8,6 +10,10 @@ public class ZoneSystemProperties extends PropertiesGroup {
     private String regensburgMicroZonesShapeFile = "input/shp/zones_regensburg_31468_jobs.shp";
     private String idFieldInZonesShp = "RS";
     private String idFieldInMicroZonesShp = "id";
+
+    public ZoneSystemProperties(ResourceBundle bundle) {
+        super(bundle);
+    }
 
     public String getZoneInputFile() {
         return zoneInputFile;

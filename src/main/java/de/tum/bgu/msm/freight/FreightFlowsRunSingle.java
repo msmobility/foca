@@ -11,12 +11,10 @@ import de.tum.bgu.msm.freight.io.output.OutputWriter;
 import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckConverter;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
-import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
+import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.*;
+import de.tum.bgu.msm.freight.modules.syntheticMicroDepotGeneration.SyntheticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
-import org.matsim.core.population.io.PopulationWriter;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -30,21 +28,27 @@ public class FreightFlowsRunSingle {
     public static void main(String[] args) {
 
 
-        Properties properties = new Properties();
-        properties.setMatrixFolder("./input/matrices/");
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
+        properties.flows().setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{9162});
-        properties.setTruckScaleFactor(0.05);
-        properties.setSampleFactorForParcels(0.01);
-        properties.setIterations(50);
+        properties.setNetworkFile("./networks/matsim/final_V11_emissions.xml.gz");
+        properties.setTruckScaleFactor(0.01);
+        properties.setSampleFactorForParcels(0.1);
+        properties.setIterations(2);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
-        properties.setRunId("testtest");
-        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters_paketbox.csv");
-        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.0);
+        properties.setRunId("withoutLdDisaggregationDc20_matsim_modified");
+        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
+        properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.);
+        properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(2000.);
+        properties.shortDistance().setMaxDistanceToMicroDepot(2000.);
 
         properties.shortDistance().setReadMicroDepotsFromFile(false);
 
+        properties.longDistance().setDisaggregateLongDistanceFlows(false);
+        properties.longDistance().setLongDistanceTruckInputFile("./input/preProcessedInput/ld_trucks_dc20.csv");
+
         try {
-            properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
+            properties.logProperties("./output/" + properties.getRunId());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -59,35 +63,51 @@ public class FreightFlowsRunSingle {
     }
 
     public void run(Properties properties) {
+        properties.initializeRandomNumber();
 
         InputManager io = new InputManager(properties);
         io.readInput();
 
         DataSet dataSet = io.getDataSet();
 
-        SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
-        FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
-        LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
+        SyntheticMicroDepots syntehticMicroDepots = new SyntheticMicroDepots();
+
+        FlowsToLDTruckConverter flowsToLDTruckConverter = null;
+        LDTruckODAllocator LDTruckODAllocator = null;
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            LDTruckODAllocator = new LDTruckODAllocator();
+            flowsToLDTruckConverter = new FlowsToLDTruckConverter();
+        }
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
+        ModeChoiceModel modeChoiceModel = new ContinuousApproximationModeChoice();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
+
         syntehticMicroDepots.setup(dataSet, properties);
-        flowsToLDTruckConverter.setup(dataSet, properties);
-        LDTruckODAllocator.setup(dataSet, properties);
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            flowsToLDTruckConverter.setup(dataSet, properties);
+            LDTruckODAllocator.setup(dataSet, properties);
+        }
+
         SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
+        modeChoiceModel.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
         syntehticMicroDepots.run();
-        flowsToLDTruckConverter.run();
-        LDTruckODAllocator.run();
+
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            flowsToLDTruckConverter.run();
+            LDTruckODAllocator.run();
+
+        }
         SDTruckGenerator.run();
         parcelGenerator.run();
-
+        modeChoiceModel.run();
         matSimAssignment.run();
 
-        PopulationWriter pw;
+        //PopulationWriter pw;
 
 
         String outputFolder = properties.getOutputFolder();

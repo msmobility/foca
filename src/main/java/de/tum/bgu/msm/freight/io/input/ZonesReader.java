@@ -121,7 +121,6 @@ public class ZonesReader extends CSVReader {
                 }
 
 
-
                 for (String jobType : properties.getJobTypes()){
                     try{
                         double jobsThis_type = Double.parseDouble(feature.getAttribute(jobType).toString());
@@ -133,6 +132,8 @@ public class ZonesReader extends CSVReader {
                     }
 
                 }
+
+                microZone.setArea_m2(((Geometry) feature.getDefaultGeometry()).getArea());
 
                 n_microzones ++;
             }

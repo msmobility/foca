@@ -32,31 +32,20 @@ public class CarrierPlansAnalyzer {
     public static void main(String[] args) throws FileNotFoundException {
 
 
-        String[] scenarios = new String[]{"muc_scenario_zero_c",
-                "muc_scenario_3km",
-                "muc_scenario_1km",
-                "muc_scenario_paketbox"};
-
+        String[] scenarios = args;
         String baseFolder = "./output/";
-
-
-
-
         for (String scenario : scenarios) {
-
             String vehicleTypes = baseFolder + scenario + "/matsim/output_vehicleTypes.xml";
             String carrierPlans = baseFolder + scenario + "/matsim/output_carriers.xml.gz";
             String outputFile = baseFolder + scenario + "/carriers_analysis.csv";
-
             new CarrierPlansAnalyzer().analyzeCarriersPlans(vehicleTypes, carrierPlans, outputFile);
-
         }
 
     }
 
 
     public void analyzeCarriersPlans(String carrierVehicleTypeFile, String carriersPlanFile, String outputFile) throws FileNotFoundException {
-        Properties properties = new Properties();
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
         PrintWriter pw = new PrintWriter(new File(outputFile));
 
         Config config = ConfigUtils.createConfig();
@@ -72,7 +61,7 @@ public class CarrierPlansAnalyzer {
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
 
 
-        CarrierPlanXmlReaderV2 carriersPlanReader = new CarrierPlanXmlReaderV2(carriers);
+        CarrierPlanXmlReader carriersPlanReader = new CarrierPlanXmlReader(carriers);
         carriersPlanReader.readFile(carriersPlanFile);
 
         pw.println("carrier,tour,service,number_of_services,time,distance,type,vehicle_type,parcels");

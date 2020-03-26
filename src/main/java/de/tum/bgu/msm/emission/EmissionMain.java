@@ -12,7 +12,7 @@ public class EmissionMain {
 
         for (String arg : args) {
 
-            Properties properties = new Properties();
+            Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
             properties.setRunId(arg);
 
             String configFile = "config_average.xml";
