@@ -29,7 +29,7 @@ public class FreightFlowsRunSingle {
 
 
         Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
-        properties.flowsProperties.setMatrixFolder("./input/matrices/", properties);
+        properties.flows().setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{9162});
         properties.setNetworkFile("./networks/matsim/final_V11_emissions.xml.gz");
         properties.setTruckScaleFactor(0.01);

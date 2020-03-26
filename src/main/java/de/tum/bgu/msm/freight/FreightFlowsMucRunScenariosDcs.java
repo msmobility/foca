@@ -15,7 +15,7 @@ import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.GlobalModalSha
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ModeChoiceModel;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
-import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
+import de.tum.bgu.msm.freight.modules.syntheticMicroDepotGeneration.SyntheticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.core.population.io.PopulationWriter;
@@ -36,9 +36,9 @@ public class FreightFlowsMucRunScenariosDcs {
 
         int dc = Integer.parseInt(args[0]);
 
-        Properties thisProperties = new Properties();
+        Properties thisProperties = new Properties(null);
         thisProperties.initializeRandomNumber();
-        thisProperties.setMatrixFolder("./input/matrices/");
+        thisProperties.flows().setMatrixFolder("./input/matrices/");
         thisProperties.setAnalysisZones(new int[]{9162});
         thisProperties.setTruckScaleFactor(1.00);
         thisProperties.setSampleFactorForParcels(0.25);
@@ -75,7 +75,7 @@ public class FreightFlowsMucRunScenariosDcs {
 
         DataSet dataSet = io.getDataSet();
 
-        SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
+        SyntheticMicroDepots syntehticMicroDepots = new SyntheticMicroDepots();
         FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
         LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();

@@ -23,7 +23,7 @@ public class RunFocaWithPropertiesFile {
 
         logger.info(properties.getRunId());
         logger.info(properties.getYear());
-        logger.info(properties.flowsProperties.getMatrixFolder());
+        logger.info(properties.flows().getMatrixFolder());
 
         FreightFlowsRunSingle freightFlows = new FreightFlowsRunSingle();
         logger.info("Start simulation " + properties.getRunId());

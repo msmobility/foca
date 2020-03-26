@@ -42,7 +42,7 @@ public class FreightFlowsTest {
 
         {
             Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
-            properties.flowsProperties.setMatrixFolder("./input/matrices/", properties);
+            properties.flows().setMatrixFolder("./input/matrices/");
             properties.setRunId("testReg");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
@@ -57,7 +57,7 @@ public class FreightFlowsTest {
         }
         {
             Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
-            properties.flowsProperties.setMatrixFolder("./input/matrices/", properties);
+            properties.flows().setMatrixFolder("./input/matrices/");
             properties.setRunId("testReg_2");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
@@ -72,7 +72,7 @@ public class FreightFlowsTest {
         }
         {
             Properties properties =new Properties(Properties.initializeResourceBundleFromFile(null));
-            properties.flowsProperties.setMatrixFolder("./input/matrices/", properties);
+            properties.flows().setMatrixFolder("./input/matrices/");
             properties.setRunId("testRegNoCargoBikes");
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
@@ -98,7 +98,7 @@ public class FreightFlowsTest {
 
 
         Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
-        properties.flowsProperties.setMatrixFolder("./input/matrices/ketten-2010-filtered.csv", properties);
+        properties.flows().setMatrixFolder("./input/matrices/");
         properties.setRunId("test_small");
         //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
         properties.setAnalysisZones(new int[]{9362});

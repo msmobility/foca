@@ -18,7 +18,7 @@ public class FreightFlowsOnlyLD {
         int year = 2020;
 
         Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
-        properties.flowsProperties.setMatrixFolder("./input/matrices/", properties);
+        properties.flows().setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{});
         properties.setTruckScaleFactor(0.05);
         properties.setSampleFactorForParcels(0.);

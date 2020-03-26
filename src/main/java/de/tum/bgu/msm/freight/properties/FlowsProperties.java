@@ -12,16 +12,9 @@ public class FlowsProperties extends PropertiesGroup {
 
     public FlowsProperties(ResourceBundle bundle) {
         super(bundle);
+        matrixFolder = PropertiesUtil.getStringProperty(bundle, "matrixFolder", matrixFolder);
+       commodityFlowYears = PropertiesUtil.getIntPropertyArray(bundle, "commodityFlowYears", commodityFlowYears);
 
-        String matrixFolderFromFile = PropertiesUtil.getStringProperty(bundle, "matrixFolder");
-        if (!matrixFolderFromFile.isEmpty()) {
-            this.matrixFolder = PropertiesUtil.getStringProperty(bundle, "matrixFolder");
-        }
-
-        String commodityFlowYearsFromFile = PropertiesUtil.getStringProperty(bundle, "commodityFlowYears");
-        if (!commodityFlowYearsFromFile.isEmpty()) {
-            this.commodityFlowYears = PropertiesUtil.getIntPropertyArray(bundle, "commodityFlowYears");
-        }
     }
 
     public int[] getCommodityFlowsYears() {
@@ -33,7 +26,7 @@ public class FlowsProperties extends PropertiesGroup {
         return matrixFolder;
     }
 
-    public void setMatrixFolder(String matrixFolder, Properties properties) {
+    public void setMatrixFolder(String matrixFolder) {
         this.matrixFolder = matrixFolder;
     }
 }

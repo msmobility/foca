@@ -37,7 +37,7 @@ public class FreightFlowsMucRunScenarios {
 
         Properties thisProperties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
         thisProperties.initializeRandomNumber();
-        thisProperties.flowsProperties.setMatrixFolder("./input/matrices/", thisProperties);
+        thisProperties.flows().setMatrixFolder("./input/matrices/");
         thisProperties.setAnalysisZones(new int[]{9162});
         thisProperties.setTruckScaleFactor(1.00);
         thisProperties.setSampleFactorForParcels(0.25);

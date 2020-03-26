@@ -14,7 +14,7 @@ public class RunSimpleMatsimPlans {
 
 
         Config config = ConfigUtils.createConfig();
-        Properties properties = new Properties();
+        Properties properties = new Properties(null);
         properties.setRunId("test_passengers_100");
         properties.setIterations(50);
 

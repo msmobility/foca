@@ -12,24 +12,24 @@ import java.util.ResourceBundle;
 public class Properties extends PropertiesGroup {
 
     private ZoneSystemProperties zoneSystemProperties;
-    public FlowsProperties flowsProperties;
+    private FlowsProperties flowsProperties;
     private LDProperties lDProperties;
     private SDProperties sDProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
 
-    private String matrixFileNamePrefix = null;
-    private String matrixFileNameSuffix = null;
-    private String commodityAttributeFile = null;
-    private String distributionCentersFile = null;
-    private String terminalsFileName = null;
+    private String matrixFileNamePrefix = "ketten-uniform-";
+    private String matrixFileNameSuffix = ".csv";
+    private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
+    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
+    private String terminalsFileName = "input/distributionCenters/intermodal_terminals_31468.csv";
 
     private String networkFile = "./networks/matsim/final_V11_emissions.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
     private int iterations = 1;
     private double flowsScaleFactor = 1.;
     private double truckScaleFactor = 1.;
-    private String runId = "assignmentFull";
+    private String runId = "base";
     private int randomSeed = 1;
     private Random rand;
     private int[] analysisZones = new int[]{};
@@ -55,12 +55,8 @@ public class Properties extends PropertiesGroup {
 
     @Deprecated
     private String distributionCentersCatchmentAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
-
     private String matsimBackgroundTrafficPlanFile = "";
-
     private String outputFolder = "output/";
-
-
     private int year = 2010;
 
 
@@ -81,44 +77,44 @@ public class Properties extends PropertiesGroup {
         super(bundle);
 
         //read all the properties of this class and assign the values
-        matrixFileNamePrefix = PropertiesUtil.getStringProperty(bundle, "matrixFileNamePrefix");
-        matrixFileNameSuffix = PropertiesUtil.getStringProperty(bundle, "matrixFileNameSuffix");
-        commodityAttributeFile = PropertiesUtil.getStringProperty(bundle, "commodityAttributeFile");
-        distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile");
-        terminalsFileName = PropertiesUtil.getStringProperty(bundle, "terminalsFileName");
-        networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName");
-        simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName");
-        iterations = PropertiesUtil.getIntProperty(bundle, "iterations");
-        flowsScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "flowsScaleFactor");
-        truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor");
-        runId = PropertiesUtil.getStringProperty(bundle, "runId");
-        randomSeed = PropertiesUtil.getIntProperty(bundle, "randomSeed");
-        analysisZones = PropertiesUtil.getIntPropertyArray(bundle, "analysisZones");
-        storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes");
-        daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", 365);
+        matrixFileNamePrefix = PropertiesUtil.getStringProperty(bundle, "matrixFileNamePrefix", matrixFileNamePrefix);
+        matrixFileNameSuffix = PropertiesUtil.getStringProperty(bundle, "matrixFileNameSuffix", matrixFileNameSuffix);
+        commodityAttributeFile = PropertiesUtil.getStringProperty(bundle, "commodityAttributeFile", commodityAttributeFile);
+        distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile", distributionCentersFile);
+        terminalsFileName = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", terminalsFileName);
+        networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", networkFile);
+        simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
+        iterations = PropertiesUtil.getIntProperty(bundle, "iterations", iterations);
+        flowsScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "flowsScaleFactor", flowsScaleFactor);
+        truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor", truckScaleFactor);
+        runId = PropertiesUtil.getStringProperty(bundle, "runId", runId);
+        randomSeed = PropertiesUtil.getIntProperty(bundle, "randomSeed", randomSeed);
+        analysisZones = PropertiesUtil.getIntPropertyArray(bundle, "analysisZones", analysisZones);
+        storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes", storeExpectedTimes);
+        daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", daysPerYear);
 
-        readEventsForCounts = PropertiesUtil.getBooleanProperty(bundle, "readEventsForCounts", true);
-        countStationLinkListFile = PropertiesUtil.getStringProperty(bundle, "countStationLinkListFile");
-        countsFileName = PropertiesUtil.getStringProperty(bundle, "countsFileName");
-        vehicleFile = PropertiesUtil.getStringProperty(bundle, "vehicleFile");
+        readEventsForCounts = PropertiesUtil.getBooleanProperty(bundle, "readEventsForCounts", readEventsForCounts);
+        countStationLinkListFile = PropertiesUtil.getStringProperty(bundle, "countStationLinkListFile", countStationLinkListFile);
+        countsFileName = PropertiesUtil.getStringProperty(bundle, "countsFileName", countStationLinkListFile);
+        vehicleFile = PropertiesUtil.getStringProperty(bundle, "vehicleFile", vehicleFile);
 
-        jobTypes = PropertiesUtil.getStringPropertyArray(bundle, "jobTypes");
-        makeTableFileName = PropertiesUtil.getStringProperty(bundle, "makeTableFileName");
-        useTableFileName = PropertiesUtil.getStringProperty(bundle, "useTableFileName");
+        jobTypes = PropertiesUtil.getStringPropertyArray(bundle, "jobTypes", jobTypes);
+        makeTableFileName = PropertiesUtil.getStringProperty(bundle, "makeTableFileName", makeTableFileName);
+        useTableFileName = PropertiesUtil.getStringProperty(bundle, "useTableFileName", useTableFileName);
 
-        parcelWeightDistributionFile = PropertiesUtil.getStringProperty(bundle, "parcelWeightDistributionFile");
+        parcelWeightDistributionFile = PropertiesUtil.getStringProperty(bundle, "parcelWeightDistributionFile", parcelWeightDistributionFile);
 
-        sampleFactorForParcels = PropertiesUtil.getDoubleProperty(bundle, "sampleFactorForParcels");
-        runParcelDelivery = PropertiesUtil.getBooleanProperty(bundle, "runParcelDelivery");
-        vehicleFileForParcelDelivery = PropertiesUtil.getStringProperty(bundle, "vehicleFileForParcelDelivery");
+        sampleFactorForParcels = PropertiesUtil.getDoubleProperty(bundle, "sampleFactorForParcels", sampleFactorForParcels);
+        runParcelDelivery = PropertiesUtil.getBooleanProperty(bundle, "runParcelDelivery", runParcelDelivery);
+        vehicleFileForParcelDelivery = PropertiesUtil.getStringProperty(bundle, "vehicleFileForParcelDelivery", vehicleFileForParcelDelivery);
 
         //distributionCentersCatchmentAreaFile = PropertiesUtil.getBooleanProperty(bundle, "distributionCentersCatchmentAreaFile");
 
-        matsimBackgroundTrafficPlanFile = PropertiesUtil.getStringProperty(bundle, "matsimBackgroundTrafficPlanFile");
+        matsimBackgroundTrafficPlanFile = PropertiesUtil.getStringProperty(bundle, "matsimBackgroundTrafficPlanFile", matsimBackgroundTrafficPlanFile);
 
-        outputFolder = PropertiesUtil.getStringProperty(bundle, "outputFolder");
+        outputFolder = PropertiesUtil.getStringProperty(bundle, "outputFolder", outputFolder);
 
-        year = PropertiesUtil.getIntProperty(bundle, "year");
+        year = PropertiesUtil.getIntProperty(bundle, "year", year);
 
         zoneSystemProperties = new ZoneSystemProperties(bundle);
         flowsProperties = new FlowsProperties(bundle);

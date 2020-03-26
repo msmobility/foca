@@ -42,7 +42,7 @@ public class FreightFlowsMucRunScenariosWithShares {
 
             Properties properties =new Properties(Properties.initializeResourceBundleFromFile(args[0]));
             properties.initializeRandomNumber();
-            properties.flowsProperties.setMatrixFolder("./input/matrices/", properties);
+            properties.flows().setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
             properties.setTruckScaleFactor(1.00);
             properties.setSampleFactorForParcels(0.25);
