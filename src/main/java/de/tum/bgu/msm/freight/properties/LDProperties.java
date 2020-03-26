@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.freight.properties;
 
 
+import java.util.ResourceBundle;
+
 public class LDProperties extends PropertiesGroup {
 
     private boolean disaggregateLongDistanceFlows = true;
@@ -20,5 +22,8 @@ public class LDProperties extends PropertiesGroup {
 
     public void setLongDistanceTruckInputFile(String longDistanceTruckInputFile) {
         this.longDistanceTruckInputFile = longDistanceTruckInputFile;
+    }
+    public LDProperties(ResourceBundle bundle) {
+        super(bundle);
     }
 }

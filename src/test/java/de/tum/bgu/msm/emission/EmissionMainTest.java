@@ -10,7 +10,7 @@ public class EmissionMainTest {
 
     @Test
     public void testRegensburgEmissions(){
-        Properties properties = new Properties();
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
         properties.setRunId("testRegNoCargoBikes");
         String configFile = "config_average.xml";
         //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");

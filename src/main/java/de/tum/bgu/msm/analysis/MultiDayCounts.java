@@ -27,7 +27,7 @@ public class MultiDayCounts {
             String countsFile = "./output/" + scenario + "/matsim/counts.csv";
 
 
-            Properties propertiesForStandAloneEventManager = new Properties();
+            Properties propertiesForStandAloneEventManager = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
             propertiesForStandAloneEventManager.setIterations(0);
 
             EventsManager eventsManager = EventsUtils.createEventsManager();

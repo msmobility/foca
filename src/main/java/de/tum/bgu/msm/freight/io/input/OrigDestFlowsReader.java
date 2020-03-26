@@ -140,7 +140,7 @@ public class OrigDestFlowsReader extends CSVReader {
 
         for (int year : properties.flows().getCommodityFlowsYears()) {
             currentYear = year;
-            String fileName = properties.getMatrixFolder() + properties.getMatrixFileNamePrefix() +
+            String fileName = properties.flowsProperties.getMatrixFolder() + properties.getMatrixFileNamePrefix() +
                     year + properties.getMatrixFileNameSuffix();
             flowsByYear.put(year, HashBasedTable.create());
             super.read(fileName, ";");

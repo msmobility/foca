@@ -15,7 +15,7 @@ public class DistCentersXml2Csv {
     public static void main(String[] args) throws FileNotFoundException {
 
         DataSet dataSet = new DataSet();
-        Properties properties = new Properties();
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
         properties.setAnalysisZones(new int[]{9162,9362});
         ZonesReader zonesReader = new ZonesReader(dataSet, properties);
         zonesReader.read();

@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkWriter;
@@ -126,11 +125,11 @@ class MyNode {
         return id;
     }
 
-    public double getXcoord() {
+    public double getxCoord() {
         return xcoord;
     }
 
-    public double getYcoord() {
+    public double getyCoord() {
         return ycoord;
     }
 
@@ -144,13 +143,13 @@ class MyLink {
     private int id;
     private int origin;
     private int destination;
-    private String stree_name;
+    private String street_name;
 
     public MyLink(Map<String, String> valuesAsString) {
         this.id = Integer.parseInt(valuesAsString.get("id"));
         this.origin = Integer.parseInt(valuesAsString.get("origin"));
         this.destination = Integer.parseInt(valuesAsString.get("destination"));
-        this.stree_name = valuesAsString.get("stree_name\n");
+        this.street_name = valuesAsString.get("street_name\n");
     }
 
     public int getId() {
@@ -165,7 +164,7 @@ class MyLink {
         return destination;
     }
 
-    public String getStree_name() {
-        return stree_name;
+    public String getStreet_name() {
+        return street_name;
     }
 }

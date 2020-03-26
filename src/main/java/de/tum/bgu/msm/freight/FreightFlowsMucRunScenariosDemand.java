@@ -15,7 +15,7 @@ import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.GlobalModalSha
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ModeChoiceModel;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
 import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
-import de.tum.bgu.msm.freight.modules.syntehticMicroDepotGeneration.SyntehticMicroDepots;
+import de.tum.bgu.msm.freight.modules.syntheticMicroDepotGeneration.SyntheticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.matsim.core.population.io.PopulationWriter;
@@ -35,9 +35,9 @@ public class FreightFlowsMucRunScenariosDemand {
 
         double demandFactor = Double.parseDouble(args[0]);
 
-        Properties thisProperties = new Properties();
+        Properties thisProperties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
         thisProperties.initializeRandomNumber();
-        thisProperties.setMatrixFolder("./input/matrices/");
+        thisProperties.flowsProperties.setMatrixFolder("./input/matrices/", thisProperties);
         thisProperties.setAnalysisZones(new int[]{9162});
         thisProperties.setTruckScaleFactor(1.00);
         thisProperties.setSampleFactorForParcels(0.25*demandFactor);
@@ -74,7 +74,7 @@ public class FreightFlowsMucRunScenariosDemand {
 
         DataSet dataSet = io.getDataSet();
 
-        SyntehticMicroDepots syntehticMicroDepots = new SyntehticMicroDepots();
+        SyntheticMicroDepots syntheticMicroDepots = new SyntheticMicroDepots();
         FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
         LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
@@ -82,7 +82,7 @@ public class FreightFlowsMucRunScenariosDemand {
         ModeChoiceModel modeChoiceModel = new GlobalModalShareModeChoice();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
-        syntehticMicroDepots.setup(dataSet, properties);
+        syntheticMicroDepots.setup(dataSet, properties);
         flowsToLDTruckConverter.setup(dataSet, properties);
         LDTruckODAllocator.setup(dataSet, properties);
         SDTruckGenerator.setup(dataSet, properties);
@@ -90,7 +90,7 @@ public class FreightFlowsMucRunScenariosDemand {
         modeChoiceModel.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
-        syntehticMicroDepots.run();
+        syntheticMicroDepots.run();
         flowsToLDTruckConverter.run();
         LDTruckODAllocator.run();
         SDTruckGenerator.run();

@@ -29,8 +29,8 @@ public class FreightFlowsRunSingle {
     public static void main(String[] args) {
 
 
-        Properties properties = new Properties();
-        properties.setMatrixFolder("./input/matrices/");
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
+        properties.flowsProperties.setMatrixFolder("./input/matrices/", properties);
         properties.setAnalysisZones(new int[]{9162});
         properties.setNetworkFile("./networks/matsim/final_V11_emissions.xml.gz");
         properties.setTruckScaleFactor(0.01);
@@ -49,7 +49,7 @@ public class FreightFlowsRunSingle {
         properties.longDistance().setLongDistanceTruckInputFile("./input/preProcessedInput/ld_trucks_dc20.csv");
 
         try {
-            properties.logProperties("./output/" + properties.getRunId() + "/properties.txt");
+            properties.logProperties("./output/" + properties.getRunId());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
