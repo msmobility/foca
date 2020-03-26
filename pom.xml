@@ -137,7 +137,8 @@
 
 
     <properties>
-        <matsimVersion>12.0-SNAPSHOT</matsimVersion>
+<!--        The following version is a standard compatible version of matsim-->
+        <matsimVersion>12.0-2019w48-SNAPSHOT</matsimVersion>
     </properties>
 
 

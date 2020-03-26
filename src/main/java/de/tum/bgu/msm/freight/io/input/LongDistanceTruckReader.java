@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.freight.io.input;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import de.tum.bgu.msm.data.accessibility.CommutingTimeProbability;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.Bound;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
