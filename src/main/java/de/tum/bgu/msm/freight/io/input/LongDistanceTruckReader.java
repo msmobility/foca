@@ -133,7 +133,7 @@ public class LongDistanceTruckReader extends CSVReader {
 
     @Override
     public void read() {
-        super.read("./input/preProcessedInput/ld_trucks_muc.csv", ",");
+        super.read(properties.longDistance().getLongDistanceTruckInputFile(), ",");
     }
 
 
