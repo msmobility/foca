@@ -125,13 +125,14 @@ public class Properties extends PropertiesGroup {
 
     }
 
-    public void logProperties(String outPropFile) throws FileNotFoundException {
+    public void logProperties(String propFolder) throws FileNotFoundException {
 
-        File propFile = new File(outPropFile);
-        if (!propFile.getParentFile().exists()) {
-            propFile.getParentFile().mkdirs();
+        File propFile = new File(propFolder);
+        if (!propFile.exists()) {
+            propFile.mkdirs();
         }
-        PropertiesUtil.printOutPropertiesOfThisRun(outPropFile);
+
+        PropertiesUtil.printOutPropertiesOfThisRun(propFolder);
 //        PrintWriter pw = new PrintWriter(propFile);
 //        this.logUsedProperties(pw);
 //        zoneSystemProperties.logUsedProperties(pw);
