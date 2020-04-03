@@ -27,21 +27,9 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
     private PrintWriter printWriter;
 
-    private final double operatingCostBike_eur_km = 0.9200;
-    private final double operatingCostTruck_eur_km = 1.7765;
-    private final double kApproximation = 1.5;
-    private final double serviceCostBike_eur_parcel = 1.0152;
-    private final double serviceCostTruck_eur_parcel = 1.2585;
-    private final double extraHandlingBike_eur_m3 = 8.4;
-    private final double capacityTruck_m3 = 12.5;
-    private final double capacityFeeder_m3 = 12.5;
 
-    private final double gridSpacing = 4000;
     private final Map<Integer, Integer> microZoneToAnalysisZoneMap = new HashMap<>();
-
-
     private final Map<Integer, Map<LoadClass, ParcelDistributionType>> modeByClassAndZone = new HashMap<>();
-    private final double MAX_WEIGHT_FOR_CARGO_BIKE_KG = 10;
 
     enum LoadClass {
         XS(1., 0.005), S(2., 0.01), M(5., 0.05), L(100., 0.2);
@@ -132,6 +120,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
             int counter = 0;
 
+            double gridSpacing = properties.modeChoice().getGridSpacing();
             double y = yMin + gridSpacing / 2;
             while (y < yMax) {
                 double x = xMin + gridSpacing / 2;
@@ -197,6 +186,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                         Map<LoadClass, Double> serviceCostBike = new HashMap<>();
                         Map<LoadClass, Double> densities = new HashMap<>();
 
+                        double operatingCostTruck_eur_km = properties.modeChoice().getOperatingCostTruck_eur_km();
                         for (LoadClass loadClass : LoadClass.values()) {
                             //calculate costs by truck and by cargo bike and by size
                             int parcels;
@@ -211,18 +201,23 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             densities.put(loadClass, density);
 
                             //by cargo bike
+                            double capacityFeeder_m3 = properties.modeChoice().getCapacityFeeder_m3();
                             longHaulCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
                                     2d * distanceToDc_km * operatingCostTruck_eur_km / capacityFeeder_m3);
 
+                            double extraHandlingBike_eur_m3 = properties.modeChoice().getExtraHandlingBike_eur_m3();
                             extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
                                     extraHandlingBike_eur_m3);
 
+                            double serviceCostBike_eur_parcel = properties.modeChoice().getServiceCostBike_eur_parcel();
                             serviceCostBike.put(loadClass, area_km2 * density * serviceCostBike_eur_parcel);
 
                             //by truck
+                            double capacityTruck_m3 = properties.modeChoice().getCapacityTruck_m3();
                             longHaulCostsTruck.put(loadClass, area_km2 * loadClass.volume_m3 * density *
                                     2d * distanceToDc_km * operatingCostTruck_eur_km / capacityTruck_m3);
 
+                            double serviceCostTruck_eur_parcel = properties.modeChoice().getServiceCostTruck_eur_parcel();
                             serviceCostTruck.put(loadClass, area_km2 * density * serviceCostTruck_eur_parcel);
                         }
 
@@ -280,6 +275,8 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                                 printWriter.println();
                             }
 
+                            double operatingCostBike_eur_km = properties.modeChoice().getOperatingCostBike_eur_km();
+                            double kApproximation = properties.modeChoice().getkApproximation();
                             cost = cost +
                                     Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2 +
                                     Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2;
@@ -364,7 +361,8 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
                 }
-                if (parcel.getWeight_kg() > MAX_WEIGHT_FOR_CARGO_BIKE_KG) {
+                double maxWeightForCargoBike_kg = properties.modeChoice().getMaxWeightForCargoBike_kg();
+                if (parcel.getWeight_kg() > maxWeightForCargoBike_kg) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
                 }

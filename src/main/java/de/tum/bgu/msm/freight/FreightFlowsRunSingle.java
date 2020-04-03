@@ -32,9 +32,9 @@ public class FreightFlowsRunSingle {
         properties.flows().setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{9162});
         properties.setNetworkFile("./networks/matsim/final_V11_emissions.xml.gz");
-        properties.setTruckScaleFactor(0.01);
-        properties.setSampleFactorForParcels(0.1);
-        properties.setIterations(2);
+        properties.setTruckScaleFactor(1.00);
+        properties.setSampleFactorForParcels(1.00);
+        properties.setIterations(1);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{20});
         properties.setRunId("base");
         properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
@@ -43,7 +43,6 @@ public class FreightFlowsRunSingle {
         properties.shortDistance().setMaxDistanceToMicroDepot(2000.);
 
         properties.shortDistance().setReadMicroDepotsFromFile(false);
-
         properties.longDistance().setDisaggregateLongDistanceFlows(false);
         properties.longDistance().setLongDistanceTruckInputFile("./input/preProcessedInput/ld_trucks_dc20.csv");
 

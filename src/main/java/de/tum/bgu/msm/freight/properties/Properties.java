@@ -11,10 +11,11 @@ import java.util.ResourceBundle;
 
 public class Properties extends PropertiesGroup {
 
-    private ZoneSystemProperties zoneSystemProperties;
-    private FlowsProperties flowsProperties;
-    private LDProperties lDProperties;
-    private SDProperties sDProperties;
+    private final ZoneSystemProperties zoneSystemProperties;
+    private final FlowsProperties flowsProperties;
+    private final LDProperties lDProperties;
+    private final SDProperties sDProperties;
+    private final ModeChoiceProperties modeChoiceProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
 
@@ -120,6 +121,7 @@ public class Properties extends PropertiesGroup {
         flowsProperties = new FlowsProperties(bundle);
         lDProperties = new LDProperties(bundle);
         sDProperties = new SDProperties(bundle);
+        modeChoiceProperties = new ModeChoiceProperties(bundle);
 
     }
 
@@ -154,6 +156,10 @@ public class Properties extends PropertiesGroup {
 
     public SDProperties shortDistance() {
         return sDProperties;
+    }
+
+    public ModeChoiceProperties modeChoice() {
+        return modeChoiceProperties;
     }
 
     public String getNetworkFile() {
