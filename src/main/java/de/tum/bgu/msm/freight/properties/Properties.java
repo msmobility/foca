@@ -96,7 +96,7 @@ public class Properties extends PropertiesGroup {
 
         readEventsForCounts = PropertiesUtil.getBooleanProperty(bundle, "readEventsForCounts", readEventsForCounts);
         countStationLinkListFile = PropertiesUtil.getStringProperty(bundle, "countStationLinkListFile", countStationLinkListFile);
-        countsFileName = PropertiesUtil.getStringProperty(bundle, "countsFileName", countStationLinkListFile);
+        countsFileName = PropertiesUtil.getStringProperty(bundle, "countsFileName", countsFileName);
         vehicleFile = PropertiesUtil.getStringProperty(bundle, "vehicleFile", vehicleFile);
 
         jobTypes = PropertiesUtil.getStringPropertyArray(bundle, "jobTypes", jobTypes);

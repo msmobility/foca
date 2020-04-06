@@ -199,6 +199,10 @@ public class Parcel {
         this.assigned = assigned;
     }
 
+    public boolean isAssigned() {
+        return assigned;
+    }
+
     public double getAccessDistance_m() {
         return accessDistance_m;
     }

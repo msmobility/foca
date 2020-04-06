@@ -30,7 +30,7 @@ public class TripCSVToMATSimPlan {
 	private static String outputFileName;
 	private static PopulationFactory factory;
 
-	private static final double scaleFactor = 0.05;
+	private static final double scaleFactor = 0.20;
 
 	public static void main(String[] args) {
 		// TODO add logging

@@ -15,11 +15,9 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.collections.Tuple;
-import org.matsim.core.utils.gis.PointFeatureFactory;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

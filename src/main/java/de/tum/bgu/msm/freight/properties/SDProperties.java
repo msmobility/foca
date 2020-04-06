@@ -6,7 +6,7 @@ public class SDProperties extends PropertiesGroup {
 
     private double shareOfCargoBikesAtZonesServedByMicroDepot = 1.;
     private int[] selectedDistributionCenters = new int[]{-1};
-    private int maxNumberOfParcelsByCarrier = 500;
+    private int maxNumberOfParcelsByCarrier = 200;
     private boolean readMicroDepotsFromFile = true;
     private double maxDistanceToMicroDepot = 4000;
 
