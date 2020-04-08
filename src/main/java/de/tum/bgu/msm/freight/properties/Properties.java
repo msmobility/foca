@@ -48,7 +48,7 @@ public class Properties extends PropertiesGroup {
     private String makeTableFileName = "./input/makeUseCoefficients/makeTable_eurostat.csv";
     private String useTableFileName = "./input/makeUseCoefficients/useTable_eurostat.csv";
 
-    private String parcelWeightDistributionFile = "./input/parcel_weight_distribution_small.csv";
+    private String parcelWeightDistributionFile = "./input/parcel_weight_distribution.csv";
 
     private double sampleFactorForParcels = 1.;
     private boolean runParcelDelivery = true;

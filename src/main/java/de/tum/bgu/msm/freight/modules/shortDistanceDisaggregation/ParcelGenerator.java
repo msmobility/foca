@@ -4,13 +4,10 @@ import de.tum.bgu.msm.freight.FreightFlowUtils;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.Commodity;
 import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
-import de.tum.bgu.msm.freight.data.freight.urban.ParcelDistributionType;
 import de.tum.bgu.msm.freight.data.freight.urban.ParcelTransaction;
 import de.tum.bgu.msm.freight.data.freight.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
-import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.ParcelWeightDistribution_kg;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
@@ -37,6 +34,10 @@ public class ParcelGenerator implements Module {
     private WeightDistribution weightDistribution;
 
     private final int density_kg_m3 = 16;
+    private double parcelWeightCounter = 0;
+    private double postWeightCounter = 0;
+    private int parcelCounter = 0;
+    private int postCounter = 0;
 
 
     @Override
@@ -57,6 +58,10 @@ public class ParcelGenerator implements Module {
     @Override
     public void run() {
         generateParcels();
+
+        logger.info("Parcels: " + parcelCounter  + " units with a weight of " + parcelWeightCounter);
+        logger.info("Post: " + postCounter  + " units with a weight of " + postWeightCounter + " (will not be considered in FOCA");
+
         chooseTransactionType();
         assignCoordinates();
     }
@@ -180,6 +185,11 @@ public class ParcelGenerator implements Module {
             if (weight_kg > minimumWeight_kg) {
                 parcelsThisDistributionCenter.add(new Parcel(counter.getAndIncrement(),
                         toCustomer, weight_kg / density_kg_m3, weight_kg, distributionCenter, commodity));
+                parcelWeightCounter += weight_kg;
+                parcelCounter++;
+            } else {
+                postWeightCounter += weight_kg;
+                postCounter++;
             }
             cum_weight += weight_kg;
         }
