@@ -36,7 +36,7 @@ public class CarrierPlansAnalyzer {
         String baseFolder = "./output/";
         for (String scenario : scenarios) {
             String vehicleTypes = baseFolder + scenario + "/matsim/output_vehicleTypes.xml";
-            String carrierPlans = baseFolder + scenario + "/matsim/output_carriers.xml.gz";
+            String carrierPlans = baseFolder + scenario + "/matsim/output_carriers.xml";
             String outputFile = baseFolder + scenario + "/carriers_analysis.csv";
             new CarrierPlansAnalyzer().analyzeCarriersPlans(vehicleTypes, carrierPlans, outputFile);
         }
@@ -45,26 +45,24 @@ public class CarrierPlansAnalyzer {
 
 
     public void analyzeCarriersPlans(String carrierVehicleTypeFile, String carriersPlanFile, String outputFile) throws FileNotFoundException {
-        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile("./scenarios/foca.properties"));
         PrintWriter pw = new PrintWriter(new File(outputFile));
 
         Config config = ConfigUtils.createConfig();
         config.network().setInputFile(properties.getNetworkFile());
         Scenario scenario = ScenarioUtils.loadScenario(config);
-        Carriers carriers = FreightUtils.getCarriers(scenario);
+        Carriers carriers = new Carriers();
         CarrierVehicleTypes carrierVehicleTypes = new CarrierVehicleTypes();
 
         Network network = scenario.getNetwork();
 
+        CarrierPlanXmlReader carriersPlanReader = new CarrierPlanXmlReader(carriers);
+        carriersPlanReader.readFile(carriersPlanFile);
 
         new CarrierVehicleTypeReader(carrierVehicleTypes).readFile(carrierVehicleTypeFile);
         new CarrierVehicleTypeLoader(carriers).loadVehicleTypes(carrierVehicleTypes);
 
-
-        CarrierPlanXmlReader carriersPlanReader = new CarrierPlanXmlReader(carriers);
-        carriersPlanReader.readFile(carriersPlanFile);
-
-        pw.println("carrier,tour,service,number_of_services,time,distance,type,vehicle_type,parcels");
+        pw.println("carrier,tour,service,number_of_services,time,distance,type,vehicle_type,parcels,free_flow,departure_time");
 
         for (Carrier carrier : carriers.getCarriers().values()) {
 
@@ -73,29 +71,28 @@ public class CarrierPlansAnalyzer {
             CarrierPlan plan = carrier.getSelectedPlan();
 
             for (ScheduledTour tour : plan.getScheduledTours()) {
-                String tourId = tour.getVehicle().getVehicleId().toString();
+                String tourId = tour.getVehicle().getId().toString();
                 String vehType;
-                if (tourId.contains("van")){
-                    if (tourId.contains("feeder")){
-                        vehType= "truck_feeder";
-                    } else{
+                if (tourId.contains("van")) {
+                    if (tourId.contains("feeder")) {
+                        vehType = "truck_feeder";
+                    } else {
                         vehType = "truck";
                     }
                 } else {
                     vehType = "cargoBike";
                 }
-                double departureTime_s = tour.getDeparture();
+                double currentTime_s = tour.getDeparture();
                 int thisServiceIndex = 0;
                 int numberOfServices = 0;
                 int numberOfParcels = 0;
 
                 for (TourElement element : tour.getTour().getTourElements()) {
-                    if (element instanceof ServiceActivity){
+                    if (element instanceof ServiceActivity) {
                         numberOfServices++;
-                        numberOfParcels+= ((ServiceActivity) element).getService().getCapacityDemand();
+                        numberOfParcels += ((ServiceActivity) element).getService().getCapacityDemand();
                     }
                 }
-
 
                 for (TourElement element : tour.getTour().getTourElements()) {
                     if (element instanceof ServiceActivity) {
@@ -110,18 +107,26 @@ public class CarrierPlansAnalyzer {
                                 numberOfServices + "," +
                                 serviceTime + ",0,service," +
                                 vehType + "," +
-                                numberOfParcels);
+                                numberOfParcels + "," +
+                                serviceTime + "," +
+                                currentTime_s);
+                        currentTime_s += serviceTime;
 
                     } else if (element instanceof Leg) {
                         Leg leg = (Leg) element;
                         double travelTime = leg.getExpectedTransportTime();
                         Route route = leg.getRoute();
                         String description = route.getRouteDescription();
+                        double routeFreeFlowTravelTime = 0;
                         double distance = 0;
                         for (String linkId : description.split(" ")) {
-                            distance += network.getLinks().get(Id.createLinkId(linkId)).getLength();
+                            double length = network.getLinks().get(Id.createLinkId(linkId)).getLength();
+                            distance += length;
+                            double freespeed = network.getLinks().get(Id.createLinkId(linkId)).getFreespeed();
+                            if (freespeed != 0) {
+                                routeFreeFlowTravelTime += length / freespeed;
+                            }
                         }
-
                         pw.println(carrierId + "," +
                                 tourId + "," +
                                 thisServiceIndex + "," +
@@ -129,7 +134,13 @@ public class CarrierPlansAnalyzer {
                                 travelTime + "," +
                                 distance + ",leg," +
                                 vehType + "," +
-                                numberOfParcels);
+                                numberOfParcels + "," +
+                                routeFreeFlowTravelTime + "," +
+                                currentTime_s);
+
+                        currentTime_s += travelTime;
+
+
                     }
                 }
 
