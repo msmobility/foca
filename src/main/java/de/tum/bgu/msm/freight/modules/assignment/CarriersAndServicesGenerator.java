@@ -204,7 +204,7 @@ public class CarriersAndServicesGenerator {
                 }
                 if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED) && parcel.isAssigned()) {
                     TimeWindow timeWindow = generateRandomTimeSubWindow(7, 17, 1);
-                    Id<Link> linkParcelDelivery = getNearestLinkByMode(parcel.getDestCoord(), ParcelDistributionType.MOTORIZED).getId();
+                    Id<Link> linkParcelDelivery = getNearestLinkByMode(new Coordinate(parcelCoord.getX(), parcelCoord.getY()), ParcelDistributionType.MOTORIZED).getId();
                     Node toNode = network.getLinks().get(linkParcelDelivery).getToNode();
                     double distance = NetworkUtils.getEuclideanDistance(toNode.getCoord(), parcelCoord);
                     parcel.setAccessDistance_m(distance);
@@ -249,7 +249,7 @@ public class CarriersAndServicesGenerator {
             if (parcel.isAssigned()) {
                 TimeWindow timeWindow;
                 timeWindow = generateRandomTimeSubWindow(8, 17, 1);
-                Id<Link> linkParcelDelivery = getNearestLinkByMode(parcel.getDestCoord(), ParcelDistributionType.CARGO_BIKE).getId();
+                Id<Link> linkParcelDelivery = getNearestLinkByMode(new Coordinate(parcelCoord.getX(), parcelCoord.getY()), ParcelDistributionType.CARGO_BIKE).getId();
                 Node toNode = network.getLinks().get(linkParcelDelivery).getToNode();
                 double distance = NetworkUtils.getEuclideanDistance(toNode.getCoord(), parcelCoord);
                 parcel.setAccessDistance_m(distance);
