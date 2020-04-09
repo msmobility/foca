@@ -40,7 +40,7 @@ public class Properties extends PropertiesGroup {
 
     private boolean readEventsForCounts = true;
     private String countStationLinkListFile = "input/matsim_links_stations.csv";
-    private String countsFileName = "counts_multi_day.csv";
+    private String countsFileName = "counts.csv";
     private String vehicleFile = "input/vehicleFile.xml";
 
 
