@@ -26,7 +26,8 @@ public class Properties extends PropertiesGroup {
     private int iterations = 1;
 
 
-    private double truckScaleFactor = 1.;
+
+
 
     private String runId = "base";
 
@@ -35,21 +36,19 @@ public class Properties extends PropertiesGroup {
 
     private int[] analysisZones = new int[]{};
 
-    private boolean storeExpectedTimes = false;
 
-    private int daysPerYear = 365;
     private boolean readEventsForCounts = true;
     private String countStationLinkListFile = "input/matsim_links_stations.csv";
     private String countsFileName = "counts.csv";
     private String vehicleFile = "input/vehicleFile.xml";
 
-
-    private String[] jobTypes = new String[]{"Mnft", "Util", "Cons", "Retl", "Trns", "Finc", "Rlst", "Admn", "Serv", "Agri"};
     private String makeTableFileName = "./input/makeUseCoefficients/makeTable_eurostat.csv";
     private String useTableFileName = "./input/makeUseCoefficients/useTable_eurostat.csv";
 
-    private String parcelWeightDistributionFile = "./input/parcel_weight_distribution.csv";
+    private String[] jobTypes = new String[]{"Mnft", "Util", "Cons", "Retl", "Trns", "Finc", "Rlst", "Admn", "Serv", "Agri"};
 
+
+    private String parcelWeightDistributionFile = "./input/parcel_weight_distribution.csv";
     private double sampleFactorForParcels = 1.;
     private boolean runParcelDelivery = true;
     private String vehicleFileForParcelDelivery = "./input/vehicleTypesForParcelDelivery.xml";
@@ -91,12 +90,11 @@ public class Properties extends PropertiesGroup {
         networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", networkFile);
         simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
         iterations = PropertiesUtil.getIntProperty(bundle, "iterations", iterations);
-        truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor", truckScaleFactor);
         runId = PropertiesUtil.getStringProperty(bundle, "runId", runId);
         randomSeed = PropertiesUtil.getIntProperty(bundle, "randomSeed", randomSeed);
         analysisZones = PropertiesUtil.getIntPropertyArray(bundle, "analysisZones", analysisZones);
-        storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes", storeExpectedTimes);
-        daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", daysPerYear);
+
+
 
         readEventsForCounts = PropertiesUtil.getBooleanProperty(bundle, "readEventsForCounts", readEventsForCounts);
         countStationLinkListFile = PropertiesUtil.getStringProperty(bundle, "countStationLinkListFile", countStationLinkListFile);
@@ -192,14 +190,6 @@ public class Properties extends PropertiesGroup {
         this.iterations = iterations;
     }
 
-    public double getTruckScaleFactor() {
-        return truckScaleFactor;
-    }
-
-    public void setTruckScaleFactor(double truckScaleFactor) {
-        this.truckScaleFactor = truckScaleFactor;
-    }
-
     public String getRunId() {
         return runId;
     }
@@ -212,10 +202,10 @@ public class Properties extends PropertiesGroup {
         return rand;
     }
 
+
     //public void setRand(Random rand) {
 //        this.rand = rand;
 //    }
-
     public int[] getAnalysisZones() {
         return analysisZones;
     }
@@ -224,21 +214,6 @@ public class Properties extends PropertiesGroup {
         this.analysisZones = analysisZones;
     }
 
-    public boolean isStoreExpectedTimes() {
-        return storeExpectedTimes;
-    }
-
-    public void setStoreExpectedTimes(boolean storeExpectedTimes) {
-        this.storeExpectedTimes = storeExpectedTimes;
-    }
-
-    public int getDaysPerYear() {
-        return daysPerYear;
-    }
-
-    public void setDaysPerYear(int daysPerYear) {
-        this.daysPerYear = daysPerYear;
-    }
 
     public boolean isReadEventsForCounts() {
         return readEventsForCounts;
@@ -318,12 +293,6 @@ public class Properties extends PropertiesGroup {
         return vehicleFileForParcelDelivery;
     }
 
-
-
-    @Deprecated
-    public String getDistributionCentersCatchmentAreaFile() {
-        return distributionCentersCatchmentAreaFile;
-    }
 
     public String getMatsimBackgroundTraffic() {
         return matsimBackgroundTrafficPlanFile;

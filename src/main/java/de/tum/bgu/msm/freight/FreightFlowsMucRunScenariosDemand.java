@@ -39,7 +39,7 @@ public class FreightFlowsMucRunScenariosDemand {
         thisProperties.initializeRandomNumber();
         thisProperties.flows().setMatrixFolder("./input/matrices/");
         thisProperties.setAnalysisZones(new int[]{9162});
-        thisProperties.setTruckScaleFactor(1.00);
+        thisProperties.longDistance().setTruckScaleFactor(1.00);
         thisProperties.setSampleFactorForParcels(0.25*demandFactor);
         thisProperties.setIterations(50);
         thisProperties.shortDistance().setReadMicroDepotsFromFile(false);

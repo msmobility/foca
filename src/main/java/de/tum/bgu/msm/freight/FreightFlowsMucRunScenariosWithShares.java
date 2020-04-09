@@ -44,7 +44,7 @@ public class FreightFlowsMucRunScenariosWithShares {
             properties.initializeRandomNumber();
             properties.flows().setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});
-            properties.setTruckScaleFactor(1.00);
+            properties.longDistance().setTruckScaleFactor(1.00);
             properties.setSampleFactorForParcels(0.25);
             properties.setIterations(50);
             properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(shareOfCargoBikes);

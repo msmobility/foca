@@ -46,7 +46,7 @@ public class MATSimTruckPlanGenerator {
 
         for (LDTruckTrip lDTruckTrip : dataSet.getLDTruckTrips()) {
 
-            if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
+            if (properties.getRand().nextDouble() < properties.longDistance().getTruckScaleFactor()) {
                 lDTruckTrip.setAssigned(true);
 
                 generatePlanForThisTruck(population, factory, counter, lDTruckTrip);
@@ -54,7 +54,7 @@ public class MATSimTruckPlanGenerator {
         }
 
         for (SDTruckTrip sDTruckTrip : dataSet.getSDTruckTrips()){
-            if (properties.getRand().nextDouble() < properties.getTruckScaleFactor()) {
+            if (properties.getRand().nextDouble() < properties.longDistance().getTruckScaleFactor()) {
                 sDTruckTrip.setAssigned(true);
 //                String idOfVehicle = "sDTruck_";
 //                idOfVehicle+= sDTruckTrip.getCommodity().getCommodityGroup().toString() + "_";

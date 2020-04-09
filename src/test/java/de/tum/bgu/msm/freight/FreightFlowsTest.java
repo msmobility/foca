@@ -47,7 +47,7 @@ public class FreightFlowsTest {
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
             properties.flows().setFlowsScaleFactor(1.0);
-            properties.setTruckScaleFactor(0.05);
+            properties.longDistance().setTruckScaleFactor(0.05);
             properties.setSampleFactorForParcels(0.05);
             properties.setIterations(50);
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
@@ -62,7 +62,7 @@ public class FreightFlowsTest {
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
             properties.flows().setFlowsScaleFactor(1.0);
-            properties.setTruckScaleFactor(0.05);
+            properties.longDistance().setTruckScaleFactor(0.05);
             properties.setSampleFactorForParcels(0.05);
             properties.setIterations(50);
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
@@ -77,7 +77,7 @@ public class FreightFlowsTest {
             //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
             properties.setAnalysisZones(new int[]{9362});
             properties.flows().setFlowsScaleFactor(1.0);
-            properties.setTruckScaleFactor(0.05);
+            properties.longDistance().setTruckScaleFactor(0.05);
             properties.setSampleFactorForParcels(0.05);
             properties.setIterations(50);
             properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");
@@ -103,7 +103,7 @@ public class FreightFlowsTest {
         //properties.setNetworkFile("./networks/matsim/regensburg_multimodal_compatible_emissions.xml");
         properties.setAnalysisZones(new int[]{9362});
         properties.flows().setFlowsScaleFactor(1.0);
-        properties.setTruckScaleFactor(0.05);
+        properties.longDistance().setTruckScaleFactor(0.05);
         properties.setSampleFactorForParcels(0.05);
         properties.setIterations(1);
         properties.setCountStationLinkListFile("./input/matsim_links_stations_all_regensburg.csv");

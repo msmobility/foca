@@ -46,7 +46,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
         this.properties = properties;
         this.dataSet = dataSet;
 
-        if (properties.isStoreExpectedTimes()) {
+        if (properties.longDistance().isStoreExpectedTimes()) {
             uncongestedTravelTime = new UncongestedTravelTime(properties.getSimpleNetworkFile());
             uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet, properties);
         }
@@ -89,7 +89,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                                 double truckLoad = dataSet.getTruckLoadsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
                                 double proportionEmpty = dataSet.getEmptyTrucksProportionsByDistanceAndCommodity().get(flowSegment.getCommodity(), distanceBin);
 
-                                double numberOfVehicles_double = flowSegment.getVolume_tn() / properties.getDaysPerYear() / truckLoad;
+                                double numberOfVehicles_double = flowSegment.getVolume_tn() / properties.longDistance().getDaysPerYear() / truckLoad;
                                 double numberOfEmptyVehicles_double = numberOfVehicles_double / (1 - proportionEmpty) - numberOfVehicles_double;
 
                                 int loadedTrucks_int = (int) Math.floor(numberOfVehicles_double);
@@ -157,7 +157,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
                         flowSegment.getSegmentDestination() + "," +
                         flowSegment.getCommodity() + "," +
                         flowSegment.getDistance_km() + "," +
-                        flowSegment.getVolume_tn() / properties.getDaysPerYear() + "," +
+                        flowSegment.getVolume_tn() / properties.longDistance().getDaysPerYear() + "," +
                         trucks + "," +
                         flowSegment.getTt_s());
             }

@@ -36,9 +36,7 @@ public class InputManager {
         new LongDistanceTruckReader(dataSet, properties).read();
     }
 
-    private void readDistributionCenterCatchmentAreas() {
-        new DistributionCenterCatchmentAreaReader(dataSet, properties).read();
-    }
+
 
     private void readWeightDistribution() {
         ParcelWeightDistributionReader parcelWeightDistributionReader = new ParcelWeightDistributionReader(dataSet, properties);

@@ -20,7 +20,7 @@ public class FreightFlowsOnlyLD {
         Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
         properties.flows().setMatrixFolder("./input/matrices/");
         properties.setAnalysisZones(new int[]{});
-        properties.setTruckScaleFactor(0.05);
+        properties.longDistance().setTruckScaleFactor(0.05);
         properties.setSampleFactorForParcels(0.);
         properties.setIterations(1);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{-1});

@@ -124,7 +124,7 @@ public class MATSimConfigUtils {
         config.controler().setWriteEventsInterval(iterations);
 
         double parcelFactor = properties.getSampleFactorForParcels();
-        double truckFactor = properties.getTruckScaleFactor();
+        double truckFactor = properties.longDistance().getTruckScaleFactor();
         double scaleFactor;
 
         if (parcelFactor == truckFactor){
