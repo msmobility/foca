@@ -113,18 +113,20 @@ public class CarrierPlansAnalyzer {
                                 serviceTime + ",0,service," +
                                 vehType + "," +
                                 numberOfParcels + "," +
-                                serviceTime + "," +
+                                0 + "," +
                                 currentTime_s);
                         currentTime_s += serviceTime;
 
                     } else if (element instanceof Leg) {
                         Leg leg = (Leg) element;
-                        double travelTime = leg.getExpectedTransportTime();
+                        double expectedTravelTime = leg.getExpectedTransportTime();
                         Route route = leg.getRoute();
                         String description = route.getRouteDescription();
-                        double routeFreeFlowTravelTime = 0;
+                        double routeFreeFlowTravelTime = 0; //todo the free flow travel time and the expected travel time are not consistent with each other
                         double distance = 0;
-                        for (String linkId : description.split(" ")) {
+                        String[] arrayOfLinkIds = description.split(" ");
+                        for (int i = 0; i < arrayOfLinkIds.length - 1; i++) {
+                            String linkId = arrayOfLinkIds[i];
                             double length = network.getLinks().get(Id.createLinkId(linkId)).getLength();
                             distance += length;
                             double freespeed = network.getLinks().get(Id.createLinkId(linkId)).getFreespeed();
@@ -136,14 +138,14 @@ public class CarrierPlansAnalyzer {
                                 tourId + "," +
                                 thisServiceIndex + "," +
                                 numberOfServices + "," +
-                                travelTime + "," +
+                                expectedTravelTime + "," +
                                 distance + ",leg," +
                                 vehType + "," +
                                 numberOfParcels + "," +
                                 routeFreeFlowTravelTime + "," +
                                 currentTime_s);
 
-                        currentTime_s += travelTime;
+                        currentTime_s += expectedTravelTime;
 
 
                     }
