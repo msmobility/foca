@@ -35,8 +35,8 @@ public class FreightFlowsRunSingle {
         properties.setSampleFactorForParcels(0.2);
         properties.setIterations(50);
         properties.shortDistance().setSelectedDistributionCenters(new int[]{13,14,16,17,19,20,21,22,23,24});
-        properties.setRunId("base");
-        properties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
+        properties.setRunId("base2");
+        properties.longDistance().setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
         //properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0);
         properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(2000.);
         properties.shortDistance().setMaxDistanceToMicroDepot(2000.);

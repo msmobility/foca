@@ -12,9 +12,11 @@ public class LDProperties extends PropertiesGroup {
     private double truckScaleFactor = 1.;
     private boolean storeExpectedTimes = false;
     private int daysPerYear = 365;
+    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
 
     public LDProperties(ResourceBundle bundle) {
         super(bundle);
+        distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile", distributionCentersFile);
         truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor", truckScaleFactor);
         storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes", storeExpectedTimes);
         daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", daysPerYear);
@@ -60,6 +62,14 @@ public class LDProperties extends PropertiesGroup {
 
     public void setLongDistanceTruckInputFile(String longDistanceTruckInputFile) {
         this.longDistanceTruckInputFile = longDistanceTruckInputFile;
+    }
+
+    public String getDistributionCentersFile() {
+        return distributionCentersFile;
+    }
+
+    public void setDistributionCentersFile(String distributionCentersFile) {
+        this.distributionCentersFile = distributionCentersFile;
     }
 
 }

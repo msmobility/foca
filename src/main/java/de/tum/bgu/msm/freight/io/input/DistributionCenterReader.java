@@ -143,7 +143,7 @@ public class DistributionCenterReader extends CSVReader {
 
     @Override
     public void read() {
-        super.read(properties.getDistributionCentersFile(), ",");
+        super.read(properties.longDistance().getDistributionCentersFile(), ",");
         fillCatchmentAreas();
         logger.info("Read " + counter + " distribution centers.");
 

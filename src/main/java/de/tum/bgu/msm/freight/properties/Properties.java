@@ -19,15 +19,11 @@ public class Properties extends PropertiesGroup {
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
 
-    private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
+
 
     private String networkFile = "./networks/matsim/final_V11_emissions.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
     private int iterations = 1;
-
-
-
-
 
     private String runId = "base";
 
@@ -86,7 +82,7 @@ public class Properties extends PropertiesGroup {
         super(bundle);
 
         //read all the properties of this class and assign the values
-        distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile", distributionCentersFile);
+
         networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", networkFile);
         simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
         iterations = PropertiesUtil.getIntProperty(bundle, "iterations", iterations);
@@ -247,9 +243,7 @@ public class Properties extends PropertiesGroup {
         this.vehicleFile = vehicleFile;
     }
 
-    public String getDistributionCentersFile() {
-        return distributionCentersFile;
-    }
+
 
     public String[] getJobTypes() {
         return jobTypes;
@@ -312,10 +306,6 @@ public class Properties extends PropertiesGroup {
 
     public void setVehicleFileForParcelDelivery(String s) {
         this.vehicleFileForParcelDelivery = s;
-    }
-
-    public void setDistributionCentersFile(String distributionCentersFile) {
-        this.distributionCentersFile = distributionCentersFile;
     }
 
     public int getYear() {

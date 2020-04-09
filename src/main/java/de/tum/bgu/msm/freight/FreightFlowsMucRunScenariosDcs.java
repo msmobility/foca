@@ -46,7 +46,7 @@ public class FreightFlowsMucRunScenariosDcs {
         thisProperties.shortDistance().setReadMicroDepotsFromFile(false);
         thisProperties.shortDistance().setSelectedDistributionCenters(new int[]{dc});
         thisProperties.setRunId("muc_dc_" + args[0]);
-        thisProperties.setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
+        thisProperties.longDistance().setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
         thisProperties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.0);
         try {
             thisProperties.logProperties("./output/" + thisProperties.getRunId() + "/properties.txt");
