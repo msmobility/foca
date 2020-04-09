@@ -58,6 +58,7 @@ public class FreightFlowsRunSingle {
 
         //adds a 5% pf cars as background traffic
         properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/plans_dc_20_20.xml.gz");
+        properties.setMatsimAdditionalScaleFactor(0.25/0.20);
         FreightFlowsRunSingle freightFlows = new FreightFlowsRunSingle();
         logger.info("Start simulation " + properties.getRunId());
         freightFlows.run(properties);

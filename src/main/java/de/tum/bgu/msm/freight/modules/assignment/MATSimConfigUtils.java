@@ -22,7 +22,7 @@ public class MATSimConfigUtils {
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 
-        config.qsim().setEndTime(30 * 60 * 60);
+        //config.qsim().setEndTime(30 * 60 * 60);
 
         config.vspExperimental().setWritingOutputEvents(true); // writes final events into toplevel directory
 
@@ -123,10 +123,20 @@ public class MATSimConfigUtils {
         config.controler().setWritePlansInterval(iterations);
         config.controler().setWriteEventsInterval(iterations);
 
+        double parcelFactor = properties.getSampleFactorForParcels();
+        double truckFactor = properties.getTruckScaleFactor();
+        double scaleFactor;
+
+        if (parcelFactor == truckFactor){
+            scaleFactor = parcelFactor;
+        } else {
+            scaleFactor = Math.max(parcelFactor, truckFactor);
+        }
+
         config.qsim().setStuckTime(10);
-        //skips scaling of the network!
-        config.qsim().setFlowCapFactor(1);
-        config.qsim().setStorageCapFactor(1);
+        //skips scaling of the network?
+        config.qsim().setFlowCapFactor(scaleFactor * properties.getMatsimAdditionalScaleFactor());
+        config.qsim().setStorageCapFactor(scaleFactor * properties.getMatsimAdditionalScaleFactor());
 
         config.linkStats().setWriteLinkStatsInterval(config.controler().getLastIteration());
 

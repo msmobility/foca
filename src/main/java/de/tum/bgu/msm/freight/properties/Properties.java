@@ -57,6 +57,7 @@ public class Properties extends PropertiesGroup {
     @Deprecated
     private String distributionCentersCatchmentAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
     private String matsimBackgroundTrafficPlanFile = "";
+    private double matsimAdditionalScaleFactor = 1.0;
     private String outputFolder = "output/";
     private int year = 2010;
 
@@ -72,6 +73,14 @@ public class Properties extends PropertiesGroup {
         }
         return bundle;
 
+    }
+
+    public double getMatsimAdditionalScaleFactor() {
+        return matsimAdditionalScaleFactor;
+    }
+
+    public void setMatsimAdditionalScaleFactor(double matsimAdditionalScaleFactor) {
+        this.matsimAdditionalScaleFactor = matsimAdditionalScaleFactor;
     }
 
     public Properties(ResourceBundle bundle) {
@@ -112,6 +121,7 @@ public class Properties extends PropertiesGroup {
         //distributionCentersCatchmentAreaFile = PropertiesUtil.getBooleanProperty(bundle, "distributionCentersCatchmentAreaFile");
 
         matsimBackgroundTrafficPlanFile = PropertiesUtil.getStringProperty(bundle, "matsimBackgroundTrafficPlanFile", matsimBackgroundTrafficPlanFile);
+        matsimAdditionalScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "matsim.additional.scale", matsimAdditionalScaleFactor);
 
         outputFolder = PropertiesUtil.getStringProperty(bundle, "outputFolder", outputFolder);
 
