@@ -25,6 +25,7 @@ public class ModeChoiceProperties extends PropertiesGroup {
         kApproximation = PropertiesUtil.getDoubleProperty(bundle, "kApproximation", kApproximation);
         serviceCostBike_eur_parcel = PropertiesUtil.getDoubleProperty(bundle, "serviceCostBike_eur_parcel", serviceCostBike_eur_parcel);
         serviceCostTruck_eur_parcel = PropertiesUtil.getDoubleProperty(bundle, "serviceCostTruck_eur_parcel", serviceCostTruck_eur_parcel);
+        extraHandlingBike_eur_m3 = PropertiesUtil.getDoubleProperty(bundle, "extraHandlingBike_eur_m3", extraHandlingBike_eur_m3);
         capacityTruck_m3 = PropertiesUtil.getDoubleProperty(bundle, "capacityTruck_m3", capacityTruck_m3);
         capacityFeeder_m3 = PropertiesUtil.getDoubleProperty(bundle, "capacityFeeder_m3", capacityFeeder_m3);
         maxWeightForCargoBike_kg = PropertiesUtil.getDoubleProperty(bundle, "maxWeightForCargoBike_kg", maxWeightForCargoBike_kg);

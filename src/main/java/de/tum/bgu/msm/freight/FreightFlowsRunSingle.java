@@ -28,26 +28,6 @@ public class FreightFlowsRunSingle {
 
 
         Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
-        properties.flows().setMatrixFolder("./input/matrices/");
-        properties.setAnalysisZones(new int[]{9162});
-        properties.setNetworkFile("./networks/matsim/final_V11_emissions.xml.gz");
-        properties.longDistance().setTruckScaleFactor(0.2);
-        properties.setSampleFactorForParcels(0.2);
-        properties.setIterations(50);
-        properties.shortDistance().setSelectedDistributionCenters(new int[]{13,14,16,17,19,20,21,22,23,24});
-        properties.setRunId("base2");
-        properties.longDistance().setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
-        //properties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(0);
-        properties.shortDistance().setDistanceBetweenMicrodepotsInGrid(2000.);
-        properties.shortDistance().setMaxDistanceToMicroDepot(2000.);
-
-        properties.shortDistance().setReadMicroDepotsFromFile(false);
-        properties.longDistance().setDisaggregateLongDistanceFlows(false);
-        properties.longDistance().setLongDistanceTruckInputFile("./input/preProcessedInput/ld_trucks_muc.csv");
-
-        properties.modeChoice().setExtraHandlingBike_eur_m3(Double.MAX_VALUE);
-
-        properties.setCountStationLinkListFile("./input/matsim_links_dc20.csv");
 
         try {
             properties.logProperties("./output/" + properties.getRunId());
@@ -55,9 +35,6 @@ public class FreightFlowsRunSingle {
             e.printStackTrace();
         }
 
-        //adds a 5% pf cars as background traffic
-        properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/plans_dc_20_20.xml.gz");
-        properties.setMatsimAdditionalScaleFactor(0.25/0.20);
         FreightFlowsRunSingle freightFlows = new FreightFlowsRunSingle();
         logger.info("Start simulation " + properties.getRunId());
         freightFlows.run(properties);
@@ -108,7 +85,7 @@ public class FreightFlowsRunSingle {
         SDTruckGenerator.run();
         parcelGenerator.run();
         modeChoiceModel.run();
-        matSimAssignment.run();
+        //matSimAssignment.run();
 
         //PopulationWriter pw;
 

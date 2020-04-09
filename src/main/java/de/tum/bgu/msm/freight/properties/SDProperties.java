@@ -11,6 +11,8 @@ public class SDProperties extends PropertiesGroup {
     private int maxNumberOfParcelsByCarrier = 200;
     private boolean readMicroDepotsFromFile = true;
     private double maxDistanceToMicroDepot = 4000;
+    private double distanceBetweenMicrodepotsInGrid = 1000;
+
 
     public SDProperties(ResourceBundle bundle) {
         super(bundle);
@@ -20,6 +22,7 @@ public class SDProperties extends PropertiesGroup {
         maxNumberOfParcelsByCarrier = PropertiesUtil.getIntProperty(bundle, "maxNumberOfParcelsByCarrier", maxNumberOfParcelsByCarrier);
         readMicroDepotsFromFile = PropertiesUtil.getBooleanProperty(bundle, "readMicroDepotsFromFile", readMicroDepotsFromFile);
         maxDistanceToMicroDepot = PropertiesUtil.getDoubleProperty(bundle, "maxDistanceToMicroDepot", maxDistanceToMicroDepot);
+        distanceBetweenMicrodepotsInGrid = PropertiesUtil.getDoubleProperty(bundle, "distanceBetweenMicrodepotsInGrid", distanceBetweenMicrodepotsInGrid);
     }
 
     public void setMaxDistanceToMicroDepot(double maxDistanceToMicroDepot) {
@@ -29,8 +32,6 @@ public class SDProperties extends PropertiesGroup {
     public void setDistanceBetweenMicrodepotsInGrid(double distanceBetweenMicrodepotsInGrid) {
         this.distanceBetweenMicrodepotsInGrid = distanceBetweenMicrodepotsInGrid;
     }
-
-    private double distanceBetweenMicrodepotsInGrid = 1000;
 
 
     public int[] getSelectedDistributionCenters() {

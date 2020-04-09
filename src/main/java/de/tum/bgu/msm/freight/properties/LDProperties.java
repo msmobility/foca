@@ -24,7 +24,7 @@ public class LDProperties extends PropertiesGroup {
         storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes", storeExpectedTimes);
         daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", daysPerYear);
         distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile", distributionCentersFile);
-        simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
+        simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "simpleNetworkFile", simpleNetworkFile);
 
     }
 
