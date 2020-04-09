@@ -70,8 +70,13 @@ public class CarrierPlansAnalyzer {
 
             CarrierPlan plan = carrier.getSelectedPlan();
 
+            int carrierTourCounter = 0;
+
             for (ScheduledTour tour : plan.getScheduledTours()) {
-                String tourId = tour.getVehicle().getId().toString();
+                String tourId;
+                String carrierTourId = tour.getVehicle().getId().toString();
+                tourId = carrierTourId + "_" + carrierTourCounter;
+                carrierTourCounter++;
                 String vehType;
                 if (tourId.contains("van")) {
                     if (tourId.contains("feeder")) {
