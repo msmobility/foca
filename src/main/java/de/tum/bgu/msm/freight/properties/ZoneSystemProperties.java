@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.freight.properties;
 
+import de.tum.bgu.msm.properties.PropertiesUtil;
+
 import java.util.ResourceBundle;
 
 public class ZoneSystemProperties extends PropertiesGroup {
@@ -13,6 +15,13 @@ public class ZoneSystemProperties extends PropertiesGroup {
 
     public ZoneSystemProperties(ResourceBundle bundle) {
         super(bundle);
+        PropertiesUtil.newPropertySubmodule("Zone system");
+        zoneInputFile = PropertiesUtil.getStringProperty(bundle, "zoneInputFile", zoneInputFile);
+        zoneShapeFile = PropertiesUtil.getStringProperty(bundle, "zoneShapeFile", zoneShapeFile);
+        munichMicroZonesShapeFile = PropertiesUtil.getStringProperty(bundle, "munichMicroZonesShapeFile", munichMicroZonesShapeFile);
+        regensburgMicroZonesShapeFile = PropertiesUtil.getStringProperty(bundle, "regensburgMicroZonesShapeFile", regensburgMicroZonesShapeFile);
+        idFieldInZonesShp = PropertiesUtil.getStringProperty(bundle, "idFieldInZonesShp", idFieldInZonesShp);
+        idFieldInMicroZonesShp = PropertiesUtil.getStringProperty(bundle, "idFieldInMicroZonesShp", idFieldInMicroZonesShp);
     }
 
     public String getZoneInputFile() {

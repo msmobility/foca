@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.freight.properties;
 
+import de.tum.bgu.msm.properties.PropertiesUtil;
+
 import java.util.ResourceBundle;
 
 public class SDProperties extends PropertiesGroup {
@@ -12,6 +14,12 @@ public class SDProperties extends PropertiesGroup {
 
     public SDProperties(ResourceBundle bundle) {
         super(bundle);
+        PropertiesUtil.newPropertySubmodule("Short-distance trucks and parcel disaggregation");
+        shareOfCargoBikesAtZonesServedByMicroDepot = PropertiesUtil.getDoubleProperty(bundle, "shareOfCargoBikesAtZonesServedByMicroDepot", shareOfCargoBikesAtZonesServedByMicroDepot);
+        selectedDistributionCenters = PropertiesUtil.getIntPropertyArray(bundle, "selectedDistributionCenters", selectedDistributionCenters);
+        maxNumberOfParcelsByCarrier = PropertiesUtil.getIntProperty(bundle, "maxNumberOfParcelsByCarrier", maxNumberOfParcelsByCarrier);
+        readMicroDepotsFromFile = PropertiesUtil.getBooleanProperty(bundle, "readMicroDepotsFromFile", readMicroDepotsFromFile);
+        maxDistanceToMicroDepot = PropertiesUtil.getDoubleProperty(bundle, "maxDistanceToMicroDepot", maxDistanceToMicroDepot);
     }
 
     public void setMaxDistanceToMicroDepot(double maxDistanceToMicroDepot) {

@@ -18,39 +18,25 @@ public class Properties extends PropertiesGroup {
     private final ModeChoiceProperties modeChoiceProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
-
+    private Random rand;
 
 
     private String networkFile = "./networks/matsim/final_V11_emissions.xml.gz";
-
     private int iterations = 1;
-
     private String runId = "base";
-
     private int randomSeed = 1;
-    private Random rand;
-
     private int[] analysisZones = new int[]{};
-
-
     private boolean readEventsForCounts = true;
     private String countStationLinkListFile = "input/matsim_links_stations.csv";
     private String countsFileName = "counts.csv";
     private String vehicleFile = "input/vehicleFile.xml";
-
     private String makeTableFileName = "./input/makeUseCoefficients/makeTable_eurostat.csv";
     private String useTableFileName = "./input/makeUseCoefficients/useTable_eurostat.csv";
-
     private String[] jobTypes = new String[]{"Mnft", "Util", "Cons", "Retl", "Trns", "Finc", "Rlst", "Admn", "Serv", "Agri"};
-
-
     private String parcelWeightDistributionFile = "./input/parcel_weight_distribution.csv";
     private double sampleFactorForParcels = 1.;
     private boolean runParcelDelivery = true;
     private String vehicleFileForParcelDelivery = "./input/vehicleTypesForParcelDelivery.xml";
-
-    @Deprecated
-    private String distributionCentersCatchmentAreaFile = "./input/distributionCenters/distributionCentersCatchmentArea.csv";
     private String matsimBackgroundTrafficPlanFile = "";
     private double matsimAdditionalScaleFactor = 1.0;
     private String outputFolder = "output/";
@@ -82,39 +68,28 @@ public class Properties extends PropertiesGroup {
         super(bundle);
 
         //read all the properties of this class and assign the values
-
+        PropertiesUtil.newPropertySubmodule("Global");
         networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", networkFile);
-
         iterations = PropertiesUtil.getIntProperty(bundle, "iterations", iterations);
         runId = PropertiesUtil.getStringProperty(bundle, "runId", runId);
         randomSeed = PropertiesUtil.getIntProperty(bundle, "randomSeed", randomSeed);
         analysisZones = PropertiesUtil.getIntPropertyArray(bundle, "analysisZones", analysisZones);
-
-
-
         readEventsForCounts = PropertiesUtil.getBooleanProperty(bundle, "readEventsForCounts", readEventsForCounts);
         countStationLinkListFile = PropertiesUtil.getStringProperty(bundle, "countStationLinkListFile", countStationLinkListFile);
         countsFileName = PropertiesUtil.getStringProperty(bundle, "countsFileName", countsFileName);
         vehicleFile = PropertiesUtil.getStringProperty(bundle, "vehicleFile", vehicleFile);
-
         jobTypes = PropertiesUtil.getStringPropertyArray(bundle, "jobTypes", jobTypes);
         makeTableFileName = PropertiesUtil.getStringProperty(bundle, "makeTableFileName", makeTableFileName);
         useTableFileName = PropertiesUtil.getStringProperty(bundle, "useTableFileName", useTableFileName);
-
         parcelWeightDistributionFile = PropertiesUtil.getStringProperty(bundle, "parcelWeightDistributionFile", parcelWeightDistributionFile);
-
         sampleFactorForParcels = PropertiesUtil.getDoubleProperty(bundle, "sampleFactorForParcels", sampleFactorForParcels);
         runParcelDelivery = PropertiesUtil.getBooleanProperty(bundle, "runParcelDelivery", runParcelDelivery);
         vehicleFileForParcelDelivery = PropertiesUtil.getStringProperty(bundle, "vehicleFileForParcelDelivery", vehicleFileForParcelDelivery);
-
-        //distributionCentersCatchmentAreaFile = PropertiesUtil.getBooleanProperty(bundle, "distributionCentersCatchmentAreaFile");
-
         matsimBackgroundTrafficPlanFile = PropertiesUtil.getStringProperty(bundle, "matsimBackgroundTrafficPlanFile", matsimBackgroundTrafficPlanFile);
         matsimAdditionalScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "matsim.additional.scale", matsimAdditionalScaleFactor);
-
         outputFolder = PropertiesUtil.getStringProperty(bundle, "outputFolder", outputFolder);
-
         year = PropertiesUtil.getIntProperty(bundle, "year", year);
+
 
         zoneSystemProperties = new ZoneSystemProperties(bundle);
         flowsProperties = new FlowsProperties(bundle);

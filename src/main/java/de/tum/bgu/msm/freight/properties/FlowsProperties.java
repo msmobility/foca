@@ -18,14 +18,14 @@ public class FlowsProperties extends PropertiesGroup {
 
     public FlowsProperties(ResourceBundle bundle) {
         super(bundle);
+        PropertiesUtil.newPropertySubmodule("Commodity flows");
         matrixFileNamePrefix = PropertiesUtil.getStringProperty(bundle, "matrixFileNamePrefix", matrixFileNamePrefix);
         matrixFileNameSuffix = PropertiesUtil.getStringProperty(bundle, "matrixFileNameSuffix", matrixFileNameSuffix);
         commodityAttributeFile = PropertiesUtil.getStringProperty(bundle, "commodityAttributeFile", commodityAttributeFile);
         terminalsFileName = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", terminalsFileName);
         flowsScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "flowsScaleFactor", flowsScaleFactor);
-
-        matrixFolder = PropertiesUtil.getStringProperty(bundle, "matrixFolder", matrixFolder);
         commodityFlowYears = PropertiesUtil.getIntPropertyArray(bundle, "commodityFlowYears", commodityFlowYears);
+        matrixFolder = PropertiesUtil.getStringProperty(bundle, "matrixFolder", matrixFolder);
 
     }
 

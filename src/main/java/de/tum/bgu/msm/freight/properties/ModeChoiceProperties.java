@@ -1,10 +1,12 @@
 package de.tum.bgu.msm.freight.properties;
 
+import de.tum.bgu.msm.properties.PropertiesUtil;
+
 import java.util.ResourceBundle;
 
 public class ModeChoiceProperties extends PropertiesGroup {
 
-        private double operatingCostBike_eur_km = 0.9200;
+    private double operatingCostBike_eur_km = 0.9200;
     private double operatingCostTruck_eur_km = 1.7765;
     private double kApproximation = 1.5;
     private double serviceCostBike_eur_parcel = 1.0152;
@@ -17,6 +19,18 @@ public class ModeChoiceProperties extends PropertiesGroup {
 
     public ModeChoiceProperties(ResourceBundle bundle) {
         super(bundle);
+        PropertiesUtil.newPropertySubmodule("Mode choice");
+        operatingCostBike_eur_km = PropertiesUtil.getDoubleProperty(bundle, "operatingCostBike_eur_km", operatingCostBike_eur_km);
+        operatingCostTruck_eur_km = PropertiesUtil.getDoubleProperty(bundle, "operatingCostTruck_eur_km", operatingCostTruck_eur_km);
+        kApproximation = PropertiesUtil.getDoubleProperty(bundle, "kApproximation", kApproximation);
+        serviceCostBike_eur_parcel = PropertiesUtil.getDoubleProperty(bundle, "serviceCostBike_eur_parcel", serviceCostBike_eur_parcel);
+        serviceCostTruck_eur_parcel = PropertiesUtil.getDoubleProperty(bundle, "serviceCostTruck_eur_parcel", serviceCostTruck_eur_parcel);
+        capacityTruck_m3 = PropertiesUtil.getDoubleProperty(bundle, "capacityTruck_m3", capacityTruck_m3);
+        capacityFeeder_m3 = PropertiesUtil.getDoubleProperty(bundle, "capacityFeeder_m3", capacityFeeder_m3);
+        maxWeightForCargoBike_kg = PropertiesUtil.getDoubleProperty(bundle, "maxWeightForCargoBike_kg", maxWeightForCargoBike_kg);
+        gridSpacing = PropertiesUtil.getDoubleProperty(bundle, "gridSpacing", gridSpacing);
+
+
     }
 
     public double getOperatingCostBike_eur_km() {

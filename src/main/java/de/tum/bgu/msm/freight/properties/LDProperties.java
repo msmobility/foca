@@ -17,10 +17,13 @@ public class LDProperties extends PropertiesGroup {
 
     public LDProperties(ResourceBundle bundle) {
         super(bundle);
-        distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile", distributionCentersFile);
+        PropertiesUtil.newPropertySubmodule("Long-distance trucks");
+        disaggregateLongDistanceFlows = PropertiesUtil.getBooleanProperty(bundle, "disaggregateLongDistanceFlows", disaggregateLongDistanceFlows);
+        longDistanceTruckInputFile = PropertiesUtil.getStringProperty(bundle, "longDistanceTruckInputFile", longDistanceTruckInputFile);
         truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor", truckScaleFactor);
         storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes", storeExpectedTimes);
         daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", daysPerYear);
+        distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile", distributionCentersFile);
         simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
 
     }
