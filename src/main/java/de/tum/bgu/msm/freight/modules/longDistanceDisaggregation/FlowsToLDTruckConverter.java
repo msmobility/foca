@@ -47,7 +47,7 @@ public class FlowsToLDTruckConverter implements de.tum.bgu.msm.freight.modules.M
         this.dataSet = dataSet;
 
         if (properties.longDistance().isStoreExpectedTimes()) {
-            uncongestedTravelTime = new UncongestedTravelTime(properties.getSimpleNetworkFile());
+            uncongestedTravelTime = new UncongestedTravelTime(properties.longDistance().getSimpleNetworkFile());
             uncongestedTravelTime.calculateTravelTimeMatrix(ct, dataSet, properties);
         }
 

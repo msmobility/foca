@@ -22,7 +22,7 @@ public class Properties extends PropertiesGroup {
 
 
     private String networkFile = "./networks/matsim/final_V11_emissions.xml.gz";
-    private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
+
     private int iterations = 1;
 
     private String runId = "base";
@@ -84,7 +84,7 @@ public class Properties extends PropertiesGroup {
         //read all the properties of this class and assign the values
 
         networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", networkFile);
-        simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
+
         iterations = PropertiesUtil.getIntProperty(bundle, "iterations", iterations);
         runId = PropertiesUtil.getStringProperty(bundle, "runId", runId);
         randomSeed = PropertiesUtil.getIntProperty(bundle, "randomSeed", randomSeed);
@@ -170,13 +170,7 @@ public class Properties extends PropertiesGroup {
         this.networkFile = networkFile;
     }
 
-    public String getSimpleNetworkFile() {
-        return simpleNetworkFile;
-    }
 
-    public void setSimpleNetworkFile(String simpleNetworkFile) {
-        this.simpleNetworkFile = simpleNetworkFile;
-    }
 
     public int getIterations() {
         return iterations;

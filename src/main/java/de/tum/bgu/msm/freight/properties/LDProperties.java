@@ -13,6 +13,7 @@ public class LDProperties extends PropertiesGroup {
     private boolean storeExpectedTimes = false;
     private int daysPerYear = 365;
     private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
+    private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
 
     public LDProperties(ResourceBundle bundle) {
         super(bundle);
@@ -20,6 +21,7 @@ public class LDProperties extends PropertiesGroup {
         truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor", truckScaleFactor);
         storeExpectedTimes = PropertiesUtil.getBooleanProperty(bundle, "storeExpectedTimes", storeExpectedTimes);
         daysPerYear = PropertiesUtil.getIntProperty(bundle, "daysPerYear", daysPerYear);
+        simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
 
     }
 
@@ -70,6 +72,14 @@ public class LDProperties extends PropertiesGroup {
 
     public void setDistributionCentersFile(String distributionCentersFile) {
         this.distributionCentersFile = distributionCentersFile;
+    }
+
+    public String getSimpleNetworkFile() {
+        return simpleNetworkFile;
+    }
+
+    public void setSimpleNetworkFile(String simpleNetworkFile) {
+        this.simpleNetworkFile = simpleNetworkFile;
     }
 
 }
