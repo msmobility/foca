@@ -19,7 +19,7 @@ public class RunFocaWithPropertiesFile {
 
         Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
         properties.logProperties("./output/" + properties.getRunId());
-        logger.info(properties.getMatrixFileNamePrefix());
+        logger.info(properties.flows().getMatrixFileNamePrefix());
 
         logger.info(properties.getRunId());
         logger.info(properties.getYear());

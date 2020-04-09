@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.freight;
 
-
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
 import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;

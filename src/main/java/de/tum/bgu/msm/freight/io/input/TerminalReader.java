@@ -73,7 +73,7 @@ public class TerminalReader extends CSVReader {
 
     @Override
     public void read() {
-        super.read(properties.getTerminalsFile(), ",");
+        super.read(properties.flows().getTerminalsFile(), ",");
         logger.info("Read " + counter + " terminals.");
 
     }

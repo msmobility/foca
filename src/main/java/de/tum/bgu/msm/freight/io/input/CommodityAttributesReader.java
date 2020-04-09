@@ -52,7 +52,7 @@ public class CommodityAttributesReader extends CSVReader {
 
     @Override
     public void read() {
-        super.read(properties.getCommodityAttributeFile(), ",");
+        super.read(properties.flowsProperties.getCommodityAttributeFile(), ",");
         logger.info("Commodity attributes read");
 
     }

@@ -12,32 +12,32 @@ import java.util.ResourceBundle;
 public class Properties extends PropertiesGroup {
 
     private final ZoneSystemProperties zoneSystemProperties;
-    private final FlowsProperties flowsProperties;
+    public final FlowsProperties flowsProperties;
     private final LDProperties lDProperties;
     private final SDProperties sDProperties;
     private final ModeChoiceProperties modeChoiceProperties;
     private static Logger LOGGER = Logger.getLogger(Properties.class);
 
 
-    private String matrixFileNamePrefix = "ketten-uniform-";
-    private String matrixFileNameSuffix = ".csv";
-    private String commodityAttributeFile = "input/commodities/commodity_groups_kba_ipf.csv";
     private String distributionCentersFile = "input/distributionCenters/distributionCenters.csv";
-    private String terminalsFileName = "input/distributionCenters/intermodal_terminals_31468.csv";
 
     private String networkFile = "./networks/matsim/final_V11_emissions.xml.gz";
     private String simpleNetworkFile = "./networks/matsim/europe_v2.xml.gz";
     private int iterations = 1;
-    private double flowsScaleFactor = 1.;
+
+
     private double truckScaleFactor = 1.;
+
     private String runId = "base";
+
     private int randomSeed = 1;
     private Random rand;
+
     private int[] analysisZones = new int[]{};
+
     private boolean storeExpectedTimes = false;
 
-    private int daysPerYear;
-
+    private int daysPerYear = 365;
     private boolean readEventsForCounts = true;
     private String countStationLinkListFile = "input/matsim_links_stations.csv";
     private String countsFileName = "counts.csv";
@@ -87,15 +87,10 @@ public class Properties extends PropertiesGroup {
         super(bundle);
 
         //read all the properties of this class and assign the values
-        matrixFileNamePrefix = PropertiesUtil.getStringProperty(bundle, "matrixFileNamePrefix", matrixFileNamePrefix);
-        matrixFileNameSuffix = PropertiesUtil.getStringProperty(bundle, "matrixFileNameSuffix", matrixFileNameSuffix);
-        commodityAttributeFile = PropertiesUtil.getStringProperty(bundle, "commodityAttributeFile", commodityAttributeFile);
         distributionCentersFile = PropertiesUtil.getStringProperty(bundle, "distributionCentersFile", distributionCentersFile);
-        terminalsFileName = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", terminalsFileName);
         networkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", networkFile);
         simpleNetworkFile = PropertiesUtil.getStringProperty(bundle, "terminalsFileName", simpleNetworkFile);
         iterations = PropertiesUtil.getIntProperty(bundle, "iterations", iterations);
-        flowsScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "flowsScaleFactor", flowsScaleFactor);
         truckScaleFactor = PropertiesUtil.getDoubleProperty(bundle, "truckScaleFactor", truckScaleFactor);
         runId = PropertiesUtil.getStringProperty(bundle, "runId", runId);
         randomSeed = PropertiesUtil.getIntProperty(bundle, "randomSeed", randomSeed);
@@ -237,14 +232,6 @@ public class Properties extends PropertiesGroup {
         this.storeExpectedTimes = storeExpectedTimes;
     }
 
-    public String getCommodityAttributeFile() {
-        return commodityAttributeFile;
-    }
-
-    public void setCommodityAttributeFile(String commodityAttributeFile) {
-        this.commodityAttributeFile = commodityAttributeFile;
-    }
-
     public int getDaysPerYear() {
         return daysPerYear;
     }
@@ -301,9 +288,7 @@ public class Properties extends PropertiesGroup {
         return useTableFileName;
     }
 
-    public String getTerminalsFile() {
-        return terminalsFileName;
-    }
+
 
     public String getParcelWeightDistributionFile() {
         return parcelWeightDistributionFile;
@@ -333,13 +318,7 @@ public class Properties extends PropertiesGroup {
         return vehicleFileForParcelDelivery;
     }
 
-    public double getFlowsScaleFactor() {
-        return flowsScaleFactor;
-    }
 
-    public void setFlowsScaleFactor(double flowsScaleFactor) {
-        this.flowsScaleFactor = flowsScaleFactor;
-    }
 
     @Deprecated
     public String getDistributionCentersCatchmentAreaFile() {
@@ -378,13 +357,7 @@ public class Properties extends PropertiesGroup {
         this.year = year;
     }
 
-    public String getMatrixFileNamePrefix() {
-        return matrixFileNamePrefix;
-    }
 
-    public String getMatrixFileNameSuffix() {
-        return matrixFileNameSuffix;
-    }
 
     public void initializeRandomNumber() {
         rand = new Random(randomSeed);

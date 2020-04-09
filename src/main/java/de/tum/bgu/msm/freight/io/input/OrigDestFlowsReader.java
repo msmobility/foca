@@ -50,7 +50,7 @@ public class OrigDestFlowsReader extends CSVReader {
     protected OrigDestFlowsReader(DataSet dataSet, Properties properties) {
         super(dataSet);
         this.properties = properties;
-        this.flowScaleFactor = properties.getFlowsScaleFactor();
+        this.flowScaleFactor = properties.flows().getFlowsScaleFactor();
         thisYear = properties.getYear();
     }
 
@@ -140,8 +140,8 @@ public class OrigDestFlowsReader extends CSVReader {
 
         for (int year : properties.flows().getCommodityFlowsYears()) {
             currentYear = year;
-            String fileName = properties.flows().getMatrixFolder() + properties.getMatrixFileNamePrefix() +
-                    year + properties.getMatrixFileNameSuffix();
+            String fileName = properties.flows().getMatrixFolder() + properties.flows().getMatrixFileNamePrefix() +
+                    year + properties.flows().getMatrixFileNameSuffix();
             flowsByYear.put(year, HashBasedTable.create());
             super.read(fileName, ";");
             AtomicInteger flowsCount = new AtomicInteger(0);
