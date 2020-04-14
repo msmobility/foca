@@ -2,10 +2,7 @@ package de.tum.bgu.msm.freight.io.input;
 
 import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
 import de.tum.bgu.msm.freight.data.DataSet;
-import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
-import de.tum.bgu.msm.freight.data.geo.InternalZone;
-import de.tum.bgu.msm.freight.data.geo.MicroDepot;
+import de.tum.bgu.msm.freight.data.geo.*;
 import de.tum.bgu.msm.freight.io.CSVReader;
 import de.tum.bgu.msm.freight.properties.Properties;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -99,6 +96,11 @@ public class DistributionCenterReader extends CSVReader {
                 currentMicroDepot = new MicroDepot(mdId, mdName, new Coordinate(mdX, mdY), currentDistributionCenter.getCommodityGroup(),
                         currentDistributionCenter, currentDistributionCenter.getZoneId(), microZoneId);
                 currentDistributionCenter.getMicroDeportsServedByThis().add(currentMicroDepot);
+
+                ParcelShop parcelShop = new ParcelShop(mdId, mdName, new Coordinate(mdX, mdY), currentDistributionCenter.getCommodityGroup(),
+                        currentDistributionCenter, currentDistributionCenter.getZoneId(), microZoneId);
+                currentDistributionCenter.getParcelShopsServedByThis().add(parcelShop);
+
             }
 
             if (object.equalsIgnoreCase(ObjectTypes.microDepotCatchmentArea.toString())) {

@@ -54,10 +54,8 @@ public class DataSet {
     private final List<SDTruckTrip> SDTruckTrips = new ArrayList<>();
 
     private DataContainerWithSchools siloDataContainer;
+
     private Map<Carrier, String> modeByCarrier;
-
-
-    //getters and setters
 
     public Map<Integer, Zone> getZones() {
         return zones;

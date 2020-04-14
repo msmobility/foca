@@ -85,7 +85,7 @@ public class FreightFlowsRunSingle {
         SDTruckGenerator.run();
         parcelGenerator.run();
         modeChoiceModel.run();
-        //matSimAssignment.run();
+        matSimAssignment.run();
 
         //PopulationWriter pw;
 

@@ -8,12 +8,14 @@ import de.tum.bgu.msm.freight.data.freight.urban.ParcelTransaction;
 import de.tum.bgu.msm.freight.data.freight.Bound;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
+import de.tum.bgu.msm.freight.data.geo.ParcelShop;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.modules.common.ParcelWeightDistribution_kg;
 import de.tum.bgu.msm.freight.modules.common.SpatialDisaggregator;
 import de.tum.bgu.msm.freight.modules.common.WeightDistribution;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
+import org.matsim.contrib.freight.utils.FreightUtils;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -120,6 +122,10 @@ public class ParcelGenerator implements Module {
     private void assignCoordinates() {
         AtomicInteger counter = new AtomicInteger(0);
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
+            Map<ParcelShop, Double> parcelShopProbabilities = new HashMap<>();
+            for (ParcelShop parcelShop : distributionCenter.getParcelShopsServedByThis()){
+                parcelShopProbabilities.put(parcelShop, 1.);
+            }
             for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
                 if (parcel.isToDestination()) {
                     parcel.setOriginCoord(parcel.getDistributionCenter().getCoordinates());
@@ -135,7 +141,11 @@ public class ParcelGenerator implements Module {
                         parcel.setDestMicroZone(microZone);
                         parcel.setDestCoord(destinationZone.getMicroZones().get(microZone).getCoordinates(properties.getRand()));
                     } else {
-                        //todo choose a parcel shop
+                        ParcelShop parcelShop = FreightFlowUtils.select(parcelShopProbabilities, parcelShopProbabilities.values().size(), properties.getRand() );
+                        int microZoneId = parcelShop.getMicroZoneId();
+                        parcel.setDestMicroZone(microZoneId);
+                        parcel.setDestCoord(parcelShop.getCoord_gk4());
+                        parcel.setParcelShop(parcelShop);
                     }
                 } else {
                     parcel.setDestCoord(parcel.getDistributionCenter().getCoordinates());
@@ -152,7 +162,11 @@ public class ParcelGenerator implements Module {
                         parcel.setOrigMicroZone(microZone);
                         parcel.setOriginCoord(originZone.getMicroZones().get(microZone).getCoordinates(properties.getRand()));
                     } else {
-                        //todo coose a parcel shop
+                        ParcelShop parcelShop = FreightFlowUtils.select(parcelShopProbabilities, parcelShopProbabilities.values().size(), properties.getRand() );
+                        int microZoneId = parcelShop.getMicroZoneId();
+                        parcel.setOrigMicroZone(microZoneId);
+                        parcel.setOriginCoord(parcelShop.getCoord_gk4());
+                        parcel.setParcelShop(parcelShop);
                     }
                 }
                 counter.incrementAndGet();

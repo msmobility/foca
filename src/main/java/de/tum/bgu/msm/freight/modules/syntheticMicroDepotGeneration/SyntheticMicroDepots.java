@@ -3,10 +3,7 @@ package de.tum.bgu.msm.freight.modules.syntheticMicroDepotGeneration;
 
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.CommodityGroup;
-import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
-import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
-import de.tum.bgu.msm.freight.data.geo.InternalZone;
-import de.tum.bgu.msm.freight.data.geo.MicroDepot;
+import de.tum.bgu.msm.freight.data.geo.*;
 import de.tum.bgu.msm.freight.io.output.DistributionCenterCsvWriter;
 import de.tum.bgu.msm.freight.modules.Module;
 import de.tum.bgu.msm.freight.properties.Properties;
@@ -94,6 +91,10 @@ public class SyntheticMicroDepots implements Module {
                             counter++;
                             MicroDepot microDepot = new MicroDepot(counter, String.valueOf(counter), coordinate, CommodityGroup.PACKET, distributionCenter, zoneId, microDepotMicroZone.getId());
                             distributionCenter.getMicroDeportsServedByThis().add(microDepot);
+
+                            ParcelShop parcelShop = new ParcelShop(counter, String.valueOf(counter), coordinate, CommodityGroup.PACKET, distributionCenter, zoneId, microDepotMicroZone.getId());
+                            distributionCenter.getParcelShopsServedByThis().add(parcelShop);
+
                             //logger.info(counter + "," + coordinate.x + "," + coordinate.y + "," + distributionCenter.getId() + "," + microDepotMicroZone.getId());
                         }
                     }
@@ -103,6 +104,7 @@ public class SyntheticMicroDepots implements Module {
                 x += gridSpacing;
             }
             logger.info("Generated " + counter + " synthetic microdepots.");
+            logger.warn("Generated " + counter + " parcel shops at the same locations!");
 
 
         }
