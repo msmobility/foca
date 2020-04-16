@@ -19,10 +19,10 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FreightFlowsRunSingle {
+public class RunFocaWithModalShare {
 
 
-    private static final Logger logger = Logger.getLogger(FreightFlowsRunSingle.class);
+    private static final Logger logger = Logger.getLogger(RunFocaWithModalShare.class);
 
     public static void main(String[] args) {
 
@@ -35,7 +35,7 @@ public class FreightFlowsRunSingle {
             e.printStackTrace();
         }
 
-        FreightFlowsRunSingle freightFlows = new FreightFlowsRunSingle();
+        RunFocaWithModalShare freightFlows = new RunFocaWithModalShare();
         logger.info("Start simulation " + properties.getRunId());
         freightFlows.run(properties);
         logger.info("End simulation " + properties.getRunId());
@@ -60,7 +60,7 @@ public class FreightFlowsRunSingle {
         }
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
-        ModeChoiceModel modeChoiceModel = new ContinuousApproximationModeChoice();
+        ModeChoiceModel modeChoiceModel = new GlobalModalShareModeChoice();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
 

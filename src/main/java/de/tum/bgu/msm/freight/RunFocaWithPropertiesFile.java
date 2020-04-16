@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.freight;
 
-import de.tum.bgu.msm.freight.properties.FlowsProperties;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 
@@ -10,6 +9,7 @@ import java.io.FileNotFoundException;
 /**
  * Created by Kamil Moreau on 12/10/2019.
  */
+@Deprecated
 public class RunFocaWithPropertiesFile {
 
     private static final Logger logger = Logger.getLogger(RunFocaWithPropertiesFile.class);
@@ -25,7 +25,7 @@ public class RunFocaWithPropertiesFile {
         logger.info(properties.getYear());
         logger.info(properties.flows().getMatrixFolder());
 
-        FreightFlowsRunSingle freightFlows = new FreightFlowsRunSingle();
+        RunFocaWithModeChoice freightFlows = new RunFocaWithModeChoice();
         logger.info("Start simulation " + properties.getRunId());
         freightFlows.run(properties);
         logger.info("End simulation " + properties.getRunId());

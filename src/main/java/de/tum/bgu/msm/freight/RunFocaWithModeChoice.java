@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.freight;
 
-
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
 import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
@@ -11,65 +10,40 @@ import de.tum.bgu.msm.freight.io.output.OutputWriter;
 import de.tum.bgu.msm.freight.modules.assignment.MATSimAssignment;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.FlowsToLDTruckConverter;
 import de.tum.bgu.msm.freight.modules.longDistanceDisaggregation.LDTruckODAllocator;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.GlobalModalShareModeChoice;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ModeChoiceModel;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.ParcelGenerator;
-import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.SDTruckGenerator;
+import de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation.*;
 import de.tum.bgu.msm.freight.modules.syntheticMicroDepotGeneration.SyntheticMicroDepots;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
-import org.matsim.core.population.io.PopulationWriter;
-
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Deprecated
-public class FreightFlowsMucRunScenariosDcs {
+public class RunFocaWithModeChoice {
 
 
-    private static final Logger logger = Logger.getLogger(FreightFlowsMucRunScenariosDcs.class);
+    private static final Logger logger = Logger.getLogger(RunFocaWithModeChoice.class);
 
     public static void main(String[] args) {
 
-        List<Properties> listOfSimulations = new ArrayList<>();
 
-        int dc = Integer.parseInt(args[0]);
+        Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
 
-        Properties thisProperties = new Properties(null);
-        thisProperties.initializeRandomNumber();
-        thisProperties.flows().setMatrixFolder("./input/matrices/");
-        thisProperties.setAnalysisZones(new int[]{9162});
-        thisProperties.longDistance().setTruckScaleFactor(1.00);
-        thisProperties.setSampleFactorForParcels(0.25);
-        thisProperties.setIterations(50);
-        thisProperties.shortDistance().setReadMicroDepotsFromFile(false);
-        thisProperties.shortDistance().setSelectedDistributionCenters(new int[]{dc});
-        thisProperties.setRunId("muc_dc_" + args[0]);
-        thisProperties.longDistance().setDistributionCentersFile("./input/distributionCenters/distributionCenters.csv");
-        thisProperties.shortDistance().setShareOfCargoBikesAtZonesServedByMicroDepot(1.0);
         try {
-            thisProperties.logProperties("./output/" + thisProperties.getRunId() + "/properties.txt");
+            properties.logProperties("./output/" + properties.getRunId());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        listOfSimulations.add(thisProperties);
 
-
-        for (Properties properties : listOfSimulations) {
-            //adds a 5% pf cars as background traffic
-            //properties.setMatsimBackgroundTrafficPlanFile("./input/carPlans/cars_5_percent.xml.gz");
-            FreightFlowsMucRunScenariosDcs freightFlows = new FreightFlowsMucRunScenariosDcs();
-            logger.info("Start simulation " + properties.getRunId());
-            freightFlows.run(properties);
-            logger.info("End simulation " + properties.getRunId());
-        }
-
+        RunFocaWithModeChoice freightFlows = new RunFocaWithModeChoice();
+        logger.info("Start simulation " + properties.getRunId());
+        freightFlows.run(properties);
+        logger.info("End simulation " + properties.getRunId());
 
     }
 
     public void run(Properties properties) {
+        properties.initializeRandomNumber();
 
         InputManager io = new InputManager(properties);
         io.readInput();
@@ -77,29 +51,43 @@ public class FreightFlowsMucRunScenariosDcs {
         DataSet dataSet = io.getDataSet();
 
         SyntheticMicroDepots syntehticMicroDepots = new SyntheticMicroDepots();
-        FlowsToLDTruckConverter flowsToLDTruckConverter = new FlowsToLDTruckConverter();
-        LDTruckODAllocator LDTruckODAllocator = new LDTruckODAllocator();
+
+        FlowsToLDTruckConverter flowsToLDTruckConverter = null;
+        LDTruckODAllocator LDTruckODAllocator = null;
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            LDTruckODAllocator = new LDTruckODAllocator();
+            flowsToLDTruckConverter = new FlowsToLDTruckConverter();
+        }
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
-        ModeChoiceModel modeChoiceModel = new GlobalModalShareModeChoice();
+        ModeChoiceModel modeChoiceModel = new ContinuousApproximationModeChoice();
         MATSimAssignment matSimAssignment = new MATSimAssignment();
 
+
         syntehticMicroDepots.setup(dataSet, properties);
-        flowsToLDTruckConverter.setup(dataSet, properties);
-        LDTruckODAllocator.setup(dataSet, properties);
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            flowsToLDTruckConverter.setup(dataSet, properties);
+            LDTruckODAllocator.setup(dataSet, properties);
+        }
+
         SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
         modeChoiceModel.setup(dataSet, properties);
         matSimAssignment.setup(dataSet, properties);
 
         syntehticMicroDepots.run();
-        flowsToLDTruckConverter.run();
-        LDTruckODAllocator.run();
+
+        if (properties.longDistance().isDisaggregateLongDistanceFlows()){
+            flowsToLDTruckConverter.run();
+            LDTruckODAllocator.run();
+
+        }
         SDTruckGenerator.run();
         parcelGenerator.run();
         modeChoiceModel.run();
         matSimAssignment.run();
-        PopulationWriter pw;
+
+        //PopulationWriter pw;
 
 
         String outputFolder = properties.getOutputFolder();

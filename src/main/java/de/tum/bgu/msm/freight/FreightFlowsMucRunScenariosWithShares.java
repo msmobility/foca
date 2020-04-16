@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class FreightFlowsMucRunScenariosWithShares {
 
 
@@ -39,8 +40,7 @@ public class FreightFlowsMucRunScenariosWithShares {
 
         {
 
-
-            Properties properties =new Properties(Properties.initializeResourceBundleFromFile(args[0]));
+            Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
             properties.initializeRandomNumber();
             properties.flows().setMatrixFolder("./input/matrices/");
             properties.setAnalysisZones(new int[]{9162});

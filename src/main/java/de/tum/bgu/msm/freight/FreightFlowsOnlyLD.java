@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import java.io.FileNotFoundException;
 
+@Deprecated
 public class FreightFlowsOnlyLD {
 
 
