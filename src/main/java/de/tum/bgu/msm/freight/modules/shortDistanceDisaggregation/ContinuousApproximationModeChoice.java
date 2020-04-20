@@ -357,6 +357,11 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                     continue;
                 }
 
+                if (parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
+                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+                    continue;
+                }
+
                 if (!internalZonesServedByMicroDepots.contains(parcel.getDestMicroZoneId())) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;

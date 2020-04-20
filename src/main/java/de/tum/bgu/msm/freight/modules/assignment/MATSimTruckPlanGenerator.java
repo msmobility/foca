@@ -6,6 +6,8 @@ import de.tum.bgu.msm.freight.data.freight.TruckTrip;
 import de.tum.bgu.msm.freight.data.freight.longDistance.FlowSegment;
 import de.tum.bgu.msm.freight.data.freight.longDistance.LDTruckTrip;
 import de.tum.bgu.msm.freight.data.freight.urban.SDTruckTrip;
+import de.tum.bgu.msm.freight.data.geo.ExternalZone;
+import de.tum.bgu.msm.freight.data.geo.Zone;
 import de.tum.bgu.msm.freight.modules.common.DepartureTimeDistribution;
 import de.tum.bgu.msm.freight.modules.common.NormalDepartureTimeDistribution;
 import de.tum.bgu.msm.freight.properties.Properties;
@@ -45,10 +47,8 @@ public class MATSimTruckPlanGenerator {
         AtomicInteger counter = new AtomicInteger(0);
 
         for (LDTruckTrip lDTruckTrip : dataSet.getLDTruckTrips()) {
-
             if (properties.getRand().nextDouble() < properties.longDistance().getTruckScaleFactor()) {
                 lDTruckTrip.setAssigned(true);
-
                 generatePlanForThisTruck(population, factory, counter, lDTruckTrip);
             }
         }
@@ -95,6 +95,18 @@ public class MATSimTruckPlanGenerator {
         Plan plan = factory.createPlan();
         person.addPlan(plan);
 
+        boolean originInternational = false;
+        boolean destInternational = false;
+
+        if (lDTruckTrip instanceof LDTruckTrip){
+            LDTruckTrip ldTruckTrip2 = (LDTruckTrip) lDTruckTrip;
+            Zone originZone = dataSet.getZones().get(ldTruckTrip2.getFlowSegment().getSegmentOrigin());
+            originInternational = originZone instanceof ExternalZone ? true : false;
+
+            Zone destinationZone = dataSet.getZones().get(ldTruckTrip2.getFlowSegment().getSegmentOrigin());
+            destInternational = destinationZone instanceof ExternalZone ? true : false;
+        }
+
 
         Coordinate origCoordinate = lDTruckTrip.getOrigCoord();
         Coord origCoord;
@@ -105,6 +117,7 @@ public class MATSimTruckPlanGenerator {
             origCoord = null;
         }
         Activity originActivity = factory.createActivityFromCoord("start", origCoord);
+        originActivity.getAttributes().putAttribute("international", originInternational);
         originActivity.setEndTime(departureTimeDistribution.getDepartureTime(0) * 60);
         plan.addActivity(originActivity);
 
@@ -120,6 +133,7 @@ public class MATSimTruckPlanGenerator {
 
         //Link destLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(NetworkUtils.getNearestLink(network, destCoord));
         Activity destinationActivity = factory.createActivityFromCoord("end", destCoord);
+        destinationActivity.getAttributes().putAttribute("international", destInternational);
         plan.addActivity(destinationActivity);
         counter.incrementAndGet();
 

@@ -183,12 +183,12 @@ public class CarriersAndServicesGenerator {
             type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
             feederCarrierParcelShop.getCarrierCapabilities().getVehicleTypes().add(type);
             feederCarrierParcelShop.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
-            vehicle = getGenericVehicle(type, feederCarrierParcelShop.getId(), linkId, 7 * 60 * 60, 8 * 60 * 60);
+            vehicle = getGenericVehicle(type, feederCarrierParcelShop.getId(), linkId, 7 * 60 * 60, 17 * 60 * 60);
             //vehicle.getType().setNetworkMode(TransportMode.truck); looks like it does not make anything
             TimeWindow timeWindow = generateRandomTimeSubWindow(7, 8, 1);
             feederCarrierParcelShop.getCarrierCapabilities().getCarrierVehicles().put(vehicle.getId(), vehicle);
+            int feederCounter = 0;
             for (ParcelShop parcelShop : parcelsByShop.keySet()) {
-                int feederCounter = 0;
                 int demandedCapacity = parcelsByShop.get(parcelShop).size();
                 double remainder = demandedCapacity;
                 while (remainder > 0) {
@@ -205,7 +205,6 @@ public class CarriersAndServicesGenerator {
                     feederCarrier.getServices().put(carrierService.getId(), carrierService);
                     feederCounter++;
                     remainder -= current;
-
                 }
             }
             logger.info("Completed distribution center: " + distributionCenter.getId() + ", " + distributionCenter.getName());

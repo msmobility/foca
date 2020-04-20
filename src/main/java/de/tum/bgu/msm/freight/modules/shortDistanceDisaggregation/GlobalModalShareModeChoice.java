@@ -3,6 +3,7 @@ package de.tum.bgu.msm.freight.modules.shortDistanceDisaggregation;
 import de.tum.bgu.msm.freight.data.DataSet;
 import de.tum.bgu.msm.freight.data.freight.urban.Parcel;
 import de.tum.bgu.msm.freight.data.freight.urban.ParcelDistributionType;
+import de.tum.bgu.msm.freight.data.freight.urban.ParcelTransaction;
 import de.tum.bgu.msm.freight.data.geo.DistributionCenter;
 import de.tum.bgu.msm.freight.data.geo.InternalMicroZone;
 import de.tum.bgu.msm.freight.data.geo.InternalZone;
@@ -52,6 +53,11 @@ public class GlobalModalShareModeChoice implements ModeChoiceModel {
                 double randomValue = properties.getRand().nextDouble();
                 //random number to assign to microdepot or to motorized(here, to try to obtain deterministic results)
                 if (!parcel.isToDestination()) {
+                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+                    continue;
+                }
+
+                if (parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
                 }
