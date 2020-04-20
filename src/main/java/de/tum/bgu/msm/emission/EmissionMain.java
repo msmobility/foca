@@ -10,9 +10,12 @@ public class EmissionMain {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        for (String arg : args) {
+        for (int i = 1; i < args.length; i++) {
 
             Properties properties = new Properties(Properties.initializeResourceBundleFromFile(args[0]));
+
+            String arg = args[i];
+
             properties.setRunId(arg);
 
             String configFile = "config_average.xml";

@@ -53,6 +53,7 @@ public class OfflineEmissionAnalysis {
         if ( config==null ) {
             this.prepareConfig(configFile, outDirectory, individualVehicleFile, networkFile, populationFile) ;
         }
+
         Scenario scenario = ScenarioUtils.loadScenario(config);
         EventsManager eventsManager = EventsUtils.createEventsManager();
 

@@ -4,8 +4,11 @@ package de.tum.bgu.msm.emission;
 import de.tum.bgu.msm.emission.data.AnalyzedLink;
 import de.tum.bgu.msm.emission.data.AnalyzedVehicle;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.events.LinkEnterEvent;
+import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.emissions.Pollutant;
 import org.matsim.contrib.emissions.events.ColdEmissionEvent;
 import org.matsim.contrib.emissions.events.ColdEmissionEventHandler;
 import org.matsim.contrib.emissions.events.WarmEmissionEvent;
@@ -15,7 +18,7 @@ import org.matsim.vehicles.Vehicle;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissionEventHandler {
+public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissionEventHandler, LinkEnterEventHandler {
 
 
 
@@ -36,37 +39,38 @@ public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissi
         Link matsimLink = network.getLinks().get(linkId);
         emmisionsByLink.putIfAbsent(linkId,new AnalyzedLink(linkId, matsimLink));
 
+        Map<Pollutant, Double> warmEmissions = event.getWarmEmissions();
+        Map<String, Double> warmEmissionsCompatible = new HashMap<>();
+        for (Pollutant pollutant : warmEmissions.keySet()){
+            warmEmissionsCompatible.put(pollutant.toString(), warmEmissions.get(pollutant));
+        }
+
         if (emmisionsByLink.get(linkId).getWarmEmissions().isEmpty()){
-            emmisionsByLink.get(linkId).getWarmEmissions().putAll(event.getWarmEmissions());
+            emmisionsByLink.get(linkId).getWarmEmissions().putAll(warmEmissionsCompatible);
         } else {
             Map<String, Double> currentEmissions = emmisionsByLink.get(linkId).getWarmEmissions();
             for (String pollutant : currentEmissions.keySet()){
-                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + event.getWarmEmissions().get(pollutant));
+                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + warmEmissionsCompatible.get(pollutant));
             }
             emmisionsByLink.get(linkId).getWarmEmissions().putAll(currentEmissions);
         }
 
         Id<Vehicle> vehicleId = event.getVehicleId();
         emmisionsByVehicle.putIfAbsent(vehicleId, new AnalyzedVehicle(vehicleId));
-        emmisionsByVehicle.get(vehicleId).addDistanceTravelled(matsimLink.getLength());
+        //emmisionsByVehicle.get(vehicleId).addDistanceTravelled(matsimLink.getLength());
         emmisionsByVehicle.get(vehicleId).registerPointOfTime(event.getTime());
         //todo currently we get operating times based on free flow conditions
-        double speed_ms;
-        if (vehicleId.toString().contains("cargoBike")){
-            speed_ms = 5.6;
-        } else {
-            speed_ms = matsimLink.getFreespeed();
-        }
-        emmisionsByVehicle.get(vehicleId).addOperatingTime(matsimLink.getLength() / speed_ms);
+
+
 
 
 
         if (emmisionsByVehicle.get(vehicleId).getWarmEmissions().isEmpty()){
-            emmisionsByVehicle.get(vehicleId).getWarmEmissions().putAll(event.getWarmEmissions());
+            emmisionsByVehicle.get(vehicleId).getWarmEmissions().putAll(warmEmissionsCompatible);
         } else {
             Map<String, Double> currentEmissions = emmisionsByVehicle.get(vehicleId).getWarmEmissions();
             for (String pollutant : currentEmissions.keySet()){
-                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + event.getWarmEmissions().get(pollutant));
+                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + warmEmissionsCompatible.get(pollutant));
             }
             emmisionsByVehicle.get(vehicleId).getWarmEmissions().putAll(currentEmissions);
         }
@@ -85,13 +89,18 @@ public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissi
         Id<Link> linkId = event.getLinkId();
         Link matsimLink = network.getLinks().get(linkId);
         emmisionsByLink.putIfAbsent(linkId,new AnalyzedLink(linkId, matsimLink));
+        Map<Pollutant, Double>  coldEmissions = event.getColdEmissions();
+        Map<String, Double> coldEmissionsCompatible = new HashMap<>();
+        for (Pollutant pollutant : coldEmissions.keySet()){
+            coldEmissionsCompatible.put(pollutant.toString(), coldEmissions.get(pollutant));
+        }
 
         if (emmisionsByLink.get(linkId).getWarmEmissions().isEmpty()){
-            emmisionsByLink.get(linkId).getWarmEmissions().putAll(event.getColdEmissions());
+            emmisionsByLink.get(linkId).getWarmEmissions().putAll(coldEmissionsCompatible);
         } else {
-            Map<String, Double> currentEmissions = emmisionsByLink.get(linkId).getWarmEmissions();
+            Map<String, Double> currentEmissions = emmisionsByLink.get(linkId).getColdEmissions();
             for (String pollutant : currentEmissions.keySet()){
-                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + event.getColdEmissions().get(pollutant));
+                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + coldEmissionsCompatible.get(pollutant));
             }
             emmisionsByLink.get(linkId).getWarmEmissions().putAll(currentEmissions);
         }
@@ -101,14 +110,30 @@ public class LinkEmissionHandler implements WarmEmissionEventHandler, ColdEmissi
         emmisionsByVehicle.get(vehicleId).registerPointOfTime(event.getTime());
 
         if (emmisionsByVehicle.get(vehicleId).getWarmEmissions().isEmpty()){
-            emmisionsByVehicle.get(vehicleId).getWarmEmissions().putAll(event.getColdEmissions());
+            emmisionsByVehicle.get(vehicleId).getWarmEmissions().putAll(coldEmissionsCompatible);
         } else {
             Map<String, Double> currentEmissions = emmisionsByVehicle.get(vehicleId).getWarmEmissions();
             for (String pollutant : currentEmissions.keySet()){
-                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + event.getColdEmissions().get(pollutant));
+                currentEmissions.put(pollutant, currentEmissions.get(pollutant) + coldEmissionsCompatible.get(pollutant));
             }
             emmisionsByVehicle.get(vehicleId).getColdEmissions().putAll(currentEmissions);
         }
+    }
+
+    @Override
+    public void handleEvent(LinkEnterEvent linkEnterEvent) {
+        Id<Link> linkId = linkEnterEvent.getLinkId();
+        Link matsimLink = network.getLinks().get(linkId);
+        Id<Vehicle> vehicleId = linkEnterEvent.getVehicleId();
+        emmisionsByVehicle.putIfAbsent(vehicleId, new AnalyzedVehicle(vehicleId));
+        emmisionsByVehicle.get(vehicleId).addDistanceTravelled(matsimLink.getLength());
+        double speed_ms;
+        if (vehicleId.toString().contains("cargoBike")){
+            speed_ms = 5.6;
+        } else {
+            speed_ms = matsimLink.getFreespeed();
+        }
+        emmisionsByVehicle.get(vehicleId).addOperatingTime(matsimLink.getLength() / speed_ms);
     }
 
     public Map<Id<Vehicle>, AnalyzedVehicle> getEmmisionsByVehicle() {
