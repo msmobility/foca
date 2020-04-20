@@ -193,7 +193,6 @@ public class CarriersAndServicesGenerator {
                 double remainder = demandedCapacity;
                 while (remainder > 0) {
                     double current = Math.min(remainder, type.getCapacity().getOther());
-                    remainder = remainder - current;
                     double duration_s = Math.min(5 * demandedCapacity, 15 * 60);
                     Coord destCoord = new Coord(parcelShop.getCoord_gk4().x, parcelShop.getCoord_gk4().y);
                     Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
@@ -202,7 +201,7 @@ public class CarriersAndServicesGenerator {
                     serviceBuilder.setServiceDuration(duration_s);
                     serviceBuilder.setServiceStartTimeWindow(timeWindow);
                     CarrierService carrierService = serviceBuilder.build();
-                    feederCarrier.getServices().put(carrierService.getId(), carrierService);
+                    feederCarrierParcelShop.getServices().put(carrierService.getId(), carrierService);
                     feederCounter++;
                     remainder -= current;
                 }
