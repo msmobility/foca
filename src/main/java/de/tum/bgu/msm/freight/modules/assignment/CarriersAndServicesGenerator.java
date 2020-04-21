@@ -22,10 +22,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.vehicles.Vehicle;
 import org.matsim.vehicles.VehicleType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -130,7 +127,6 @@ public class CarriersAndServicesGenerator {
             feederCarrier.getCarrierCapabilities().getCarrierVehicles().put(vehicle.getId(), vehicle);
 
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
-                Coord destCoord = new Coord(microDepot.getCoord_gk4().x, microDepot.getCoord_gk4().y);
                 TimeWindow timeWindow = generateRandomTimeSubWindow(7, 8, 1);
                 int demandedCapacity = parcelsByMicrodepotScaled.get(microDepot).size();
 
@@ -142,9 +138,9 @@ public class CarriersAndServicesGenerator {
                         double current = Math.min(remainder, type.getCapacity().getOther());
                         remainder -= current;
 
-                        double duration_s = Math.min(5 * demandedCapacity, 15 * 60);
-                        Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
-                        CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId() + "_" + feederCounter, CarrierService.class), linkParcelDelivery);
+                        double duration_s = Math.min(5 * current, 15 * 60);
+                        Id<Link> linkAtMicroDepot =getNearestLinkByMode(microDepot.getCoord_gk4(), ParcelDistributionType.MOTORIZED).getId();
+                        CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_micro_depot_" + microDepot.getId() + "_" + feederCounter, CarrierService.class), linkAtMicroDepot);
                         serviceBuilder.setCapacityDemand((int) Math.round(current));
                         serviceBuilder.setServiceDuration(duration_s);
                         serviceBuilder.setServiceStartTimeWindow(timeWindow);
@@ -193,10 +189,10 @@ public class CarriersAndServicesGenerator {
                 double remainder = demandedCapacity;
                 while (remainder > 0) {
                     double current = Math.min(remainder, type.getCapacity().getOther());
-                    double duration_s = Math.min(5 * demandedCapacity, 15 * 60);
-                    Coord destCoord = new Coord(parcelShop.getCoord_gk4().x, parcelShop.getCoord_gk4().y);
-                    Id<Link> linkParcelDelivery = NetworkUtils.getNearestLink(network, destCoord).getId();
-                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_shop_" + parcelShop.getZoneId() + "_" + feederCounter, CarrierService.class), linkParcelDelivery);
+                    double duration_s = Math.min(5 * current, 15 * 60);
+                    //Coord destCoord = new Coord(parcelShop.getCoord_gk4().x, parcelShop.getCoord_gk4().y);
+                    Id<Link> linkAtParcelShop = getNearestLinkByMode(parcelShop.getCoord_gk4(), ParcelDistributionType.MOTORIZED).getId();
+                    CarrierService.Builder serviceBuilder = CarrierService.Builder.newInstance(Id.create("to_shop_" + parcelShop.getZoneId() + "_" + feederCounter, CarrierService.class), linkAtParcelShop);
                     serviceBuilder.setCapacityDemand((int) Math.round(current));
                     serviceBuilder.setServiceDuration(duration_s);
                     serviceBuilder.setServiceStartTimeWindow(timeWindow);
@@ -214,16 +210,29 @@ public class CarriersAndServicesGenerator {
     }
 
     private Link getNearestLinkByMode(Coordinate coordinates, ParcelDistributionType mode) {
+        Coord coord = new Coord(coordinates.x, coordinates.y);
         if (mode.equals(ParcelDistributionType.MOTORIZED)) {
-            Link thisLink = NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
-            Link nearestLink;
-            while ((nearestLink = FreightFlowUtils.findUpstreamLinksForMotorizedVehicle(thisLink)) == null) {
-                thisLink = thisLink.getFromNode().getInLinks().values().iterator().next();
+            Link thisLink = NetworkUtils.getNearestLink(network, coord);
+            if (thisLink.getAllowedModes().contains(TransportMode.truck)){
+                return thisLink;
+            } else {
+                double buffer = thisLink.getLength()*2;
+                while (buffer < 1000){
+                    Collection<Node> nodes = NetworkUtils.getNearestNodes(network, coord, buffer);
+                    for (Node node :  nodes){
+                        for (Link l : node.getInLinks().values()) {
+                            if (l.getAllowedModes().contains(TransportMode.truck)){
+                                return l;
+                            }
+                        }
+                    }
+                    buffer = buffer * 2;
+                }
+                logger.warn("Unable to find a link for trucks in 2.00 km");
+                return null;
             }
-            return nearestLink;
-
         } else {
-            return NetworkUtils.getNearestLink(network, new Coord(coordinates.x, coordinates.y));
+            return NetworkUtils.getNearestLink(network, coord);
         }
 
     }
