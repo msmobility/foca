@@ -79,83 +79,85 @@ public class CarrierPlansAnalyzer {
                 carrierTourCounter++;
                 String vehType;
                 if (tourId.contains("van")) {
-                    if (tourId.contains("feeder")) {
+                    if (tourId.contains("Shop")) {
+                        vehType = "truck_shop";
+                    } else if (tourId.contains("feeder")) {
                         vehType = "truck_feeder";
                     } else {
                         vehType = "truck";
                     }
-                } else {
-                    vehType = "cargoBike";
+            } else{
+                vehType = "cargoBike";
+            }
+            double currentTime_s = tour.getDeparture();
+            int thisServiceIndex = 0;
+            int numberOfServices = 0;
+            int numberOfParcels = 0;
+
+            for (TourElement element : tour.getTour().getTourElements()) {
+                if (element instanceof ServiceActivity) {
+                    numberOfServices++;
+                    numberOfParcels += ((ServiceActivity) element).getService().getCapacityDemand();
                 }
-                double currentTime_s = tour.getDeparture();
-                int thisServiceIndex = 0;
-                int numberOfServices = 0;
-                int numberOfParcels = 0;
-
-                for (TourElement element : tour.getTour().getTourElements()) {
-                    if (element instanceof ServiceActivity) {
-                        numberOfServices++;
-                        numberOfParcels += ((ServiceActivity) element).getService().getCapacityDemand();
-                    }
-                }
-
-                for (TourElement element : tour.getTour().getTourElements()) {
-                    if (element instanceof ServiceActivity) {
-                        ServiceActivity activity = (ServiceActivity) element;
-                        int parcels_this_service = activity.getService().getCapacityDemand();
-                        numberOfParcels -= parcels_this_service;
-                        double serviceTime = activity.getDuration();
-                        thisServiceIndex++;
-                        pw.println(carrierId + "," +
-                                tourId + "," +
-                                thisServiceIndex + "," +
-                                numberOfServices + "," +
-                                serviceTime + ",0,service," +
-                                vehType + "," +
-                                numberOfParcels + "," +
-                                0 + "," +
-                                currentTime_s);
-                        currentTime_s += serviceTime;
-
-                    } else if (element instanceof Leg) {
-                        Leg leg = (Leg) element;
-                        double expectedTravelTime = leg.getExpectedTransportTime();
-                        Route route = leg.getRoute();
-                        String description = route.getRouteDescription();
-                        double routeFreeFlowTravelTime = 0; //todo the free flow travel time and the expected travel time are not consistent with each other
-                        double distance = 0;
-                        String[] arrayOfLinkIds = description.split(" ");
-                        for (int i = 0; i < arrayOfLinkIds.length - 1; i++) {
-                            String linkId = arrayOfLinkIds[i];
-                            double length = network.getLinks().get(Id.createLinkId(linkId)).getLength();
-                            distance += length;
-                            double freespeed = network.getLinks().get(Id.createLinkId(linkId)).getFreespeed();
-                            if (freespeed != 0) {
-                                routeFreeFlowTravelTime += length / freespeed;
-                            }
-                        }
-                        pw.println(carrierId + "," +
-                                tourId + "," +
-                                thisServiceIndex + "," +
-                                numberOfServices + "," +
-                                expectedTravelTime + "," +
-                                distance + ",leg," +
-                                vehType + "," +
-                                numberOfParcels + "," +
-                                routeFreeFlowTravelTime + "," +
-                                currentTime_s);
-
-                        currentTime_s += expectedTravelTime;
-
-
-                    }
-                }
-
-
             }
 
+            for (TourElement element : tour.getTour().getTourElements()) {
+                if (element instanceof ServiceActivity) {
+                    ServiceActivity activity = (ServiceActivity) element;
+                    int parcels_this_service = activity.getService().getCapacityDemand();
+                    numberOfParcels -= parcels_this_service;
+                    double serviceTime = activity.getDuration();
+                    thisServiceIndex++;
+                    pw.println(carrierId + "," +
+                            tourId + "," +
+                            thisServiceIndex + "," +
+                            numberOfServices + "," +
+                            serviceTime + ",0,service," +
+                            vehType + "," +
+                            numberOfParcels + "," +
+                            0 + "," +
+                            currentTime_s);
+                    currentTime_s += serviceTime;
+
+                } else if (element instanceof Leg) {
+                    Leg leg = (Leg) element;
+                    double expectedTravelTime = leg.getExpectedTransportTime();
+                    Route route = leg.getRoute();
+                    String description = route.getRouteDescription();
+                    double routeFreeFlowTravelTime = 0; //todo the free flow travel time and the expected travel time are not consistent with each other
+                    double distance = 0;
+                    String[] arrayOfLinkIds = description.split(" ");
+                    for (int i = 0; i < arrayOfLinkIds.length - 1; i++) {
+                        String linkId = arrayOfLinkIds[i];
+                        double length = network.getLinks().get(Id.createLinkId(linkId)).getLength();
+                        distance += length;
+                        double freespeed = network.getLinks().get(Id.createLinkId(linkId)).getFreespeed();
+                        if (freespeed != 0) {
+                            routeFreeFlowTravelTime += length / freespeed;
+                        }
+                    }
+                    pw.println(carrierId + "," +
+                            tourId + "," +
+                            thisServiceIndex + "," +
+                            numberOfServices + "," +
+                            expectedTravelTime + "," +
+                            distance + ",leg," +
+                            vehType + "," +
+                            numberOfParcels + "," +
+                            routeFreeFlowTravelTime + "," +
+                            currentTime_s);
+
+                    currentTime_s += expectedTravelTime;
+
+
+                }
+            }
+
+
         }
-        pw.close();
 
     }
+        pw.close();
+
+}
 }
