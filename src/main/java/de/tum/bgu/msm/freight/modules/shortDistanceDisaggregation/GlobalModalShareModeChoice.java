@@ -21,8 +21,6 @@ public class GlobalModalShareModeChoice implements ModeChoiceModel {
     private Properties properties;
     private DataSet dataSet;
 
-    private double MAX_WEIGHT_FOR_CARGO_BIKE_KG = 10.;
-
     public double getShareOfCargoBikesAtThisMicroZone(int microzoneId, double weight) {
         return properties.shortDistance().getShareOfCargoBikesAtZonesServedByMicroDepot();
     }
@@ -66,7 +64,7 @@ public class GlobalModalShareModeChoice implements ModeChoiceModel {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
                 }
-                if (parcel.getWeight_kg() > MAX_WEIGHT_FOR_CARGO_BIKE_KG) {
+                if (parcel.getWeight_kg() > properties.modeChoice().getMaxWeightForCargoBike_kg()) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
                 }
