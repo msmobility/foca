@@ -114,7 +114,7 @@ public class MATSimAssignment implements Module {
         controler.run();
         if (properties.isReadEventsForCounts()) {
             try {
-                countEventHandler.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName());
+                countEventHandler.printOutCounts("./output/" + properties.getRunId() + "/" + properties.getCountsFileName(), properties.getNetworkFile());
             } catch (IOException e) {
                 e.printStackTrace();
             }

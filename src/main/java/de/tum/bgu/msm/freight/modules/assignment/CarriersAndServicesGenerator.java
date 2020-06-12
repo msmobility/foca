@@ -70,6 +70,9 @@ public class CarriersAndServicesGenerator {
 
         for (DistributionCenter distributionCenter : selectedDistributionCenters) {
             List<Parcel> parcelsInThisDistributionCenter = dataSet.getParcelsByDistributionCenter().get(distributionCenter);
+
+            Collections.shuffle(parcelsInThisDistributionCenter, properties.getRand());
+
             for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {
                 //initialize
                 parcelsByMicrodepotScaled.put(microDepot, new ArrayList<>());
