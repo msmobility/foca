@@ -80,22 +80,21 @@ public class SyntheticMicroDepots implements Module {
                                 microDepotMicroZone = internalMicroZone;
                                 for (DistributionCenter distributionCenterCandidate : dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, CommodityGroup.PACKET).values()) {
                                     if (distributionCenterCandidate.getZonesServedByThis().contains(microDepotMicroZone)){
-                                        //will find the last in the case there is overlap
+                                        //will create as many microdepots as dc serve in this zone
                                         distributionCenter = distributionCenterCandidate;
+                                        if (distributionCenter!= null && microDepotMicroZone!= null){
+                                            counter++;
+                                            MicroDepot microDepot = new MicroDepot(counter, String.valueOf(counter), coordinate, CommodityGroup.PACKET, distributionCenter, zoneId, microDepotMicroZone.getId());
+                                            distributionCenter.getMicroDeportsServedByThis().add(microDepot);
+
+                                            ParcelShop parcelShop = new ParcelShop(counter, String.valueOf(counter), coordinate, CommodityGroup.PACKET, distributionCenter, zoneId, microDepotMicroZone.getId());
+                                            distributionCenter.getParcelShopsServedByThis().add(parcelShop);
+
+                                        }
                                     }
                                 }
 
                             }
-                        }
-                        if (distributionCenter!= null && microDepotMicroZone!= null){
-                            counter++;
-                            MicroDepot microDepot = new MicroDepot(counter, String.valueOf(counter), coordinate, CommodityGroup.PACKET, distributionCenter, zoneId, microDepotMicroZone.getId());
-                            distributionCenter.getMicroDeportsServedByThis().add(microDepot);
-
-                            ParcelShop parcelShop = new ParcelShop(counter, String.valueOf(counter), coordinate, CommodityGroup.PACKET, distributionCenter, zoneId, microDepotMicroZone.getId());
-                            distributionCenter.getParcelShopsServedByThis().add(parcelShop);
-
-                            //logger.info(counter + "," + coordinate.x + "," + coordinate.y + "," + distributionCenter.getId() + "," + microDepotMicroZone.getId());
                         }
                     }
                     y+= gridSpacing;
@@ -116,7 +115,7 @@ public class SyntheticMicroDepots implements Module {
     private void assignMicroZonesToMicroDepots() {
 
         double maxDistanceToMicroDepot = properties.shortDistance().getMaxDistanceToMicroDepot();
-        logger.info("Assign: " + "microzone" +  "," + "microDepot" + "," + "distributionCenter");
+        //logger.info("Assign: " + "microzone" +  "," + "microDepot" + "," + "distributionCenter");
         for (int zoneId : properties.getAnalysisZones()){
             for (DistributionCenter distributionCenter : dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, CommodityGroup.PACKET).values()) {
                 int counter = 0;
@@ -133,7 +132,7 @@ public class SyntheticMicroDepots implements Module {
                     }
                     if (md != null && maxDistance < maxDistanceToMicroDepot){
                         md.getZonesServedByThis().add(internalMicroZone);
-                        logger.info("Assign: " + internalMicroZone.getId() + "," + md.getId() + "," + distributionCenter.getId());
+                        //logger.info("Assign: " + internalMicroZone.getId() + "," + md.getId() + "," + distributionCenter.getId());
                         counter++;
                     }
                 }

@@ -23,6 +23,7 @@ public class MultiDayCounts {
 
             String scenario = args [i];
 
+            String networkFile = "./output/" + scenario + "/matsim/" + scenario  + ".output_network.xml.gz";
             String eventsFile = "./output/" + scenario + "/matsim/" + scenario  + ".output_events.xml.gz";
             String countsFile = "./output/" + scenario + "/matsim/counts.csv";
 
@@ -41,7 +42,7 @@ public class MultiDayCounts {
 
             eventsManager.addHandler(countEventHandler);
             new MatsimEventsReader(eventsManager).readFile(eventsFile);
-            countEventHandler.printOutCounts(countsFile);
+            countEventHandler.printOutCounts(countsFile, networkFile);
         }
 
 

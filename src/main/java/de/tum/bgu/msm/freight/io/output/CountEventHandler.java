@@ -6,6 +6,9 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.LinkEnterEvent;
 import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.network.NetworkUtils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,7 +19,7 @@ import java.util.Map;
 
 public class CountEventHandler implements LinkEnterEventHandler {
     private enum CountVehicleType {
-        car, cargoBike, van, lDTruck, sDTruck;
+        car, cargoBike, van, lDTruck, sDTruck, feeder;
     }
 
     private final int LAST_HOUR = 49;
@@ -69,11 +72,12 @@ public class CountEventHandler implements LinkEnterEventHandler {
     }
 
 
-    public void printOutCounts(String countsFile) throws IOException {
+    public void printOutCounts(String countsFile, String networkFile) throws IOException {
         PrintWriter pw = new PrintWriter(new FileWriter(countsFile));
 
+        Network network = NetworkUtils.readNetwork(networkFile);
 
-        pw.print("link,hour");
+        pw.print("link,hour,length,type");
         for (CountVehicleType type : CountVehicleType.values()) {
             pw.print(",");
             pw.print(type);
@@ -86,6 +90,11 @@ public class CountEventHandler implements LinkEnterEventHandler {
                 pw.print(id.toString());
                 pw.print(",");
                 pw.print(hour);
+                pw.print(",");
+                Link link = network.getLinks().get(id);
+                pw.print(link.getLength());
+                pw.print(",");
+                pw.print(link.getAttributes().getAttribute("type"));
                 Map<CountVehicleType, Integer> countsByType = countsByHour.get(hour);
                 for (CountVehicleType type : CountVehicleType.values()){
                     pw.print(",");
@@ -99,7 +108,9 @@ public class CountEventHandler implements LinkEnterEventHandler {
     }
 
     private static CountVehicleType getTypeFromId(String vehicleId){
-        if (vehicleId.contains("van")){
+        if (vehicleId.contains("feeder") || vehicleId.contains("ParcelShop")) {
+            return CountVehicleType.feeder;
+        } else if (vehicleId.contains("van")){
             return CountVehicleType.van;
         } else if (vehicleId.contains("cargoBike")){
             return CountVehicleType.cargoBike;

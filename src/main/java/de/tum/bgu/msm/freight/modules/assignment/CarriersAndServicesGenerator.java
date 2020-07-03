@@ -220,7 +220,7 @@ public class CarriersAndServicesGenerator {
                 return thisLink;
             } else {
                 double buffer = thisLink.getLength()*2;
-                while (buffer < 1000){
+                while (buffer < 5000){
                     Collection<Node> nodes = NetworkUtils.getNearestNodes(network, coord, buffer);
                     for (Node node :  nodes){
                         for (Link l : node.getInLinks().values()) {

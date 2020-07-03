@@ -60,7 +60,7 @@ public class NetworkFromOsm {
 
         OsmNetworkReader onr = new OsmNetworkReader(network,ct);
         onr.setHierarchyLayer(Integer.parseInt(args[2]));
-        //onr.setKeepPaths(true);
+        onr.setKeepPaths(true);
         onr.parse(osm);
 
         /*

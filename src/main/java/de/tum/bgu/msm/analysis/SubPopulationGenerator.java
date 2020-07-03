@@ -38,9 +38,9 @@ public class SubPopulationGenerator {
 
         Population population = PopulationUtils.createPopulation(ConfigUtils.createConfig());
         Population subPopulation = PopulationUtils.createPopulation(ConfigUtils.createConfig());
-        PopulationUtils.readPopulation(population, "output/" + scenario + "/" + scenario + ".output_plans.xml.gz");
+        PopulationUtils.readPopulation(population, "./output/" + scenario + "/" + scenario + ".output_plans.xml.gz");
 
-        Network network = NetworkUtils.readNetwork("output/" + scenario + "/" + scenario + ".output_network.xml.gz");
+        Network network = NetworkUtils.readNetwork("./output/" + scenario + "/" + scenario + ".output_network.xml.gz");
 
         ArrayList<SimpleFeature> features = new ArrayList<>();
         features.addAll(ShapeFileReader.getAllFeatures(args[1]));

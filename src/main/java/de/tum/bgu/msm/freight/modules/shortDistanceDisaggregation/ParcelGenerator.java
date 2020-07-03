@@ -62,7 +62,7 @@ public class ParcelGenerator implements Module {
         generateParcels();
 
         logger.info("Parcels: " + parcelCounter  + " units with a weight of " + parcelWeightCounter);
-        logger.info("Post: " + postCounter  + " units with a weight of " + postWeightCounter + " (will not be considered in FOCA");
+        logger.info("Post: a weight of " + postWeightCounter + " (will not be considered in FOCA)");
 
         chooseTransactionType();
         assignCoordinates();
