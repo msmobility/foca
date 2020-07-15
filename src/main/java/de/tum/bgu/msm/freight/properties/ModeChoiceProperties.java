@@ -6,15 +6,16 @@ import java.util.ResourceBundle;
 
 public class ModeChoiceProperties extends PropertiesGroup {
 
-    private double operatingCostBike_eur_km = 0.9200;
-    private double operatingCostTruck_eur_km = 1.7765;
-    private double kApproximation = 1.5;
-    private double serviceCostBike_eur_parcel = 1.0152;
-    private double serviceCostTruck_eur_parcel = 1.2585;
-    private double extraHandlingBike_eur_m3 = 8.4;
+    private double operatingCostBike_eur_km = 0.830;
+    private double operatingCostTruck_eur_km = 1.739;
+    private double operatingCostFeeder_eur_km = 1.159;
+    private double kApproximation = 0.820;
+    private double serviceCostBike_eur_parcel = 0.916;
+    private double serviceCostTruck_eur_parcel = 1.136;
+    private double extraHandlingBike_eur_m3 = 7.3;
     private double capacityTruck_m3 = 12.5;
-    private double capacityFeeder_m3 = 12.5;
-    private double maxWeightForCargoBike_kg = 10;
+    private double capacityFeeder_m3 = 25.0;
+    private double maxWeightForCargoBike_kg = 1000;
     private double gridSpacing = 4000;
 
     public ModeChoiceProperties(ResourceBundle bundle) {
@@ -112,5 +113,9 @@ public class ModeChoiceProperties extends PropertiesGroup {
 
     public void setGridSpacing(double gridSpacing) {
         this.gridSpacing = gridSpacing;
+    }
+
+    public double getOperatingCostFeeder_eur_km() {
+        return operatingCostFeeder_eur_km;
     }
 }

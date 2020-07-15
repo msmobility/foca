@@ -122,7 +122,7 @@ public class CarriersAndServicesGenerator {
             Coordinate coordinates = distributionCenter.getCoordinates();
             Link link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
             Id<Link> linkId = link.getId();
-            VehicleType type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
+            VehicleType type = types.getVehicleTypes().get(Id.create("feeder", VehicleType.class));
             feederCarrier.getCarrierCapabilities().getVehicleTypes().add(type);
             feederCarrier.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
             CarrierVehicle vehicle = getGenericVehicle(type, feederCarrier.getId(), linkId, 7 * 60 * 60, 8 * 60 * 60);
@@ -179,7 +179,7 @@ public class CarriersAndServicesGenerator {
             coordinates = distributionCenter.getCoordinates();
             link = getNearestLinkByMode(coordinates, ParcelDistributionType.MOTORIZED);
             linkId = link.getId();
-            type = types.getVehicleTypes().get(Id.create("van", VehicleType.class));
+            type = types.getVehicleTypes().get(Id.create("feeder", VehicleType.class));
             feederCarrierParcelShop.getCarrierCapabilities().getVehicleTypes().add(type);
             feederCarrierParcelShop.getCarrierCapabilities().setFleetSize(CarrierCapabilities.FleetSize.INFINITE);
             vehicle = getGenericVehicle(type, feederCarrierParcelShop.getId(), linkId, 7 * 60 * 60, 17 * 60 * 60);

@@ -26,13 +26,14 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
     private Properties properties;
 
     private PrintWriter printWriter;
+    private PrintWriter printWriterSolution;
 
 
     private final Map<Integer, Integer> microZoneToAnalysisZoneMap = new HashMap<>();
     private final Map<Integer, Map<LoadClass, ParcelDistributionType>> modeByClassAndZone = new HashMap<>();
 
     enum LoadClass {
-        XS(1., 0.005), S(2., 0.01), M(5., 0.05), L(100., 0.2);
+        XS(1., 0.5*0.0184), S(2., 1*0.0184), M(5., 4*0.0184), L(100., 8*0.0184);
         private double weightUpperThreshold_kg;
         private double volume_m3;
 
@@ -54,8 +55,10 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
         this.properties = properties;
         try {
             this.printWriter = new PrintWriter(new File("./output/" + properties.getRunId() + "/analyticalModeChoice.csv"));
+            this.printWriterSolution = new PrintWriter(new File("./output/" + properties.getRunId() + "/analyticalModeChoiceSolution.csv"));
             printWriter.println("zone,analysisZone,x,y,dc,distanceToDc,size,area,density,combination,mode," +
                     "costs_lh,costs_service,cost_extra,costs_routing_bike,costs_routing_truck,costs_all");
+            printWriterSolution.println("zone,analysisZone,dc,solution");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -75,14 +78,14 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
         int countNull = 0;
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
             for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
-                if (parcel.getParcelDistributionType() == null) {
+                if (parcel.getParcelDistributionType() == null && !parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)){
                     countNull++;
-                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED)) {
+                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED) && !parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                     countVan++;
-                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.CARGO_BIKE)) {
+                } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.CARGO_BIKE) && !parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                     countBike++;
                 } else {
-                    logger.error("another parcel distribution type");
+                    //logger.error("another parcel distribution type");
                 }
             }
         }
@@ -187,6 +190,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                         Map<LoadClass, Double> densities = new HashMap<>();
 
                         double operatingCostTruck_eur_km = properties.modeChoice().getOperatingCostTruck_eur_km();
+                        double operatingCostFeeder_eur_km = properties.modeChoice().getOperatingCostFeeder_eur_km();
                         for (LoadClass loadClass : LoadClass.values()) {
                             //calculate costs by truck and by cargo bike and by size
                             int parcels;
@@ -198,12 +202,14 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
                             double density = parcels / area_km2;
 
+
+
                             densities.put(loadClass, density);
 
                             //by cargo bike
                             double capacityFeeder_m3 = properties.modeChoice().getCapacityFeeder_m3();
                             longHaulCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
-                                    2d * distanceToDc_km * operatingCostTruck_eur_km / capacityFeeder_m3);
+                                    2d * distanceToDc_km * operatingCostFeeder_eur_km / capacityFeeder_m3);
 
                             double extraHandlingBike_eur_m3 = properties.modeChoice().getExtraHandlingBike_eur_m3();
                             extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
@@ -277,8 +283,16 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
                             double operatingCostBike_eur_km = properties.modeChoice().getOperatingCostBike_eur_km();
                             double kApproximation = properties.modeChoice().getkApproximation();
+
+                            //adds a penalty for cargo-bike if the density is too low, which happens in the boundaries of the region
+                            double bike_penalty = 1.;
+
+                            if (sumOfDensitiesBike + sumOfDensitiesTruck < 10){
+                                bike_penalty = 1000.;
+                            }
+
                             cost = cost +
-                                    Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2 +
+                                    Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2 * bike_penalty +
                                     Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2;
 
                             printWriter.print(zone.getId());
@@ -309,34 +323,36 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             printWriter.print(",");
                             printWriter.print(0);
                             printWriter.print(",");
-                            printWriter.print(Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2);
+                            printWriter.print(Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2*bike_penalty);
                             printWriter.print(",");
                             printWriter.print(Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2);
                             printWriter.print(",");
                             printWriter.print(cost);
-                            printWriter.println();
-
-
                             if (cost < minCost) {
                                 minCost = cost;
                                 selectedCombinationIndex = combinationIndex;
+                            } else {
                             }
+
+                            printWriter.println();
                         }
 
                         EnumMap<LoadClass, Double> selectedCombination = combinations.get(selectedCombinationIndex);
                         for (LoadClass loadClass : selectedCombination.keySet()) {
                             ParcelDistributionType parcelDistributionType = selectedCombination.get(loadClass) == 0. ?
                                     ParcelDistributionType.MOTORIZED : ParcelDistributionType.CARGO_BIKE;
-
                             modeByClassAndZone.get(analysisZone.id).put(loadClass, parcelDistributionType);
-
                         }
+
+                        printWriterSolution.print(zone.getId() + "," + analysisZoneId + "," + distributionCenter.getId() + "," + selectedCombinationIndex);
+                        printWriterSolution.println();
                     }
                 }
             }
         }
 
         printWriter.close();
+        printWriterSolution.close();
 
     }
 
