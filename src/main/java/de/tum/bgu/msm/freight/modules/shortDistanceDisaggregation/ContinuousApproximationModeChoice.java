@@ -12,7 +12,14 @@ import de.tum.bgu.msm.freight.data.geo.MicroDepot;
 import de.tum.bgu.msm.freight.properties.Properties;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.matsim.core.utils.gis.PointFeatureFactory;
+import org.matsim.core.utils.gis.ShapeFileReader;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.BoundingBox;
+import scala.Int;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,12 +35,15 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
     private PrintWriter printWriter;
     private PrintWriter printWriterSolution;
 
+    private double scaleFactor = 1.;
+
 
     private final Map<Integer, Integer> microZoneToAnalysisZoneMap = new HashMap<>();
     private final Map<Integer, Map<LoadClass, ParcelDistributionType>> modeByClassAndZone = new HashMap<>();
 
     enum LoadClass {
-        XS(1., 0.5*0.0184), S(2., 1*0.0184), M(5., 4*0.0184), L(100., 8*0.0184);
+        //        XS(4.1, 0.0175), S(9.3, 0.035), M(17, 0.14), L(1000., 0.28);
+        XS(4.1, 0.5), S(9.3, 1), M(17, 4), L(1000., 8);
         private double weightUpperThreshold_kg;
         private double volume_m3;
 
@@ -78,7 +88,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
         int countNull = 0;
         for (DistributionCenter distributionCenter : dataSet.getParcelsByDistributionCenter().keySet()) {
             for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
-                if (parcel.getParcelDistributionType() == null && !parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)){
+                if (parcel.getParcelDistributionType() == null && !parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                     countNull++;
                 } else if (parcel.getParcelDistributionType().equals(ParcelDistributionType.MOTORIZED) && !parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                     countVan++;
@@ -90,20 +100,27 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
             }
         }
 
-        logger.info("Modal share van = " + countVan);
-        logger.info("Modal share bike = " + countBike);
-        logger.info("Cases with null = " + countNull);
+        logger.info("Modal share van = " + countVan * scaleFactor);
+        logger.info("Modal share bike = " + countBike * scaleFactor);
+        logger.info("Cases with null = " + countNull * scaleFactor);
     }
 
     class AnalysisZone {
         int id;
+        double congestion;
+        double area;
+        SimpleFeature feature;
         double xCenter;
         double yCenter;
 
-        public AnalysisZone(int id, double xCenter, double yCenter) {
+        public AnalysisZone(int id, double congestion, double area, SimpleFeature feature) {
             this.id = id;
-            this.xCenter = xCenter;
-            this.yCenter = yCenter;
+            this.congestion = congestion;
+            this.area = area;
+            this.feature = feature;
+            Coordinate centroidCoordinates = ((Geometry) this.feature.getDefaultGeometry()).getCentroid().getCoordinate();
+            this.xCenter = centroidCoordinates.getX();
+            this.yCenter = centroidCoordinates.getY();
         }
     }
 
@@ -115,25 +132,36 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
             Map<Integer, AnalysisZone> analysisZones = new HashMap<>();
             //create raster analysis cells
-            BoundingBox bounds = zone.getShapeFeature().getBounds();
-            double xMin = bounds.getMinX();
-            double yMin = bounds.getMinY();
-            double xMax = bounds.getMaxX();
-            double yMax = bounds.getMaxY();
+//            BoundingBox bounds = zone.getShapeFeature().getBounds();
+//            double xMin = bounds.getMinX();
+//            double yMin = bounds.getMinY();
+//            double xMax = bounds.getMaxX();
+//            double yMax = bounds.getMaxY();
 
             int counter = 0;
 
-            double gridSpacing = properties.modeChoice().getGridSpacing();
-            double y = yMin + gridSpacing / 2;
-            while (y < yMax) {
-                double x = xMin + gridSpacing / 2;
-                while (x < xMax) {
-                    analysisZones.put(counter, new AnalysisZone(counter, x, y));
-                    counter++;
-                    x += gridSpacing;
-                }
-                y += gridSpacing;
+//            double gridSpacing = properties.modeChoice().getGridSpacing();
+//            double y = yMin + gridSpacing / 2;
+//            while (y < yMax) {
+//                double x = xMin + gridSpacing / 2;
+//                while (x < xMax) {
+//                    analysisZones.put(counter, new AnalysisZone(counter, x, y));
+//                    counter++;
+//                    x += gridSpacing;
+//                }
+//                y += gridSpacing;
+//            }
+
+            Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("./input/modeChoice/regensburg_4k_31468.shp");
+
+            for (SimpleFeature feature : features) {
+                int id = Integer.parseInt(feature.getAttribute("id").toString());
+                double congestionFactor = Double.parseDouble(feature.getAttribute("congestion").toString());
+                double area = Double.parseDouble(feature.getAttribute("area").toString());
+                analysisZones.put(id, new AnalysisZone(id, congestionFactor, area, feature));
+                counter++;
             }
+
             logger.warn("Problem reduced to " + counter + " analysis zones");
 
             for (DistributionCenter distributionCenter : dataSet.getDistributionCentersForZoneAndCommodityGroup(zoneId, CommodityGroup.PACKET).values()) {
@@ -141,6 +169,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                 if (dataSet.getParcelsByDistributionCenter().get(distributionCenter) != null) {
                     for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
                         LoadClass loadClass = getLoadClassFromWeight(parcel.getWeight_kg());
+
                         Coordinate coordinate;
                         if (!parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                             if (parcel.isToDestination()) {
@@ -149,23 +178,20 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                                 coordinate = parcel.getOriginCoord();
                             }
 
-                            //int microZoneid = parcel.getDestMicroZoneId();
                             //finds the closest analysis zone
-                            int selecteAZ = -1;
-                            double distance = Double.MAX_VALUE;
+                            int selectedAZ = -1;
+                            PointFeatureFactory factory = new PointFeatureFactory.Builder().create();
                             for (AnalysisZone az : analysisZones.values()) {
-                                double thisDistance = Math.sqrt(Math.pow(az.xCenter - coordinate.getX(), 2) + Math.pow(az.yCenter - coordinate.getY(), 2));
-                                if (thisDistance < distance) {
-                                    distance = thisDistance;
-                                    selecteAZ = az.id;
+                                if (((Geometry) az.feature.getDefaultGeometry()).contains((Geometry) factory.createPoint(coordinate).getDefaultGeometry())) {
+                                    selectedAZ = az.id;
                                 }
                             }
 
-                            if (selecteAZ != -1) {
-                                microZoneToAnalysisZoneMap.put(parcel.getDestMicroZoneId(), selecteAZ);
-                                parcelsByZoneAndLoadClass.putIfAbsent(selecteAZ, new HashMap<>());
-                                parcelsByZoneAndLoadClass.get(selecteAZ).putIfAbsent(loadClass, 0);
-                                parcelsByZoneAndLoadClass.get(selecteAZ).put(loadClass, parcelsByZoneAndLoadClass.get(selecteAZ).get(loadClass) + 1);
+                            if (selectedAZ != -1) {
+                                microZoneToAnalysisZoneMap.put(parcel.getDestMicroZoneId(), selectedAZ);
+                                parcelsByZoneAndLoadClass.putIfAbsent(selectedAZ, new HashMap<>());
+                                parcelsByZoneAndLoadClass.get(selectedAZ).putIfAbsent(loadClass, 0);
+                                parcelsByZoneAndLoadClass.get(selectedAZ).put(loadClass, parcelsByZoneAndLoadClass.get(selectedAZ).get(loadClass) + 1);
                             } else {
                                 logger.warn("The closest zone is not found!");
                             }
@@ -180,7 +206,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                                 Math.abs(zoneCoordinates.getY() - dcCoordinate.getY()) / 1000d;
 
                         modeByClassAndZone.putIfAbsent(analysisZone.id, new HashMap<>());
-                        double area_km2 = Math.pow(gridSpacing, 2) / 1e6;
+                        double area_km2 = analysisZone.area;
 
                         Map<LoadClass, Double> longHaulCostsTruck = new HashMap<>();
                         Map<LoadClass, Double> longHaulCostsBike = new HashMap<>();
@@ -200,31 +226,30 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                                 parcels = 0;
                             }
 
-                            double density = parcels / area_km2;
-
+                            double density = parcels / area_km2 * scaleFactor;
 
 
                             densities.put(loadClass, density);
 
                             //by cargo bike
-                            double capacityFeeder_m3 = properties.modeChoice().getCapacityFeeder_m3();
-                            longHaulCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
-                                    2d * distanceToDc_km * operatingCostFeeder_eur_km / capacityFeeder_m3);
+                            double capacityFeeder = properties.modeChoice().getCapacityFeeder_units();
+                            longHaulCostsBike.put(loadClass, area_km2 * density *
+                                    2d * distanceToDc_km * operatingCostFeeder_eur_km * loadClass.volume_m3/ capacityFeeder);
 
-                            double extraHandlingBike_eur_m3 = properties.modeChoice().getExtraHandlingBike_eur_m3();
+                            double extraHandlingBike_eur_unit = properties.modeChoice().getExtraHandlingBike_eur_unit();
                             extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
-                                    extraHandlingBike_eur_m3);
+                                    extraHandlingBike_eur_unit);
 
                             double serviceCostBike_eur_parcel = properties.modeChoice().getServiceCostBike_eur_parcel();
                             serviceCostBike.put(loadClass, area_km2 * density * serviceCostBike_eur_parcel);
 
                             //by truck
-                            double capacityTruck_m3 = properties.modeChoice().getCapacityTruck_m3();
-                            longHaulCostsTruck.put(loadClass, area_km2 * loadClass.volume_m3 * density *
-                                    2d * distanceToDc_km * operatingCostTruck_eur_km / capacityTruck_m3);
+                            double capacityTruck = properties.modeChoice().getCapacityTruck_units();
+                            longHaulCostsTruck.put(loadClass, area_km2 * density *
+                                    2d * distanceToDc_km * operatingCostFeeder_eur_km * loadClass.volume_m3/ capacityTruck);
 
                             double serviceCostTruck_eur_parcel = properties.modeChoice().getServiceCostTruck_eur_parcel();
-                            serviceCostTruck.put(loadClass, area_km2 * density * serviceCostTruck_eur_parcel);
+                            serviceCostTruck.put(loadClass, area_km2 * density * serviceCostTruck_eur_parcel * analysisZone.congestion);
                         }
 
                         double minCost = Double.MAX_VALUE;
@@ -238,9 +263,9 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             for (LoadClass loadClass : LoadClass.values()) {
                                 double isCargoBike = thisCombination.get(loadClass);
                                 cost += longHaulCostsBike.get(loadClass) * isCargoBike;
-                                cost += longHaulCostsTruck.get(loadClass) * (1d - isCargoBike);
-                                cost += extraHandlingCostsBike.get(loadClass) * isCargoBike;
                                 cost += serviceCostBike.get(loadClass) * isCargoBike;
+                                cost += extraHandlingCostsBike.get(loadClass) * isCargoBike;
+                                cost += longHaulCostsTruck.get(loadClass) * (1d - isCargoBike);
                                 cost += serviceCostTruck.get(loadClass) * (1d - isCargoBike);
                                 sumOfDensitiesBike += densities.get(loadClass) * isCargoBike;
                                 sumOfDensitiesTruck += densities.get(loadClass) * (1d - isCargoBike);
@@ -293,7 +318,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
                             cost = cost +
                                     Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2 * bike_penalty +
-                                    Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2;
+                                    Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2 * analysisZone.congestion;
 
                             printWriter.print(zone.getId());
                             printWriter.print(",");
@@ -323,9 +348,9 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             printWriter.print(",");
                             printWriter.print(0);
                             printWriter.print(",");
-                            printWriter.print(Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2*bike_penalty);
+                            printWriter.print(Math.sqrt(sumOfDensitiesBike) * kApproximation * operatingCostBike_eur_km * area_km2 * bike_penalty);
                             printWriter.print(",");
-                            printWriter.print(Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2);
+                            printWriter.print(Math.sqrt(sumOfDensitiesTruck) * kApproximation * operatingCostTruck_eur_km * area_km2 * analysisZone.congestion);
                             printWriter.print(",");
                             printWriter.print(cost);
                             if (cost < minCost) {
@@ -368,10 +393,10 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 
             for (Parcel parcel : dataSet.getParcelsByDistributionCenter().get(distributionCenter)) {
 
-                if (!parcel.isToDestination()) {
-                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
-                    continue;
-                }
+//                if (!parcel.isToDestination()) {
+//                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
+//                    continue;
+//                }
 
                 if (parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
@@ -383,17 +408,15 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                     continue;
                 }
                 double maxWeightForCargoBike_kg = properties.modeChoice().getMaxWeightForCargoBike_kg();
+
                 if (parcel.getWeight_kg() > maxWeightForCargoBike_kg) {
                     parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
                     continue;
                 }
 
-                if (parcel.getParcelTransaction().equals(ParcelTransaction.PARCEL_SHOP)) {
-                    parcel.setParcelDistributionType(ParcelDistributionType.MOTORIZED);
-                    continue;
-                }
                 ParcelDistributionType modeAtThisMicroZone = getModeAtThisMicroZone(parcel.getDestMicroZoneId(), parcel.getWeight_kg());
                 parcel.setParcelDistributionType(modeAtThisMicroZone);
+
                 if (modeAtThisMicroZone.equals(ParcelDistributionType.CARGO_BIKE)) {
                     here:
                     for (MicroDepot microDepot : distributionCenter.getMicroDeportsServedByThis()) {

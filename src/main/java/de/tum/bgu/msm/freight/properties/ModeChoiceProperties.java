@@ -6,17 +6,17 @@ import java.util.ResourceBundle;
 
 public class ModeChoiceProperties extends PropertiesGroup {
 
-    private double operatingCostBike_eur_km = 0.830;
-    private double operatingCostTruck_eur_km = 1.739;
-    private double operatingCostFeeder_eur_km = 1.159;
+    private double operatingCostBike_eur_km = 3.1097;
+    private double operatingCostTruck_eur_km = 2.8817;
+    private double operatingCostFeeder_eur_km = 1.9301;
     private double kApproximation = 0.820;
-    private double serviceCostBike_eur_parcel = 0.916;
-    private double serviceCostTruck_eur_parcel = 1.136;
-    private double extraHandlingBike_eur_m3 = 7.3;
-    private double capacityTruck_m3 = 12.5;
-    private double capacityFeeder_m3 = 25.0;
+    private double serviceCostBike_eur_parcel = 1.0248;
+    private double serviceCostTruck_eur_parcel = 1.1386;
+    private double extraHandlingBike_eur_unit = 0.76;
+    private double capacityTruck_units = 120;
+    private double capacityFeeder_units = 240;
     private double maxWeightForCargoBike_kg = 1000;
-    private double gridSpacing = 4000;
+    //private double gridSpacing = 4000;
 
     public ModeChoiceProperties(ResourceBundle bundle) {
         super(bundle);
@@ -26,11 +26,11 @@ public class ModeChoiceProperties extends PropertiesGroup {
         kApproximation = PropertiesUtil.getDoubleProperty(bundle, "kApproximation", kApproximation);
         serviceCostBike_eur_parcel = PropertiesUtil.getDoubleProperty(bundle, "serviceCostBike_eur_parcel", serviceCostBike_eur_parcel);
         serviceCostTruck_eur_parcel = PropertiesUtil.getDoubleProperty(bundle, "serviceCostTruck_eur_parcel", serviceCostTruck_eur_parcel);
-        extraHandlingBike_eur_m3 = PropertiesUtil.getDoubleProperty(bundle, "extraHandlingBike_eur_m3", extraHandlingBike_eur_m3);
-        capacityTruck_m3 = PropertiesUtil.getDoubleProperty(bundle, "capacityTruck_m3", capacityTruck_m3);
-        capacityFeeder_m3 = PropertiesUtil.getDoubleProperty(bundle, "capacityFeeder_m3", capacityFeeder_m3);
+        extraHandlingBike_eur_unit = PropertiesUtil.getDoubleProperty(bundle, "extraHandlingBike_eur_unit", extraHandlingBike_eur_unit);
+        capacityTruck_units = PropertiesUtil.getDoubleProperty(bundle, "capacityTruck_units", capacityTruck_units);
+        capacityFeeder_units = PropertiesUtil.getDoubleProperty(bundle, "capacityFeeder_units", capacityFeeder_units);
         maxWeightForCargoBike_kg = PropertiesUtil.getDoubleProperty(bundle, "maxWeightForCargoBike_kg", maxWeightForCargoBike_kg);
-        gridSpacing = PropertiesUtil.getDoubleProperty(bundle, "gridSpacing", gridSpacing);
+        //gridSpacing = PropertiesUtil.getDoubleProperty(bundle, "gridSpacing", gridSpacing);
 
 
     }
@@ -75,28 +75,28 @@ public class ModeChoiceProperties extends PropertiesGroup {
         this.serviceCostTruck_eur_parcel = serviceCostTruck_eur_parcel;
     }
 
-    public double getExtraHandlingBike_eur_m3() {
-        return extraHandlingBike_eur_m3;
+    public double getExtraHandlingBike_eur_unit() {
+        return extraHandlingBike_eur_unit;
     }
 
-    public void setExtraHandlingBike_eur_m3(double extraHandlingBike_eur_m3) {
-        this.extraHandlingBike_eur_m3 = extraHandlingBike_eur_m3;
+    public void setExtraHandlingBike_eur_unit(double extraHandlingBike_eur_unit) {
+        this.extraHandlingBike_eur_unit = extraHandlingBike_eur_unit;
     }
 
-    public double getCapacityTruck_m3() {
-        return capacityTruck_m3;
+    public double getCapacityTruck_units() {
+        return capacityTruck_units;
     }
 
-    public void setCapacityTruck_m3(double capacityTruck_m3) {
-        this.capacityTruck_m3 = capacityTruck_m3;
+    public void setCapacityTruck_units(double capacityTruck_units) {
+        this.capacityTruck_units = capacityTruck_units;
     }
 
-    public double getCapacityFeeder_m3() {
-        return capacityFeeder_m3;
+    public double getCapacityFeeder_units() {
+        return capacityFeeder_units;
     }
 
-    public void setCapacityFeeder_m3(double capacityFeeder_m3) {
-        this.capacityFeeder_m3 = capacityFeeder_m3;
+    public void setCapacityFeeder_units(double capacityFeeder_units) {
+        this.capacityFeeder_units = capacityFeeder_units;
     }
 
     public double getMaxWeightForCargoBike_kg() {
@@ -107,13 +107,13 @@ public class ModeChoiceProperties extends PropertiesGroup {
         this.maxWeightForCargoBike_kg = maxWeightForCargoBike_kg;
     }
 
-    public double getGridSpacing() {
-        return gridSpacing;
-    }
-
-    public void setGridSpacing(double gridSpacing) {
-        this.gridSpacing = gridSpacing;
-    }
+//    public double getGridSpacing() {
+//        return gridSpacing;
+//    }
+//
+//    public void setGridSpacing(double gridSpacing) {
+//        this.gridSpacing = gridSpacing;
+//    }
 
     public double getOperatingCostFeeder_eur_km() {
         return operatingCostFeeder_eur_km;
