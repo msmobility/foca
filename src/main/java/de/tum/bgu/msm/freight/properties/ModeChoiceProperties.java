@@ -16,8 +16,11 @@ public class ModeChoiceProperties extends PropertiesGroup {
     private double capacityTruck_units = 120;
     private double capacityFeeder_units = 240;
     private double maxWeightForCargoBike_kg = 1000;
-    //private double gridSpacing = 4000;
+    private String zoneSystemFile = "./input/modeChoice/muc_4k_31468.shp";
 
+    //private String zoneSystemFile = "./input/modeChoice/regensburg_4k_31468.shp";
+
+    //private double gridSpacing = 4000;
     public ModeChoiceProperties(ResourceBundle bundle) {
         super(bundle);
         PropertiesUtil.newPropertySubmodule("Mode choice");
@@ -30,6 +33,7 @@ public class ModeChoiceProperties extends PropertiesGroup {
         capacityTruck_units = PropertiesUtil.getDoubleProperty(bundle, "capacityTruck_units", capacityTruck_units);
         capacityFeeder_units = PropertiesUtil.getDoubleProperty(bundle, "capacityFeeder_units", capacityFeeder_units);
         maxWeightForCargoBike_kg = PropertiesUtil.getDoubleProperty(bundle, "maxWeightForCargoBike_kg", maxWeightForCargoBike_kg);
+        zoneSystemFile = PropertiesUtil.getStringProperty(bundle, "zoneSystemFile", zoneSystemFile);
         //gridSpacing = PropertiesUtil.getDoubleProperty(bundle, "gridSpacing", gridSpacing);
 
 
@@ -107,6 +111,7 @@ public class ModeChoiceProperties extends PropertiesGroup {
         this.maxWeightForCargoBike_kg = maxWeightForCargoBike_kg;
     }
 
+
 //    public double getGridSpacing() {
 //        return gridSpacing;
 //    }
@@ -114,8 +119,15 @@ public class ModeChoiceProperties extends PropertiesGroup {
 //    public void setGridSpacing(double gridSpacing) {
 //        this.gridSpacing = gridSpacing;
 //    }
-
     public double getOperatingCostFeeder_eur_km() {
         return operatingCostFeeder_eur_km;
+    }
+
+    public String getZoneSystemFile() {
+        return zoneSystemFile;
+    }
+
+    public void setZoneSystemFile(String zoneSystemFile) {
+        this.zoneSystemFile = zoneSystemFile;
     }
 }

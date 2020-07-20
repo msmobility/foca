@@ -152,7 +152,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
 //                y += gridSpacing;
 //            }
 
-            Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("./input/modeChoice/regensburg_4k_31468.shp");
+            Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures(properties.modeChoice().getZoneSystemFile());
 
             for (SimpleFeature feature : features) {
                 int id = Integer.parseInt(feature.getAttribute("id").toString());
@@ -234,7 +234,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             //by cargo bike
                             double capacityFeeder = properties.modeChoice().getCapacityFeeder_units();
                             longHaulCostsBike.put(loadClass, area_km2 * density *
-                                    2d * distanceToDc_km * operatingCostFeeder_eur_km * loadClass.volume_m3/ capacityFeeder);
+                                    2d * distanceToDc_km * operatingCostFeeder_eur_km * loadClass.volume_m3 / capacityFeeder);
 
                             double extraHandlingBike_eur_unit = properties.modeChoice().getExtraHandlingBike_eur_unit();
                             extraHandlingCostsBike.put(loadClass, area_km2 * loadClass.volume_m3 * density *
@@ -246,7 +246,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             //by truck
                             double capacityTruck = properties.modeChoice().getCapacityTruck_units();
                             longHaulCostsTruck.put(loadClass, area_km2 * density *
-                                    2d * distanceToDc_km * operatingCostFeeder_eur_km * loadClass.volume_m3/ capacityTruck);
+                                    2d * distanceToDc_km * operatingCostFeeder_eur_km * loadClass.volume_m3 / capacityTruck);
 
                             double serviceCostTruck_eur_parcel = properties.modeChoice().getServiceCostTruck_eur_parcel();
                             serviceCostTruck.put(loadClass, area_km2 * density * serviceCostTruck_eur_parcel * analysisZone.congestion);
@@ -312,7 +312,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                             //adds a penalty for cargo-bike if the density is too low, which happens in the boundaries of the region
                             double bike_penalty = 1.;
 
-                            if (sumOfDensitiesBike + sumOfDensitiesTruck < 10){
+                            if (sumOfDensitiesBike + sumOfDensitiesTruck < 10) {
                                 bike_penalty = 1000.;
                             }
 

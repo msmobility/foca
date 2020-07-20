@@ -61,7 +61,7 @@ public class RunFocaWithModeChoice {
         SDTruckGenerator SDTruckGenerator = new SDTruckGenerator();
         ParcelGenerator parcelGenerator = new ParcelGenerator();
         ModeChoiceModel modeChoiceModel = new ContinuousApproximationModeChoice();
-        //MATSimAssignment matSimAssignment = new MATSimAssignment();
+        MATSimAssignment matSimAssignment = new MATSimAssignment();
 
 
         syntehticMicroDepots.setup(dataSet, properties);
@@ -73,7 +73,7 @@ public class RunFocaWithModeChoice {
         SDTruckGenerator.setup(dataSet, properties);
         parcelGenerator.setup(dataSet, properties);
         modeChoiceModel.setup(dataSet, properties);
-        //matSimAssignment.setup(dataSet, properties);
+        matSimAssignment.setup(dataSet, properties);
 
         syntehticMicroDepots.run();
 
@@ -85,7 +85,7 @@ public class RunFocaWithModeChoice {
         SDTruckGenerator.run();
         parcelGenerator.run();
         modeChoiceModel.run();
-//        matSimAssignment.run();
+        matSimAssignment.run();
 
         //PopulationWriter pw;
 
