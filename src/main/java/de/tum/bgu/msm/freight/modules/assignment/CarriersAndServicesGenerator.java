@@ -24,6 +24,7 @@ import org.matsim.vehicles.VehicleType;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Generates carriers and its services (equivalent to population and plans)
@@ -83,15 +84,31 @@ public class CarriersAndServicesGenerator {
                 parcelsByShop.put(parcelShop, new ArrayList<>());
             }
 
-            int numberOfCarriers = (int) Math.floor(parcelsInThisDistributionCenter.size() / MAX_NUMBER_PARCELS * properties.getSampleFactorForParcels()) + 1;
-            int numberOfParcelsByCarrier = parcelsInThisDistributionCenter.size() / numberOfCarriers;
+            //int numberOfCarriers = (int) Math.floor(parcelsInThisDistributionCenter.size() / MAX_NUMBER_PARCELS * properties.getSampleFactorForParcels()) + 1;
+            //int numberOfParcelsByCarrier = parcelsInThisDistributionCenter.size() / numberOfCarriers;
+
+            List<Integer> uniqueAnalysisZonesIds = new ArrayList<>();
+
+            for (Parcel parcel : parcelsInThisDistributionCenter){
+                if (!uniqueAnalysisZonesIds.contains(parcel.getAnalysisZoneId())){
+                    uniqueAnalysisZonesIds.add(parcel.getAnalysisZoneId());
+                }
+            }
+
+            logger.info("The problem is divided into " + uniqueAnalysisZonesIds.size() + " sub-problems, according to the numebr of analysis zones");
+            logger.warn("The parecels without zone are assigned to the zone 0! this may have undesired effects. ");
 
             //split the problem of van deliveries to various carriers by limiting the number of services by carrier
-            for (int carrierIndex = 0; carrierIndex < numberOfCarriers; carrierIndex++) {
-                int firstParcel = carrierIndex * numberOfParcelsByCarrier;
-                int lastParcel = (1 + carrierIndex) * numberOfParcelsByCarrier - 1;
-                logger.info("Split distribution center into carrier " + carrierIndex + ": parcels " + firstParcel + " to " + lastParcel);
-                List<Parcel> parcelsInThisCarrier = parcelsInThisDistributionCenter.subList(firstParcel, lastParcel);
+//            for (int carrierIndex = 0; carrierIndex < numberOfCarriers; carrierIndex++) {
+//                int firstParcel = carrierIndex * numberOfParcelsByCarrier;
+//                int lastParcel = (1 + carrierIndex) * numberOfParcelsByCarrier - 1;
+//                logger.info("Split distribution center into carrier " + carrierIndex + ": parcels " + firstParcel + " to " + lastParcel);
+
+               //split by analyis zones
+
+            for(int thisZoneId : uniqueAnalysisZonesIds){
+                List<Parcel> parcelsInThisCarrier = parcelsInThisDistributionCenter.stream().filter(p -> p.getAnalysisZoneId() == thisZoneId).collect(Collectors.toList());
+                logger.info("Zone " + thisZoneId + " has " + parcelsInThisCarrier.size() +  " parcels");
                 Carrier carrier = CarrierImpl.newInstance(Id.create(carrierCounter.getAndIncrement(), Carrier.class));
                 modeByCarrier.put(carrier, TransportMode.truck);
                 Coordinate coordinates = distributionCenter.getCoordinates();

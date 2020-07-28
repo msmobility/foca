@@ -192,6 +192,7 @@ public class ContinuousApproximationModeChoice implements ModeChoiceModel {
                                 parcelsByZoneAndLoadClass.putIfAbsent(selectedAZ, new HashMap<>());
                                 parcelsByZoneAndLoadClass.get(selectedAZ).putIfAbsent(loadClass, 0);
                                 parcelsByZoneAndLoadClass.get(selectedAZ).put(loadClass, parcelsByZoneAndLoadClass.get(selectedAZ).get(loadClass) + 1);
+                                parcel.setAnalysisZone(selectedAZ);
                             } else {
                                 logger.warn("The closest zone is not found!");
                             }

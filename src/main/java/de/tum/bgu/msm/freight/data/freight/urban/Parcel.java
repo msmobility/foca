@@ -27,6 +27,7 @@ public class Parcel {
 
     private boolean assigned = false;
     private double accessDistance_m;
+    private int analysisZoneId;
 
     public Parcel(int id, boolean toDestination, double volume_m3, double weight_kg,
                   DistributionCenter distributionCenter, Commodity commodity) {
@@ -58,7 +59,8 @@ public class Parcel {
                 append("parcelShop").append(",").
                 append("distributionType").append(",").
                 append("assigned").append(",").
-                append("accessDistance");
+                append("accessDistance").append(",").
+                append("analysisZoneId");
 
 
         return builder.toString();
@@ -92,16 +94,17 @@ public class Parcel {
         builder.append(distributionCenter.getId()).append(",").
                 append(parcelTransaction.toString()).append(",");
 
-        if (microDepot != null){
+        if (microDepot != null) {
             builder.append(microDepot.getId()).append(",");
         } else {
             builder.append("null").append(",");
         }
 
-                builder.append(parcelShop).append(",").
+        builder.append(parcelShop).append(",").
                 append(parcelDistributionType).append(",").
                 append(assigned).append(",").
-                append(accessDistance_m);
+                append(accessDistance_m).append(",").
+                append(analysisZoneId);
 
         return builder.toString();
 
@@ -167,7 +170,7 @@ public class Parcel {
         return destMicroZoneId;
     }
 
-    public int getOrigMicroZoneId(){
+    public int getOrigMicroZoneId() {
         return origMicroZoneId;
     }
 
@@ -209,5 +212,13 @@ public class Parcel {
 
     public void setAccessDistance_m(double accessDistance_m) {
         this.accessDistance_m = accessDistance_m;
+    }
+
+    public void setAnalysisZone(int analysisZoneId) {
+        this.analysisZoneId = analysisZoneId;
+    }
+
+    public int getAnalysisZoneId() {
+        return analysisZoneId;
     }
 }
