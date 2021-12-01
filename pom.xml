@@ -14,7 +14,7 @@
             <!-- Geotools is not on Maven central -->
             <id>osgeo</id>
             <name>Geotools repository</name>
-            <url>http://download.osgeo.org/webdav/geotools</url>
+            <url>https://download.osgeo.org/webdav/geotools</url>
         </repository>
         <repository>
             <id>matsim</id>
@@ -22,12 +22,12 @@
         </repository>
         <repository>
             <id>ojo-snapshots</id>
-            <url>http://oss.jfrog.org/libs-snapshot</url>
+            <url>https://oss.jfrog.org/libs-snapshot</url>
         </repository>
         <repository>
             <id>bintray-msmobility-maven</id>
             <name>bintray</name>
-            <url>http://dl.bintray.com/msmobility/maven</url>
+            <url>https://dl.bintray.com/msmobility/maven</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
