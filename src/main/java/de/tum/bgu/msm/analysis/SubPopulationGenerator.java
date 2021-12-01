@@ -82,7 +82,7 @@ public class SubPopulationGenerator {
 
             Map<Integer, Tuple<Double, Link>> borderCrossings = new HashMap<>();
             int sequence = 0;
-            double time = activityAtOrigin.getEndTime();
+            double time = activityAtOrigin.getEndTime().seconds();
             for (String linkId : routeString) {
                 Link link = network.getLinks().get(Id.createLinkId(linkId));
                 time += link.getLength() / link.getFreespeed();
@@ -123,7 +123,7 @@ public class SubPopulationGenerator {
 
                 if (originInside) {
                     orig = PopulationUtils.createActivityFromCoord(activityAtOrigin.getType(), activityAtOrigin.getCoord());
-                    orig.setEndTime(activityAtOrigin.getEndTime());
+                    orig.setEndTime(activityAtOrigin.getEndTime().seconds());
                     if (destInside) {
                         //internal
                         countInternal++;
