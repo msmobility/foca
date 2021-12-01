@@ -8,6 +8,16 @@
     <artifactId>freightFlows</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>msm</id>
+            <url>https://maven.cloudsmith.io/msmobility/msm/</url>
+        </snapshotRepository>
+        <repository>
+            <id>msm-snapshots</id>
+            <url>https://maven.cloudsmith.io/msmobility/msm/</url>
+        </repository>
+    </distributionManagement>
 
     <repositories>
         <repository>
@@ -131,11 +141,19 @@
             <groupId>de.tum.bgu.msm</groupId>
             <artifactId>siloCore</artifactId>
             <version>0.1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>de.tum.bgu.msm</groupId>
+                    <artifactId>mito</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
         <dependency>
             <groupId>de.tum.bgu.msm</groupId>
             <artifactId>munich</artifactId>
             <version>0.1.0-SNAPSHOT</version>
+
         </dependency>
 
         <dependency>
