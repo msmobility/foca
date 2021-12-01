@@ -11,7 +11,7 @@
 
     <repositories>
         <repository>
-            <id>msm</id>
+            <id>msmobility-msm</id>
             <url>https://dl.cloudsmith.io/public/msmobility/msm/maven/</url>
             <releases>
                 <enabled>true</enabled>
@@ -36,15 +36,15 @@
             <id>ojo-snapshots</id>
             <url>https://oss.jfrog.org/libs-snapshot</url>
         </repository>
-       <!-- <repository>
-            <id>bintray-msmobility-maven</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/msmobility/maven</url>
-        </repository>-->
-<!--        <repository>-->
-<!--            <id>jitpack.io</id>-->
-<!--            <url>https://jitpack.io</url>-->
-<!--        </repository>-->
+        <!-- <repository>
+             <id>bintray-msmobility-maven</id>
+             <name>bintray</name>
+             <url>https://dl.bintray.com/msmobility/maven</url>
+         </repository>-->
+        <!--        <repository>-->
+        <!--            <id>jitpack.io</id>-->
+        <!--            <url>https://jitpack.io</url>-->
+        <!--        </repository>-->
     </repositories>
     <build>
         <plugins>
@@ -129,7 +129,7 @@
 
         <dependency>
             <groupId>de.tum.bgu.msm</groupId>
-            <artifactId>silo</artifactId>
+            <artifactId>siloCore</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
 
@@ -138,7 +138,6 @@
             <artifactId>mito</artifactId>
             <version>master-SNAPSHOT</version>
         </dependency>
-
 
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
