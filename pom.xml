@@ -11,6 +11,18 @@
 
     <repositories>
         <repository>
+            <id>msm</id>
+            <url>https://dl.cloudsmith.io/public/msmobility/msm/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
             <!-- Geotools is not on Maven central -->
             <id>osgeo</id>
             <name>Geotools repository</name>
@@ -24,11 +36,11 @@
             <id>ojo-snapshots</id>
             <url>https://oss.jfrog.org/libs-snapshot</url>
         </repository>
-        <repository>
+       <!-- <repository>
             <id>bintray-msmobility-maven</id>
             <name>bintray</name>
             <url>https://dl.bintray.com/msmobility/maven</url>
-        </repository>
+        </repository>-->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>

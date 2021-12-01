@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.emission;
 
 import de.tum.bgu.msm.freight.properties.Properties;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -8,6 +9,7 @@ import java.io.FileNotFoundException;
 public class EmissionMainTest {
 
 
+    @Ignore
     @Test
     public void testRegensburgEmissions(){
         Properties properties = new Properties(Properties.initializeResourceBundleFromFile(null));
