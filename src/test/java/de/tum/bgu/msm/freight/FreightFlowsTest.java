@@ -2,6 +2,7 @@ package de.tum.bgu.msm.freight;
 
 import de.tum.bgu.msm.freight.properties.Properties;
 import junitx.framework.FileAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -35,6 +36,7 @@ public class FreightFlowsTest {
         }
     }
 
+    @Ignore
     @Test
     public void runVariousScenarios() {
 
@@ -93,6 +95,7 @@ public class FreightFlowsTest {
 
     }
 
+    @Ignore
     @Test
     public void runSmallScenario() {
 

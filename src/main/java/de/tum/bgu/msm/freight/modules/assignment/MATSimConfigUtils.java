@@ -116,7 +116,7 @@ public class MATSimConfigUtils {
         config.qsim().setNumberOfThreads(16);
         config.global().setNumberOfThreads(16);
         config.parallelEventHandling().setNumberOfThreads(16);
-        config.qsim().setUsingThreadpool(false);
+        //config.qsim().setUsingThreadpool(false);
 
         int iterations = properties.getIterations();
         config.controler().setLastIteration(iterations);

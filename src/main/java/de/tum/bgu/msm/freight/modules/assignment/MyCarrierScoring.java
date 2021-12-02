@@ -67,7 +67,7 @@ public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
         @Override
         public void handleActivity(Activity act) {
             if(act instanceof FreightActivity) {
-                double actStartTime = act.getStartTime();
+                double actStartTime = act.getStartTime().seconds();
 
 //                log.info(act + " start: " + Time.writeTime(actStartTime));
                 TimeWindow tw = ((FreightActivity) act).getTimeWindow();
@@ -78,7 +78,7 @@ public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
                     score += penalty_score;
 
                 }
-                double actTimeCosts = (act.getEndTime()-actStartTime)*timeParameter;
+                double actTimeCosts = (act.getEndTime().seconds() - actStartTime)*timeParameter;
 //                log.info("actCosts " + actTimeCosts);
                 assert actTimeCosts >= 0.0 : "actTimeCosts must be positive";
                 score += actTimeCosts*(-1);
@@ -203,7 +203,7 @@ public final class MyCarrierScoring implements CarrierScoringFunctionFactory {
                 double distanceCosts = distance*getDistanceParameter(vehicle);
                 assert distanceCosts >= 0.0 : "distanceCosts must be positive";
                 score += (-1) * distanceCosts;
-                double timeCosts = leg.getTravelTime()*getTimeParameter(vehicle);
+                double timeCosts = leg.getTravelTime().seconds() * getTimeParameter(vehicle);
                 assert timeCosts >= 0.0 : "timeCosts must be positive";
                 score += (-1) * timeCosts;
 

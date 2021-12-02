@@ -19,7 +19,7 @@ import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.BoundingBox;
 import scala.Int;
-import sun.java2d.pipe.SpanShapeRenderer;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
