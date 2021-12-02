@@ -36,7 +36,7 @@
             <!-- Geotools is not on Maven central -->
             <id>osgeo</id>
             <name>Geotools repository</name>
-            <url>https://download.osgeo.org/webdav/geotools</url>
+            <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
         <repository>
             <id>matsim</id>
@@ -46,15 +46,6 @@
             <id>ojo-snapshots</id>
             <url>https://oss.jfrog.org/libs-snapshot</url>
         </repository>
-        <!-- <repository>
-             <id>bintray-msmobility-maven</id>
-             <name>bintray</name>
-             <url>https://dl.bintray.com/msmobility/maven</url>
-         </repository>-->
-        <!--        <repository>-->
-        <!--            <id>jitpack.io</id>-->
-        <!--            <url>https://jitpack.io</url>-->
-        <!--        </repository>-->
     </repositories>
     <build>
         <plugins>
@@ -88,6 +79,32 @@
             <version>2.13.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-referencing</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-shapefile</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-hsql</artifactId>
+            <version>${geotools.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.matsim</groupId>
@@ -97,21 +114,10 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.matsim.contrib</groupId>-->
-        <!--<artifactId>networkEditor</artifactId>-->
-        <!--<version>${matsimVersion}</version>-->
-        <!--<type>jar</type>-->
-        <!--<scope>compile</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>freight</artifactId>
-            <!--            The follwing line for the "normal" matsim-->
             <version>${matsimVersion}</version>
-            <!--            The follwing line for the modified matsim-->
-            <!--            <version>12.0-SNAPSHOT</version>-->
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -153,7 +159,12 @@
             <groupId>de.tum.bgu.msm</groupId>
             <artifactId>munich</artifactId>
             <version>0.1.0-SNAPSHOT</version>
-
+            <exclusions>
+                <exclusion>
+                    <groupId>de.tum.bgu.msm</groupId>
+                    <artifactId>mito</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -162,9 +173,6 @@
             <version>master-SNAPSHOT</version>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
-
     </dependencies>
 
 
@@ -172,6 +180,7 @@
         <!--        The following version is a standard compatible version of matsim-->
         <!--        <matsimVersion>12.0-SNAPSHOT</matsimVersion>-->
         <matsimVersion>14.0-PR1766</matsimVersion>
+        <geotools.version>24.2</geotools.version>
     </properties>
 
 
